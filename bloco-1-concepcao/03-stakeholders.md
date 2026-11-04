@@ -21,26 +21,9 @@ O parceiro BaaS não estava na lista inicial do grupo e foi incluído porque o p
 
 ## Matriz poder x interesse
 
-```mermaid
-quadrantChart
-    title Stakeholders do Rufus Bank
-    x-axis Baixo interesse --> Alto interesse
-    y-axis Baixo poder --> Alto poder
-    quadrant-1 Gerenciar de perto
-    quadrant-2 Manter satisfeito
-    quadrant-3 Monitorar
-    quadrant-4 Manter informado
-    Sócios: [0.88, 0.90]
-    Investidores: [0.78, 0.84]
-    Parceiro BaaS: [0.70, 0.94]
-    Banco Central: [0.42, 0.88]
-    ANPD: [0.22, 0.76]
-    Usuários finais: [0.92, 0.42]
-    Famílias: [0.76, 0.34]
-    Equipe dev: [0.84, 0.28]
-    SAC: [0.66, 0.16]
-    Concorrentes: [0.18, 0.40]
-```
+![Matriz poder x interesse dos stakeholders](diagramas/img/stakeholders.svg)
+
+Fonte do diagrama: [diagramas/stakeholders.mmd](diagramas/stakeholders.mmd).
 
 Os quatro quadrantes, em uma linha cada:
 

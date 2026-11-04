@@ -1,0 +1,12 @@
+{
+  "theme": "neutral",
+  "themeVariables": {
+    "fontFamily": "Arial, Helvetica, sans-serif",
+    "fontSize": "14px"
+  },
+  "flowchart": { "htmlLabels": false, "curve": "basis" },
+  "class": { "htmlLabels": false },
+  "er": { "useMaxWidth": false },
+  "sequence": { "useMaxWidth": false, "showSequenceNumbers": true },
+  "quadrantChart": { "chartWidth": 560, "chartHeight": 460 }
+}

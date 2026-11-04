@@ -1,0 +1,14 @@
+{
+  "nome": "Rufus Bank",
+  "slogan": "Rufus, iluminando sua vida financeira",
+  "disciplina": "Análise e Projeto de Sistemas · Projeto Final",
+  "instituicao": "UNIPÊ · Centro Universitário de João Pessoa",
+  "professor": "Israel Cunha",
+  "periodo": "2026.2",
+  "data": "2026-11-04",
+  "equipe": [
+    {"nome": "Pedro Oliveira", "papel": "Analista / PO"},
+    {"nome": "Izaias Terto", "papel": "Arquiteto de Software"},
+    {"nome": "Carlos Eduardo", "papel": "Engenheiro / DBA"}
+  ]
+}
