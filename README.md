@@ -8,9 +8,9 @@ Projeto final da disciplina Análise e Projeto de Sistemas (UNIPÊ, 2026.2), "Da
 
 | Papel | Responsável | Entrega |
 | --- | --- | --- |
-| Analista / PO | a definir | Visão, personas, requisitos, histórias, MoSCoW |
-| Arquiteto de Software | a definir | ADR, C4, stack, padrões, diagramas UML |
-| Engenheiro / DBA | a definir | Banco, infra cloud, CI/CD, segurança, custos |
+| Analista / PO | Pedro Oliveira | Visão, personas, requisitos, histórias, MoSCoW |
+| Arquiteto de Software | Izaias Terto | ADR, C4, stack, padrões, diagramas UML |
+| Engenheiro / DBA | Carlos Eduardo | Banco, infra cloud, CI/CD, segurança, custos |
 
 Na arguição o professor pergunta qualquer parte para qualquer integrante. Todo mundo precisa saber explicar tudo.
 

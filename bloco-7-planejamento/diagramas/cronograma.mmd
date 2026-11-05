@@ -1,0 +1,22 @@
+%% titulo: Cronograma do MVP em sprints de 2 semanas
+%%{init: {'gantt': {'leftPadding': 210, 'useWidth': 1500, 'rightPadding': 40, 'barHeight': 26, 'barGap': 8, 'fontSize': 14, 'sectionFontSize': 14}}}%%
+gantt
+    dateFormat YYYY-MM-DD
+    axisFormat %d/%m
+    tickInterval 2week
+    todayMarker off
+    section Fundação e plataforma
+    S0 18 SP :s0, 2026-11-16, 2026-11-27
+    S1 26 SP :s1, 2026-11-30, 2026-12-11
+    section Fluxo do cliente (Must)
+    S2 26 SP :s2, 2026-12-14, 2026-12-25
+    S3 29 SP :s3, 2026-12-28, 2027-01-08
+    S4 32 SP :s4, 2027-01-11, 2027-01-22
+    S5 34 SP :s5, 2027-01-25, 2027-02-05
+    section Rede de apoio e LGPD
+    S6 27 SP :s6, 2027-02-08, 2027-02-19
+    section Qualidade e lojas
+    S7 29 SP :s7, 2027-02-22, 2027-03-05
+    section Beta e lançamento
+    S8 reserva :crit, s8, 2027-03-08, 2027-03-19
+    Lançamento :milestone, m1, 2027-03-19, 0d

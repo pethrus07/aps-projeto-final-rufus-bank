@@ -113,7 +113,7 @@ Um ADR por decisão relevante. Cada um tem contexto, decisão, alternativas desc
 
 **Alternativas descartadas.** MongoDB (documento) e Amazon Aurora PostgreSQL. Motivos detalhados no Bloco 5, item 5.1.
 
-**Consequências.** Failover automático para a réplica. Backup com restauração a qualquer ponto dos últimos 35 dias. Custo já no Bloco 1 (US$ 227,40 por mês em produção).
+**Consequências.** Failover automático para a réplica. Backup com restauração a qualquer ponto dos últimos 35 dias. Custo já no Bloco 1 (US$ 284,40 por mês em produção, com os snapshots mensais).
 
 ---
 

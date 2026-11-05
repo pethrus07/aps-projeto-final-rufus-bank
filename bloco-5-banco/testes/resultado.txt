@@ -1,0 +1,55 @@
+Rufus Bank · teste do modelo físico · 04/11/2026 21:06
+Servidor: PostgreSQL 17.11 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+
+== Aplicando 001_schema.sql
+ok
+== Aplicando 002_seed_dev.sql
+ok
+
+Tabelas criadas: 27
+Colunas sem comentário: 0
+Tabelas sem comentário: 0
+
+== Casos
+[OK]    deve passa: Pix enviado equilibrado (-R$ 50 na principal, +R$ 50 na liquidação)
+[OK]    deve falha: lançamento desequilibrado (soma diferente de zero)
+        ERROR:  transação 00000000-0000-0000-0000-0000000e0102 desequilibrada: soma -1000 em 2 lançamento(s)
+[OK]    deve falha: transação com um lançamento só
+        ERROR:  transação 00000000-0000-0000-0000-0000000e0103 desequilibrada: soma -5000 em 1 lançamento(s)
+[OK]    deve falha: chave de idempotência repetida na mesma conta (Pix em dobro, RNF11)
+        ERROR:  duplicate key value violates unique constraint "ux_transacao_idempotencia"
+[OK]    deve passa: mesma chave de idempotência em outra conta
+[OK]    deve falha: segundo dispositivo ativo para o mesmo cliente (RF005)
+        ERROR:  duplicate key value violates unique constraint "ux_dispositivo_um_ativo_por_cliente"
+[OK]    deve passa: troca de aparelho: desativa o antigo e ativa o novo
+[OK]    deve falha: transação com valor negativo
+        ERROR:  new row for relation "transacao" violates check constraint "transacao_valor_centavos_check"
+[OK]    deve falha: lançamento com valor zero
+        ERROR:  new row for relation "lancamento" violates check constraint "lancamento_valor_centavos_check"
+[OK]    deve falha: alterar um lançamento já gravado (razão só aceita inserção)
+        ERROR:  tabela lancamento só aceita inserção
+[OK]    deve falha: apagar registro de auditoria (RNF14)
+        ERROR:  tabela registro_auditoria só aceita inserção
+[OK]    deve falha: subtipo de Pix apontando para transação de boleto
+        ERROR:  insert or update on table "pix_envio" violates foreign key constraint "pix_envio_transacao_id_tipo_fkey"
+[OK]    deve falha: Pix com nota 85 liberado automaticamente (RF026)
+        ERROR:  new row for relation "analise_risco" violates check constraint "analise_risco_check1"
+[OK]    deve passa: Pix com nota 85 retido para o analista
+[OK]    deve falha: decisão de analista sem analista
+        ERROR:  new row for relation "analise_risco" violates check constraint "analise_risco_check"
+[OK]    deve falha: limite diário do menor maior que o mensal
+        ERROR:  new row for relation "vinculo_responsavel" violates check constraint "vinculo_responsavel_check1"
+[OK]    deve falha: menor vinculado a si mesmo como responsável
+        ERROR:  new row for relation "vinculo_responsavel" violates check constraint "vinculo_responsavel_check"
+[OK]    deve falha: conta bloqueada sem data de bloqueio
+        ERROR:  new row for relation "conta" violates check constraint "conta_check"
+[OK]    deve passa: bloquear tudo agora (RF020)
+[OK]    deve falha: CPF repetido (mesmo hash)
+        ERROR:  duplicate key value violates unique constraint "cliente_cpf_hash_key"
+[OK]    deve falha: mensagem de chamado sem texto e sem áudio
+        ERROR:  new row for relation "mensagem_chamado" violates check constraint "mensagem_chamado_check"
+
+== Saldo da carteira principal do Antônio (soma dos lançamentos)
+R$ 100,00 (esperado R$ 100,00: recebeu 150, enviou 50)
+
+Resultado: 21 caso(s) como esperado, 0 diferente(s) do esperado

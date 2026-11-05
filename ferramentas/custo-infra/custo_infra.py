@@ -25,6 +25,9 @@ AQUI = pathlib.Path(__file__).parent
 CACHE = AQUI / "cache"
 SAIDA = AQUI / "custo-gerado.md"
 URL = "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/{s}/current/sa-east-1/index.json"
+URL_GLOBAL = "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/{s}/current/index.json"  # serviço sem região (Route 53)
+URL_SMS = ("https://d1.awsstatic.com/onedam/marketing-channels/website/aws/en_US/business-applications/approved/"
+           "documents/End-User-Messaging-SMS-Prices.ebc340b4d416d90832dd59629c4792b0deb6f8bc.csv")  # CSV oficial, por país
 HORAS = 730  # horas em um mes, padrao da propria calculadora da AWS
 
 # (servico, usagetype, trecho obrigatorio na descricao ou None)
@@ -53,6 +56,8 @@ PRECOS = {
     "s3_gb": ("AmazonS3", "SAE1-TimedStorage-ByteHrs", "first 50 TB"),
     "ecr_gb": ("AmazonECR", "SAE1-TimedStorage-ByteHrs", None),
     "polly_char": ("AmazonPolly", "SAE1-SynthesizeSpeech-Characters", None),
+    "r53_zona": ("AmazonRoute53@global", "HostedZone", "first 25 Hosted Zones"),
+    "r53_consulta": ("AmazonRoute53@global", "DNS-Queries", "first 1 Billion"),
 }
 
 # Premissas de uso. Toda quantidade aqui e citada no 04-viabilidade.md.
@@ -65,6 +70,7 @@ PROD = [
     ("PostgreSQL RDS db.t4g.medium Multi-AZ", "rds_medium_maz", HORAS, "h"),
     ("Disco do banco: 50 GB gp3 Multi-AZ", "rds_gp3_maz", 50, "GB-mês"),
     ("Backup além da cota grátis (retenção de 35 dias)", "rds_backup", 50, "GB-mês"),
+    ("Snapshots mensais guardados 12 meses (12 x 50 GB, Bloco 5)", "rds_backup", 600, "GB-mês"),
     ("Application Load Balancer", "alb_hora", HORAS, "h"),
     ("ALB: capacidade media de 1 LCU", "alb_lcu", HORAS, "LCU-h"),
     ("NAT Gateway: 2, um por zona", "nat_hora", 2 * HORAS, "h"),
@@ -82,6 +88,9 @@ PROD = [
     ("S3: comprovantes, documentos e cache de áudio", "s3_gb", 50, "GB-mês"),
     ("ECR: imagens dos containers", "ecr_gb", 5, "GB-mês"),
     ("Polly: leitura em voz alta (12 mi caracteres)", "polly_char", 12_000_000, "caracteres"),
+    ("Route 53: 1 zona de DNS (rufusbank.com.br)", "r53_zona", 1, "zona"),
+    ("Route 53: consultas de DNS", "r53_consulta", 5_000_000, "consultas"),
+    ("SMS para o Brasil: convites e avisos a quem não tem o app", "sms_br", 1_000, "SMS"),
 ]
 
 HOMOLOG = [
@@ -105,11 +114,30 @@ HOMOLOG = [
 
 def baixar(servico, forcar):
     CACHE.mkdir(exist_ok=True)
-    arq = CACHE / f"{servico}.json"
+    arq = CACHE / f"{servico.replace('@', '-')}.json"
     if forcar or not arq.exists():
         print(f"baixando {servico}...", file=sys.stderr)
-        urllib.request.urlretrieve(URL.format(s=servico), arq)
+        urllib.request.urlretrieve(url_de(servico), arq)
     return arq
+
+
+def url_de(servico):
+    if servico.endswith("@global"):
+        return URL_GLOBAL.format(s=servico.removesuffix("@global"))
+    return URL.format(s=servico)
+
+
+def preco_sms_brasil(forcar):
+    """Lê o preço do SMS para o Brasil no CSV oficial da AWS End User Messaging."""
+    CACHE.mkdir(exist_ok=True)
+    arq = CACHE / "sms-precos.csv"
+    if forcar or not arq.exists():
+        urllib.request.urlretrieve(URL_SMS, arq)
+    linhas = [l.split(",") for l in arq.read_text(encoding="utf-8").splitlines()]
+    br = [l for l in linhas if l[0] == "BR"]
+    if len(br) != 1:
+        sys.exit(f"ABORTADO: esperado 1 linha do Brasil no CSV de SMS, veio {len(br)}")
+    return float(br[0][-1])
 
 
 def precos_unitarios(forcar):
@@ -176,16 +204,71 @@ def tabela(nome, itens, p, cambio):
     return linhas, total
 
 
+# Serviços fora da AWS. Preço transcrito da página oficial de cada fornecedor em
+# CONSULTA (não há API de preço). (item, valor, moeda, periodicidade, conta, fonte, url)
+CONSULTA = "04/11/2026"
+EXTERNOS = [
+    ("Expo EAS, plano Starter (build do app e atualizações)", 19 + (10_000 - 3_000) * 0.005, "USD", "mês",
+     "US$ 19 + 7.000 usuários acima dos 3.000 incluídos x US$ 0,005", "Expo, página de preços", "https://expo.dev/pricing"),
+    ("Notificações push (Expo Push)", 0.0, "USD", "mês",
+     "Sem custo por envio", "Expo, FAQ de push", "https://docs.expo.dev/push-notifications/faq/"),
+    ("GitHub Team (código, revisão e CI)", 8 * 4.0, "USD", "mês",
+     "8 pessoas x US$ 4; inclui 3.000 minutos de GitHub Actions", "GitHub, página de preços", "https://github.com/pricing"),
+    ("Domínio rufusbank.com.br", 40.0, "BRL", "ano",
+     "Anuidade do .com.br", "Registro.br", "https://registro.br/"),
+    ("Conta de desenvolvedor Apple", 99.0, "USD", "ano",
+     "Anuidade", "Apple Developer Program", "https://developer.apple.com/support/enrollment/"),
+    ("Conta de desenvolvedor Google Play", 25.0, "USD", "único",
+     "Taxa única de registro", "Google Play Console", "https://support.google.com/googleplay/android-developer/answer/6112435"),
+    ("Teste de invasão externo antes do lançamento", 25_000.0, "BRL", "único",
+     "Teto da faixa de mercado para aplicação + API + autenticação (R$ 10.000 a R$ 25.000). Referência, não cotação",
+     "FreelaSemCrise, tabela de preços 2026", "https://www.freelasemcrise.com.br/quanto-cobrar/pentest-teste-seguranca"),
+]
+SOB_COTACAO = [
+    ("Tarifa do parceiro BaaS (conta, Pix, boleto e validação de identidade)",
+     "Os parceiros não publicam tabela de preço; depende de contrato e volume (risco R04)."),
+]
+
+
+def externos(cambio):
+    """Devolve as linhas da tabela, o total mensal em R$ e o total único em R$."""
+    linhas = ["### Serviços fora da AWS", "",
+              f"Preços transcritos da página oficial de cada fornecedor em {CONSULTA}.", "",
+              "| Item | Valor | Periodicidade | Conta | Equivalente mensal (R$) | Fonte |",
+              "| --- | --- | --- | --- | --- | --- |"]
+    mensal = unico = 0.0
+    for item, valor, moeda, per, conta, fonte, url in EXTERNOS:
+        reais = valor * cambio if moeda == "USD" else valor
+        simbolo = "US$" if moeda == "USD" else "R$"
+        if per == "mês":
+            eq = reais
+        elif per == "ano":
+            eq = reais / 12
+        else:
+            eq = 0.0
+            unico += reais
+        mensal += eq
+        eq_txt = brl(eq) if per != "único" else f"custo único de {brl(reais)}"
+        linhas.append(f"| {item} | {simbolo} {brl(valor)} | {per} | {conta} | {eq_txt} | [{fonte}]({url}) |")
+    linhas += ["", f"Equivalente mensal dos serviços externos: **R$ {brl(mensal)}**. Custos únicos: **R$ {brl(unico)}**.", ""]
+    linhas += ["Sem preço público, fora do total:", ""]
+    linhas += [f"- {i}: {m}" for i, m in SOB_COTACAO]
+    linhas.append("")
+    return linhas, mensal, unico
+
+
 def main():
-    p = precos_unitarios("--baixar" in sys.argv)
+    forcar = "--baixar" in sys.argv
+    p = precos_unitarios(forcar)
+    p["sms_br"] = (preco_sms_brasil(forcar), dt.date.today().isoformat())
     cambio, data_cambio = ptax()
     versoes = sorted({v for _, v in p.values()})
     out = [
-        "# Custo mensal de infraestrutura (gerado)",
+        "# 4.4 Custo de infraestrutura item a item",
         "",
-        "Arquivo gerado por `custo_infra.py`. Não editar à mão: mude as premissas no script e rode de novo.",
+        "Anexo do Estudo de Viabilidade. Tabela gerada pelo script `ferramentas/custo-infra/custo_infra.py` a partir da tabela oficial de preços da AWS e das páginas de preço dos outros fornecedores; para mudar, altere as premissas no script e gere de novo.",
         "",
-        f"- Região: AWS sa-east-1 (São Paulo), preço sob demanda, sem desconto de reserva.",
+        "- Região: AWS sa-east-1 (São Paulo), preço sob demanda, sem desconto de reserva.",
         f"- Tabelas de preço AWS publicadas entre {versoes[0][:10]} e {versoes[-1][:10]}.",
         f"- Câmbio: PTAX de venda de {data_cambio}, R$ {brl(cambio, 4)} por dólar (Banco Central).",
         f"- Gerado em {dt.date.today():%d/%m/%Y}.",
@@ -193,7 +276,9 @@ def main():
     ]
     t1, prod = tabela("Produção", PROD, p, cambio)
     t2, hml = tabela("Homologação (staging)", HOMOLOG, p, cambio)
-    out += t1 + t2
+    t3, ext_mensal, ext_unico = externos(cambio)
+    out += t1 + t2 + t3
+    total_mensal_brl = (prod + hml) * cambio + ext_mensal
     out += [
         "### Resumo por ambiente",
         "",
@@ -201,12 +286,39 @@ def main():
         "| --- | --- | --- |",
         f"| Produção | {brl(prod)} | {brl(prod * cambio)} |",
         f"| Homologação | {brl(hml)} | {brl(hml * cambio)} |",
+        f"| Serviços fora da AWS | {brl(ext_mensal / cambio)} | {brl(ext_mensal)} |",
         "| Desenvolvimento | 0,00 | 0,00 (Docker Compose na máquina do dev) |",
-        f"| **Total** | **{brl(prod + hml)}** | **{brl((prod + hml) * cambio)}** |",
+        f"| **Total** | **{brl(total_mensal_brl / cambio)}** | **{brl(total_mensal_brl)}** |",
+        "",
+        f"Custos únicos (antes do lançamento): **R$ {brl(ext_unico)}**.",
+        "",
+        "### Fontes dos preços",
+        "",
+        "Cada preço unitário da AWS foi lido destes arquivos oficiais (Price List API, pública, sem login), "
+        "filtrando pelo código de uso (`usagetype`) indicado no script.",
+        "",
+        "| Serviço | Tabela oficial | Publicada em |",
+        "| --- | --- | --- |",
+    ]
+    servicos = {}
+    for chave, (serv, _, _) in PRECOS.items():
+        servicos[serv] = p[chave][1][:10]
+    for serv, versao in sorted(servicos.items()):
+        url = url_de(serv)
+        out.append(f"| {serv.removesuffix('@global')} | [{url}]({url}) | {versao} |")
+    out.append(f"| SMS para o Brasil (End User Messaging) | [{URL_SMS}]({URL_SMS}) | consultado em {dt.date.today():%d/%m/%Y} |")
+    url_ptax = "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/"
+    out += [
+        "",
+        f"Câmbio: API de cotações PTAX do Banco Central, [{url_ptax}]({url_ptax}), cotação de venda de {data_cambio}.",
+        "",
+        "Conferência manual: os mesmos itens e quantidades podem ser lançados na calculadora oficial, "
+        "[https://calculator.aws](https://calculator.aws), região South America (São Paulo).",
         "",
     ]
     SAIDA.write_text("\n".join(out), encoding="utf-8")
-    print(f"producao USD {prod:.2f} | homolog USD {hml:.2f} | total R$ {brl((prod + hml) * cambio)}")
+    print(f"producao USD {prod:.2f} (R$ {brl(prod * cambio)}) | homolog USD {hml:.2f} (R$ {brl(hml * cambio)}) | "
+          f"externos R$ {brl(ext_mensal)}/mes | total R$ {brl(total_mensal_brl)}/mes | unicos R$ {brl(ext_unico)}")
 
 
 if __name__ == "__main__":

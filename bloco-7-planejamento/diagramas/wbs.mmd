@@ -1,0 +1,35 @@
+%% titulo: WBS do MVP do Rufus Bank (níveis 1 a 3)
+flowchart TB
+    R["1 · MVP Rufus Bank"]
+
+    subgraph G["1.1 Gestão"]
+        direction TB
+        G1["1.1.1 Backlog e planejamento"] ~~~ G2["1.1.2 Cerimônias Scrum"] ~~~ G3["1.1.3 Riscos e contrato BaaS"]
+    end
+    subgraph P["1.2 Produto"]
+        direction TB
+        P1["1.2.1 Conta e acesso"] ~~~ P2["1.2.2 Dinheiro do dia a dia"] ~~~ P3["1.2.3 Proteção contra golpe"] ~~~ P4["1.2.4 Família"] ~~~ P5["1.2.5 Metas e educação"] ~~~ P6["1.2.6 Atendimento e avisos"] ~~~ P7["1.2.7 Backoffice"]
+    end
+    subgraph T["1.3 Plataforma técnica"]
+        direction TB
+        T1["1.3.1 Infraestrutura como código"] ~~~ T2["1.3.2 Pipeline CI/CD"] ~~~ T3["1.3.3 Base da API, app e painel"] ~~~ T4["1.3.4 Razão contábil e eventos"]
+    end
+    subgraph I["1.4 Integrações"]
+        direction TB
+        I1["1.4.1 Parceiro BaaS"] ~~~ I2["1.4.2 Voz"] ~~~ I3["1.4.3 Conciliação"]
+    end
+    subgraph Q["1.5 Qualidade"]
+        direction TB
+        Q1["1.5.1 Testes automatizados"] ~~~ Q2["1.5.2 Segurança"] ~~~ Q3["1.5.3 Desempenho"] ~~~ Q4["1.5.4 Acessibilidade e testes com usuários"] ~~~ Q5["1.5.5 Observabilidade e backup"]
+    end
+    subgraph D["1.6 Implantação"]
+        direction TB
+        D1["1.6.1 Publicação nas lojas"] ~~~ D2["1.6.2 Beta fechado"] ~~~ D3["1.6.3 Lançamento e treino do SAC"]
+    end
+
+    R --> G
+    R --> P
+    R --> T
+    R --> I
+    R --> Q
+    R --> D

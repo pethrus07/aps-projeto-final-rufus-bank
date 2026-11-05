@@ -1,6 +1,6 @@
 # 4. Estudo de Viabilidade
 
-**Veredito: o projeto é viável.** Tecnicamente, tudo que o Rufus precisa já existe em serviços maduros. Operacionalmente, a condição é ter um parceiro autorizado pelo Banco Central. A infraestrutura custa cerca de **R$ 4.426 por mês** (produção e homologação), o que dá R$ 0,33 por usuário ativo em produção.
+**Veredito: o projeto é viável.** Tecnicamente, tudo que o Rufus precisa já existe em serviços maduros. Operacionalmente, a condição é ter um parceiro autorizado pelo Banco Central. A infraestrutura custa **R$ 5.435,43 por mês** (produção, homologação e serviços fora da AWS), mais **R$ 25.136,94 de custos únicos** antes do lançamento. Só a produção na AWS dá R$ 0,38 por usuário ativo.
 
 ## 4.1 Viabilidade técnica
 
@@ -35,26 +35,30 @@ O ponto mais frágil da operação é a dependência do parceiro BaaS. Ele vira 
 
 ## 4.3 Custo de infraestrutura mensal
 
-Preços tirados da tabela oficial da AWS (Price List API pública, a mesma base da calculadora em calculator.aws), região South America (São Paulo), preço sob demanda, consultados em 04/11/2026. Dólar pela PTAX de venda do Banco Central de 04/11/2026: **R$ 5,4778**.
+Preços da AWS tirados da tabela oficial (Price List API pública, a mesma base da calculadora em calculator.aws), região South America (São Paulo), preço sob demanda, consultados em 04/11/2026. Preço do SMS tirado do CSV oficial de preços por país da AWS. Serviços fora da AWS (Expo, GitHub, domínio, lojas, teste de invasão) transcritos das páginas de preço de cada fornecedor. Dólar pela PTAX de venda do Banco Central de 04/11/2026: **R$ 5,4778**. Cada fonte, com o link, está no item 4.4.
 
 | Ambiente | Para que serve | USD por mês | R$ por mês |
 | --- | --- | --- | --- |
-| Produção | Clientes reais, alta disponibilidade em 2 zonas | 600,41 | 3.288,92 |
-| Homologação (staging) | Testes antes de publicar, 1 zona, banco menor | 207,50 | 1.136,64 |
+| Produção (AWS) | Clientes reais, alta disponibilidade em 2 zonas | 689,91 | 3.779,18 |
+| Homologação (AWS) | Testes antes de publicar, 1 zona, banco menor | 207,50 | 1.136,64 |
+| Serviços fora da AWS | Build do app, push, GitHub, domínio e conta da Apple | 94,86 | 519,62 |
 | Desenvolvimento | Cada dev roda tudo na própria máquina com Docker Compose | 0,00 | 0,00 |
-| **Total** | | **807,91** | **4.425,55** |
+| **Total mensal** | | **992,27** | **5.435,43** |
 
-A tabela item a item (quantidade, preço unitário e total de cada serviço) está em [ferramentas/custo-infra/custo-gerado.md](../ferramentas/custo-infra/custo-gerado.md). Ela é gerada pelo script [custo_infra.py](../ferramentas/custo-infra/custo_infra.py), que baixa os preços oficiais e para com erro se algum preço não for encontrado.
+Custos únicos antes do lançamento: conta do Google Play (US$ 25) e teste de invasão externo (R$ 25.000, teto da faixa de mercado), total de **R$ 25.136,94**.
+
+A tabela item a item (quantidade, preço unitário, total e fonte de cada serviço) está no item 4.4, em [ferramentas/custo-infra/custo-gerado.md](../ferramentas/custo-infra/custo-gerado.md). Ela é gerada pelo script [custo_infra.py](../ferramentas/custo-infra/custo_infra.py), que baixa os preços oficiais e para com erro se algum preço não for encontrado.
 
 ### Onde está o dinheiro em produção
 
 | Serviço | USD por mês | Por que custa isso |
 | --- | --- | --- |
-| Banco PostgreSQL (RDS Multi-AZ, disco e backup) | 227,40 | Multi-AZ mantém uma cópia em outra zona e assume em caso de falha. É o que sustenta os 99,9% |
+| Banco PostgreSQL (RDS Multi-AZ, disco, backup e snapshots mensais) | 284,40 | Multi-AZ mantém uma cópia em outra zona e assume em caso de falha. É o que sustenta os 99,9%. Os snapshots mensais ficam 12 meses (Bloco 5) |
 | NAT Gateway (2) | 137,64 | Um por zona, para a API falar com o parceiro BaaS mesmo se uma zona cair |
 | Containers (Fargate) | 62,00 | 2 tarefas da API, uma em cada zona, e 1 worker |
 | Leitura em voz alta (Polly) | 48,00 | Fala gerada na hora para saldo, valores e nomes |
-| Restante (balanceador, WAF, logs, saída de dados, IPs, segredos, S3, ECR) | 125,37 | Rede, segurança e observabilidade |
+| SMS para o Brasil | 30,00 | 1.000 SMS por mês a US$ 0,03, só para quem ainda não tem o app (convites e avisos) |
+| Restante (balanceador, WAF, logs, saída de dados, IPs, DNS, segredos, S3, ECR) | 127,87 | Rede, segurança e observabilidade |
 
 ### Premissas de uso
 
@@ -65,11 +69,13 @@ A tabela item a item (quantidade, preço unitário e total de cada serviço) est
 | Dados enviados para a internet | 120 GB | 6 milhões de respostas de 20 KB |
 | Caracteres falados por mês | 12 milhões | Metade dos usuários usa áudio: 5.000 x 30 falas x 80 caracteres |
 | Logs | 20 GB por mês, guardados por 90 dias | Estimativa para API e worker com log estruturado |
+| SMS | 1.000 por mês | Push é grátis; SMS só para convite do responsável e do contato de confiança e para aviso a quem não tem o app |
+| Usuários que recebem atualização do app (Expo) | 10.000 | Todos os usuários ativos |
+| Pessoas no GitHub | 8 | A equipe do Bloco 7 |
 | Disponibilidade | 99,9% | Meta que obriga 2 zonas, banco Multi-AZ, 2 NAT e balanceador |
 
 ### O que este valor não inclui
 
-- Tarifa do parceiro BaaS por conta e por transação. Depende de contrato e entra no Bloco 7.
-- SMS, contas nas lojas de aplicativos e domínio.
+- Tarifa do parceiro BaaS por conta, Pix, boleto e validação de identidade. Os parceiros não publicam tabela de preço: depende de contrato e de volume (risco R04).
 - Salários da equipe (Bloco 7).
 - Descontos de reserva (Savings Plans). Com uso estável depois do lançamento, o custo de containers e banco pode cair.
