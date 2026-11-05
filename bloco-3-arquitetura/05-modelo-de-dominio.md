@@ -153,6 +153,18 @@ Subtipos (herança, porque um Pix **é uma** transação e compartilha o ciclo d
 | Chamado | MensagemChamado | 1 para N | Composição | |
 | Funcionario | RegistroAuditoria | 1 para N | Associação | |
 
+## Como o modelo vira tabela (diferenças de propósito)
+
+O diagrama de classes mostra o domínio; o banco (Bloco 5) guarda alguns campos de forma diferente por segurança e integridade:
+
+| No domínio | No banco | Por quê |
+| --- | --- | --- |
+| `Cliente.cpf: Cpf` | `cpf_cifrado` + `cpf_hash` | CPF cifrado em repouso (RNF07). O hash permite buscar e garantir unicidade sem decifrar |
+| `Cliente.dataNascimento: LocalDate` | `data_nascimento_cifrada` | Cifrado em repouso (RNF07) |
+| `Funcionario.segredoTotp: String` | `segredo_totp_cifrado` | Segredo do segundo fator nunca em texto puro |
+| Saldo da carteira (soma dos lançamentos) | Tabela extra `saldo_fechamento_diario` | Desnormalização de propósito: a consulta de saldo soma só os lançamentos do dia sobre o fechamento anterior e cabe no p95 de 300 ms (ADR-007, RNF01) |
+| Subtipos de `Transacao` (herança) | Uma tabela por subtipo, com chave estrangeira composta (`transacao_id`, `tipo`) | Impede, por exemplo, um registro de Pix apontando para uma transação de boleto |
+
 ## Classes de serviço (para o diagrama de classes e o C4 nível 4)
 
 | Classe | Métodos principais |

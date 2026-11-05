@@ -1,0 +1,149 @@
+# Integração contínua do Rufus Bank (Bloco 6, pipeline CI/CD).
+# Roda em todo pull request e em todo push na main.
+# Ordem: lint > testes > build > segurança. Qualquer etapa vermelha bloqueia o merge
+# (a proteção da main exige os 4 jobs verdes, bloco-8-dev/04-git-workflow.md).
+#
+# Caminhos relativos à raiz do repositório. Esta pasta .github fica em codigo/
+# nesta entrega para não disparar deploy no repositório acadêmico; no dia 1 ela
+# vai para a raiz (bloco-6-infra/02-pipeline-ci-cd.md).
+
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: codigo/backend
+
+jobs:
+  lint:
+    name: 1. lint e tipos
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: codigo/backend/package-lock.json
+      - run: npm ci
+      # BLOQUEIA: qualquer erro de ESLint (inclui import entre módulos, ADR-001)
+      - run: npm run lint
+      # BLOQUEIA: qualquer erro do TypeScript em modo estrito
+      - run: npm run typecheck
+      # BLOQUEIA: contrato OpenAPI com erro (Bloco 8)
+      - run: npx -y @redocly/cli lint ../../bloco-8-dev/openapi.yaml --config ../../bloco-8-dev/redocly.yaml
+
+  testes:
+    name: 2. testes
+    needs: lint
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    services:
+      # PostgreSQL real para os testes de integração (razão e outbox, Bloco 9)
+      banco:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: rufus_teste
+          POSTGRES_USER: rufus
+          POSTGRES_PASSWORD: rufus_teste
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U rufus -d rufus_teste"
+          --health-interval 3s --health-timeout 3s --health-retries 20
+    env:
+      NODE_ENV: teste
+      DATABASE_URL: postgres://rufus:rufus_teste@localhost:5432/rufus_teste
+      JWT_SEGREDO: segredo-de-teste-com-mais-de-32-caracteres
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: codigo/backend/package-lock.json
+      - run: npm ci
+      - name: aplicar o schema do Bloco 5
+        run: |
+          for f in ../../bloco-5-banco/sql/*.sql; do
+            PGPASSWORD=rufus_teste psql -h localhost -U rufus -d rufus_teste -v ON_ERROR_STOP=1 -f "$f"
+          done
+      # BLOQUEIA: teste falhando ou cobertura de linhas abaixo de 80% (coverageThreshold, Bloco 9)
+      - run: npm run test:cov
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cobertura
+          path: codigo/backend/coverage
+
+  build:
+    name: 3. build das imagens
+    needs: testes
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      # BLOQUEIA: imagem que não compila
+      - name: imagem da api
+        run: docker build -f ../docker/api.Dockerfile -t rufus-api:${{ github.sha }} .
+      - name: imagem do worker
+        run: docker build -f ../docker/worker.Dockerfile -t rufus-worker:${{ github.sha }} .
+      - name: salvar imagens para a varredura
+        run: docker save rufus-api:${{ github.sha }} rufus-worker:${{ github.sha }} -o /tmp/imagens.tar
+      - uses: actions/upload-artifact@v4
+        with:
+          name: imagens
+          path: /tmp/imagens.tar
+          retention-days: 1
+
+  seguranca:
+    name: 4. segurança
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # BLOQUEIA: dependência com vulnerabilidade alta ou crítica (RNF06)
+      - run: npm audit --audit-level=high
+      # BLOQUEIA: segredo (chave, senha, token) commitado em qualquer ponto do histórico
+      - name: gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: imagens
+          path: /tmp
+      - run: docker load -i /tmp/imagens.tar
+      # BLOQUEIA: vulnerabilidade alta ou crítica com correção disponível nas imagens (RNF06)
+      - name: trivy api
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: rufus-api:${{ github.sha }}
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: '1'
+      - name: trivy worker
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: rufus-worker:${{ github.sha }}
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: '1'

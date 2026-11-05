@@ -28,6 +28,7 @@ import re
 import subprocess
 import sys
 import tempfile
+import xml.dom.minidom
 
 RAIZ = pathlib.Path(__file__).resolve().parents[2]
 AQUI = pathlib.Path(__file__).resolve().parent
@@ -61,7 +62,8 @@ def svg_mermaid(fonte: pathlib.Path) -> str:
 
 
 def svg_python(fonte: pathlib.Path) -> str:
-    r = subprocess.run([sys.executable, "-I", str(fonte)], capture_output=True, text=True, encoding="utf-8")
+    # -X utf8: no Windows o stdout do filho sairia em cp1252 e quebraria os acentos
+    r = subprocess.run([sys.executable, "-I", "-X", "utf8", str(fonte)], capture_output=True, text=True, encoding="utf-8")
     if r.returncode != 0 or "<svg" not in r.stdout:
         sys.exit(f"ABORTADO: {fonte} falhou\n{r.stderr}")
     return r.stdout
@@ -87,10 +89,15 @@ def envolver(svg: str, titulo: str, p: dict) -> tuple[str, int, int]:
     altura = int(vh + FAIXA + 2 * MARGEM)
     # o SVG interno vira um <svg> aninhado, posicionado abaixo da faixa
     interno = re.sub(r"^<\?xml[^>]*>", "", svg.strip())
-    interno = re.sub(r"<svg\b", f'<svg x="{MARGEM + (largura - 2 * MARGEM - vw) / 2}" y="{FAIXA + MARGEM}" '
-                     f'width="{vw}" height="{vh}"', interno, count=1)
-    interno = re.sub(r'\s(width|height)="100%"', "", interno)
-    interno = re.sub(r'style="max-width:[^"]*"', "", interno, count=1)
+    # limpa só a tag de abertura do <svg> interno: tira width, height, x, y e
+    # max-width, que seriam duplicados (XML inválido = imagem quebrada)
+    abre = re.search(r"<svg\b[^>]*>", interno)
+    tag = abre.group(0)
+    tag = re.sub(r'\s(width|height|x|y)="[^"]*"', "", tag)
+    tag = re.sub(r'\sstyle="max-width:[^"]*"', "", tag)
+    tag = tag.replace("<svg", f'<svg x="{MARGEM + (largura - 2 * MARGEM - vw) / 2}" y="{FAIXA + MARGEM}" '
+                      f'width="{vw}" height="{vh}"', 1)
+    interno = interno[:abre.start()] + tag + interno[abre.end():]
     cab = (
         f'<rect x="0" y="0" width="{largura}" height="{FAIXA}" fill="#F3F4F6"/>'
         f'<line x1="0" y1="{FAIXA}" x2="{largura}" y2="{FAIXA}" stroke="#D1D5DB"/>'
@@ -139,6 +146,10 @@ def main():
         nome = f.name.removesuffix(".svg.py").removesuffix(".mmd")
         saida = f.parent / "img" / f"{nome}.svg"
         saida.parent.mkdir(exist_ok=True)
+        try:
+            xml.dom.minidom.parseString(final.encode("utf-8"))
+        except Exception as e:
+            sys.exit(f"ABORTADO: SVG final inválido em {f}: {e}")
         saida.write_text(final, encoding="utf-8")
         png(saida, w, h)
         print(f"ok  {saida.relative_to(RAIZ)}  ({w}x{h})")

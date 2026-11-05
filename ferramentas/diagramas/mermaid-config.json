@@ -2,11 +2,32 @@
   "theme": "neutral",
   "themeVariables": {
     "fontFamily": "Arial, Helvetica, sans-serif",
-    "fontSize": "14px"
+    "fontSize": "14px",
+    "noteBkgColor": "#FFF8C5",
+    "noteTextColor": "#111827",
+    "noteBorderColor": "#C9A227"
   },
-  "flowchart": { "htmlLabels": false, "curve": "basis" },
-  "class": { "htmlLabels": false },
-  "er": { "useMaxWidth": false },
-  "sequence": { "useMaxWidth": false, "showSequenceNumbers": true },
-  "quadrantChart": { "chartWidth": 560, "chartHeight": 460 }
+  "flowchart": {
+    "htmlLabels": false,
+    "curve": "basis",
+    "wrappingWidth": 330,
+    "nodeSpacing": 40,
+    "rankSpacing": 42
+  },
+  "class": {
+    "htmlLabels": false
+  },
+  "er": {
+    "useMaxWidth": false
+  },
+  "sequence": {
+    "useMaxWidth": false,
+    "showSequenceNumbers": true,
+    "noteMargin": 14,
+    "boxMargin": 12
+  },
+  "quadrantChart": {
+    "chartWidth": 560,
+    "chartHeight": 460
+  }
 }

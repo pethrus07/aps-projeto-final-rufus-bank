@@ -1,0 +1,1540 @@
+openapi: 3.0.3
+info:
+  title: Rufus Bank API
+  version: 1.0.0
+  description: |
+    Contrato da API do Rufus Bank (Bloco 8). Segue a lista canônica de rotas de
+    `bloco-3-arquitetura/06-rotas-da-api.md` e o modelo de `05-modelo-de-dominio.md`.
+
+    Regras gerais:
+    - Dinheiro sempre em **centavos inteiros** (`valorCentavos`). R$ 12,34 = 1234.
+    - Datas e horas em ISO 8601, UTC.
+    - Rotas que movem dinheiro exigem o cabeçalho `Idempotency-Key` (RNF11). Repetir a
+      mesma chave devolve o resultado da primeira requisição, sem criar outra operação.
+    - Toda resposta traz `X-Correlation-Id` (RNF13). Erros seguem o schema `Erro`.
+    - Rotas `/admin` exigem token de funcionário com o papel indicado em `x-papel`.
+  contact:
+    name: Equipe Rufus Bank
+  license:
+    name: Uso acadêmico (UNIPÊ)
+    url: https://github.com/pethrus07/aps-projeto-final-rufus-bank
+servers:
+  - url: http://localhost:3000/v1
+    description: Desenvolvimento (docker compose)
+  - url: https://api-hml.rufusbank.com.br/v1
+    description: Homologação
+  - url: https://api.rufusbank.com.br/v1
+    description: Produção
+security:
+  - bearerAuth: []
+tags:
+  - name: saude
+    description: Verificação de disponibilidade (RNF03)
+  - name: onboarding
+    description: Abertura de conta (RF001, RF002)
+  - name: autenticacao
+    description: Login, renovação e aparelho vinculado (RF003 a RF005, ADR-010)
+  - name: contas
+    description: Conta, saldo, extrato e bloqueio total (RF006, RF020)
+  - name: pix
+    description: Envio, recebimento e chaves Pix (RF008 a RF012, RF019)
+  - name: boletos
+    description: Pagamento de boleto (RF013)
+  - name: metas
+    description: Metas de economia (RF017)
+  - name: familia
+    description: Conta de menor, responsável e contato de confiança (RF014 a RF016, RF018)
+  - name: voz-e-lembretes
+    description: Leitura em voz alta e lembretes (RF007, RF022)
+  - name: atendimento
+    description: Chamados do cliente (RF024)
+  - name: titular
+    description: Direitos do titular da LGPD (RF029)
+  - name: webhooks
+    description: Avisos do parceiro BaaS
+  - name: admin
+    description: Painéis internos de SAC, antifraude e administração (RF025, RF027, RF030)
+
+paths:
+  /health:
+    servers:
+      - url: http://localhost:3000
+      - url: https://api.rufusbank.com.br
+    get:
+      tags: [saude]
+      operationId: verificarSaude
+      summary: Saúde da API e do banco
+      security: []
+      responses:
+        '200':
+          description: API e banco respondendo
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Saude' }
+              example: { status: ok, banco: ok, versao: 3f2a9c1 }
+        '503':
+          description: Banco indisponível
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Saude' }
+              example: { status: erro, banco: indisponivel, versao: 3f2a9c1 }
+        '429': { $ref: '#/components/responses/MuitasRequisicoes' }
+
+  # ---------------------------------------------------------------- onboarding
+  /onboarding/cadastros:
+    post:
+      tags: [onboarding]
+      operationId: iniciarCadastro
+      summary: Inicia o cadastro de uma conta
+      description: Primeiro passo do RF001. Para menor de 18 anos, o cadastro segue para o convite do responsável (RF014).
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/NovoCadastro' }
+            example: { nomeCompleto: Antônio Pereira da Silva, cpf: '12345678909', dataNascimento: '1979-03-14', celular: '+5583999990000', aceiteTermosVersao: '2026-11' }
+      responses:
+        '201':
+          description: Cadastro iniciado
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Cadastro' }
+        '400': { $ref: '#/components/responses/Invalido' }
+        '409': { $ref: '#/components/responses/Conflito' }
+        '429': { $ref: '#/components/responses/MuitasRequisicoes' }
+
+  /onboarding/cadastros/{id}/documentos:
+    post:
+      tags: [onboarding]
+      operationId: enviarDocumento
+      summary: Envia a foto do documento
+      security:
+        - tokenCadastro: []
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [frente, verso, tipo]
+              properties:
+                tipo: { type: string, enum: [RG, CNH] }
+                frente: { type: string, format: binary }
+                verso: { type: string, format: binary }
+      responses:
+        '202':
+          description: Documento recebido para validação
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Cadastro' }
+        '400': { $ref: '#/components/responses/Invalido' }
+        '404': { $ref: '#/components/responses/NaoEncontrado' }
+        '422':
+          description: Foto recusada (escura, cortada ou ilegível). A `mensagem` é a frase falada ao cliente.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Erro' }
+              example: { codigo: FOTO_ESCURA, mensagem: 'A foto ficou escura, tente perto da janela.', correlacaoId: 9b1c3f0e-2a4d-4c8e-9f1a-7d3e5b6a8c90 }
+
+  /onboarding/cadastros/{id}/selfie:
+    post:
+      tags: [onboarding]
+      operationId: enviarSelfie
+      summary: Envia a selfie e dispara a validação no parceiro
+      security:
+        - tokenCadastro: []
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [selfie, chavePublicaDispositivo, modeloDispositivo]
+              properties:
+                selfie: { type: string, format: binary }
+                chavePublicaDispositivo: { type: string, description: Chave pública gerada no Keystore ou Keychain (ADR-010) }
+                modeloDispositivo: { type: string, example: Samsung Galaxy A05 }
+      responses:
+        '202':
+          description: Selfie recebida. A validação no parceiro é assíncrona.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Cadastro' }
+        '400': { $ref: '#/components/responses/Invalido' }
+        '404': { $ref: '#/components/responses/NaoEncontrado' }
+        '422': { $ref: '#/components/responses/RegraDeNegocio' }
+
+  /onboarding/cadastros/{id}:
+    get:
+      tags: [onboarding]
+      operationId: consultarCadastro
+      summary: Situação do cadastro
+      security:
+        - tokenCadastro: []
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: Situação atual
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Cadastro' }
+        '404': { $ref: '#/components/responses/NaoEncontrado' }
+
+  # -------------------------------------------------------------- autenticacao
+  /auth/login:
+    post:
+      tags: [autenticacao]
+      operationId: entrar
+      summary: Login com CPF, senha de 6 números e assinatura do aparelho
+      description: Após 5 senhas erradas o acesso fica bloqueado por 30 minutos (RF004). Aparelho diferente do vinculado recebe 403 com código APARELHO_NAO_VINCULADO (RF005).
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PedidoLogin' }
+      responses:
+        '200':
+          description: Tokens emitidos
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Tokens' }
+        '400': { $ref: '#/components/responses/Invalido' }
+        '401': { $ref: '#/components/responses/NaoAutenticado' }
+        '403': { $ref: '#/components/responses/Proibido' }
+        '423':
+          description: Acesso bloqueado por tentativas erradas
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Erro' }
+              example: { codigo: ACESSO_BLOQUEADO, mensagem: 'Você errou a senha 5 vezes. Tente de novo em 30 minutos.', correlacaoId: 9b1c3f0e-2a4d-4c8e-9f1a-7d3e5b6a8c90 }
+
+  /auth/renovacao:
+    post:
+      tags: [autenticacao]
+      operationId: renovarToken
+      summary: Troca o token de renovação por um novo par de tokens
+      description: O token de renovação é de uso único. Reutilizar um token já trocado revoga todas as sessões do aparelho (detecção de roubo).
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [tokenRenovacao, assinaturaDispositivo]
+              properties:
+                tokenRenovacao: { type: string }
+                assinaturaDispositivo: { type: string }
+      responses:
+        '200':
+          description: Novo par de tokens
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Tokens' }
+        '401': { $ref: '#/components/responses/NaoAutenticado' }
+
+  /auth/logout:
+    post:
+      tags: [autenticacao]
+      operationId: sair
+      summary: Revoga a sessão atual
+      responses:
+        '204': { description: Sessão revogada }
+        '401': { $ref: '#/components/responses/NaoAutenticado' }
+
+  /dispositivos/troca:
+    post:
+      tags: [autenticacao]
+      operationId: trocarDispositivo
+      summary: Troca o celular vinculado com selfie nova (RF005)
+      security: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [cpf, senha, selfie, chavePublicaDispositivo, modeloDispositivo]
+              properties:
+                cpf: { type: string, pattern: '^[0-9]{11}$' }
+                senha: { type: string, pattern: '^[0-9]{6}$' }
+                selfie: { type: string, format: binary }
+                chavePublicaDispositivo: { type: string }
+                modeloDispositivo: { type: string }
+      responses:
+        '202':
+          description: Troca em análise. O aparelho antigo é desconectado quando aprovada.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  situacao: { type: string, enum: [EM_ANALISE, APROVADA, RECUSADA] }
+        '400': { $ref: '#/components/responses/Invalido' }
+        '401': { $ref: '#/components/responses/NaoAutenticado' }
+        '429': { $ref: '#/components/responses/MuitasRequisicoes' }
+
+  # -------------------------------------------------------------------- contas
+  /contas/me:
+    get:
+      tags: [contas]
+      operationId: consultarConta
+      summary: Dados da conta do cliente logado
+      responses:
+        '200':
+          description: Conta
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Conta' }
+        '401': { $ref: '#/components/responses/NaoAutenticado' }
+
+  /contas/me/saldo:
+    get:
+      tags: [contas]
+      operationId: consultarSaldo
+      summary: Saldo da carteira principal
+      description: Soma dos lançamentos da carteira principal (ADR-007). p95 abaixo de 300 ms (RNF01).
+      responses:
+        '200':
+          description: Saldo
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Saldo' }
+              example: { saldoCentavos: 15230, textoFalado: 'Você tem 152 reais e 30 centavos.', atualizadoEm: '2026-11-04T18:20:00Z' }
+        '401': { $ref: '#/components/responses/NaoAutenticado' }
+
+  /contas/me/extrato:
+    get:
+      tags: [contas]
+      operationId: consultarExtrato
+      summary: Extrato paginado por cursor
+      parameters:
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/Limite'
+      responses:
+        '200':
+          description: Página do extrato, mais recente primeiro
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PaginaExtrato' }
+        '401': { $ref: '#/components/responses/NaoAutenticado' }
+
+  /contas/me/bloqueio-total:
+    post:
+      tags: [contas]
+      operationId: bloquearTudo
+      summary: Bloquear tudo agora (RF020)
+      description: Suspende na hora todas as saídas de dinheiro e avisa o contato de confiança.
+      responses:
+        '200':
+          description: Conta bloqueada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Conta' }
+        '401': { $ref: '#/components/responses/NaoAutenticado' }
+    delete:
+      tags: [contas]
+      operationId: pedirDesbloqueio
+      summary: Pede o desbloqueio (selfie e 1 hora de espera)
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [selfie]
+              properties:
+                selfie: { type: string, format: binary }
+      responses:
+        '202':
+          description: Desbloqueio agendado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  liberaEm: { type: string, format: date-time }
+        '401': { $ref: '#/components/responses/NaoAutenticado' }
+        '422': { $ref: '#/components/responses/RegraDeNegocio' }
+
+  # ----------------------------------------------------------------------- pix
+  /pix/consultas-chave:
+    post:
+      tags: [pix]
+      operationId: consultarChavePix
+      summary: Descobre o nome do recebedor e o banco de uma chave (RF009)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [chave]
+              properties:
+                chave: { type: string, example: '+5583988887777' }
+      responses:
+        '200':
+          description: Dados do recebedor
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DadosRecebedor' }
+        '401': { $ref: '#/components/responses/NaoAutenticado' }
+        '404': { $ref: '#/components/responses/NaoEncontrado' }
+        '503': { $ref: '#/components/responses/ParceiroIndisponivel' }
+
+  /pix/envios:
+    post:
+      tags: [pix]
+      operationId: enviarPix
+      summary: Envia um Pix (RF008, RF019)
+      description: |
+        Inicia a saga de envio: reserva o saldo, passa pelo antifraude (RF026) e envia ao parceiro.
+        Pix com nota de risco 70 ou mais volta com status RETIDA. Limites de destinatário novo
+        (R$ 300 nas primeiras 24 h) e noturno (R$ 1.000 entre 20h e 6h) devolvem 422.
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PedidoPix' }
+            example: { chaveDestino: '+5583988887777', valorCentavos: 5000, assinaturaDispositivo: MEUCIQC... }
+      responses:
+        '201':
+          description: Pix criado. Consulte o status até CONCLUIDA, RECUSADA ou RETIDA.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Transacao' }
+        '200':
+          description: Mesma Idempotency-Key já usada. Devolve a transação original.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Transacao' }
+        '400': { $ref: '#/components/responses/Invalido' }
+        '401': { $ref: '#/components/responses/NaoAutenticado' }
+        '409': { $ref: '#/components/responses/Conflito' }
+        '422': { $ref: '#/components/responses/RegraDeNegocio' }
+
+  /pix/envios/{id}:
+    get:
+      tags: [pix]
+      operationId: consultarPix
+      summary: Situação de um Pix enviado
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: Transação
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Transacao' }
+        '401': { $ref: '#/components/responses/NaoAutenticado' }
+        '404': { $ref: '#/components/responses/NaoEncontrado' }
+
+  /pix/envios/{id}/comprovante:
+    get:
+      tags: [pix]
+      operationId: obterComprovante
+      summary: Comprovante para ouvir e compartilhar (RF012)
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: Comprovante
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Comprovante' }
+            image/png:
+              schema: { type: string, format: binary }
+        '401': { $ref: '#/components/responses/NaoAutenticado' }
+        '404': { $ref: '#/components/responses/NaoEncontrado' }
+
+  /pix/cobrancas:
+    post:
+      tags: [pix]
+      operationId: gerarCobrancaPix
+      summary: Gera QR Code para receber (RF010)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                valorCentavos: { type: integer, format: int64, minimum: 1, description: 'Opcional. Sem valor, quem paga digita.' }
+      responses:
+        '201':
+          description: QR Code gerado
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CobrancaPix' }
+        '401': { $ref: '#/components/responses/NaoAutenticado' }
+        '503': { $ref: '#/components/responses/ParceiroIndisponivel' }
+
+  /pix/chaves:
+    get:
+      tags: [pix]
+      operationId: listarChavesPix
+      summary: Chaves Pix da conta
+      responses:
+        '200':
+          description: Lista de chaves
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/ChavePix' }
+        '401': { $ref: '#/components/responses/NaoAutenticado' }
+    post:
+      tags: [pix]
+      operationId: cadastrarChavePix
+      summary: Cadastra uma chave Pix (RF011)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [tipo]
+              properties:
+                tipo: { $ref: '#/components/schemas/TipoChavePix' }
+                valor: { type: string, description: Vazio para chave ALEATORIA. }
+      responses:
+        '201':
+          description: Chave cadastrada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ChavePix' }
+        '401': { $ref: '#/components/responses/NaoAutenticado' }
+        '409': { $ref: '#/components/responses/Conflito' }
+
+  /pix/chaves/{id}:
+    delete:
+      tags: [pix]
+      operationId: excluirChavePix
+      summary: Exclui uma chave Pix
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      responses:
+        '204': { description: Chave excluída }
+        '401': { $ref: '#/components/responses/NaoAutenticado' }
+        '404': { $ref: '#/components/responses/NaoEncontrado' }
+
+  # ------------------------------------------------------------------- boletos
+  /boletos/consultas:
+    post:
+      tags: [boletos]
+      operationId: consultarBoleto
+      summary: Lê a linha digitável e devolve beneficiário, valor e vencimento (RF013)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [linhaDigitavel]
+              properties:
+                linhaDigitavel: { type: string, pattern: '^[0-9]{44,48}$' }
+      responses:
+        '200':
+          description: Dados do boleto
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DadosBoleto' }
+        '400': { $ref: '#/components/responses/Invalido' }
+        '401': { $ref: '#/components/responses/NaoAutenticado' }
+        '503': { $ref: '#/components/responses/ParceiroIndisponivel' }
+
+  /boletos/pagamentos:
+    post:
+      tags: [boletos]
+      operationId: pagarBoleto
+      summary: Paga um boleto
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [linhaDigitavel, valorCentavos, assinaturaDispositivo]
+              properties:
+                linhaDigitavel: { type: string }
+                valorCentavos: { type: integer, format: int64, minimum: 1 }
+                assinaturaDispositivo: { type: string }
+      responses:
+        '201':
+          description: Pagamento criado
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Transacao' }
+        '200':
+          description: Mesma Idempotency-Key já usada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Transacao' }
+        '401': { $ref: '#/components/responses/NaoAutenticado' }
+        '422': { $ref: '#/components/responses/RegraDeNegocio' }
+
+  # --------------------------------------------------------------------- metas
+  /metas:
+    get:
+      tags: [metas]
+      operationId: listarMetas
+      summary: Metas de economia
+      responses:
+        '200':
+          description: Lista de metas
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Meta' }
+        '401': { $ref: '#/components/responses/NaoAutenticado' }
+    post:
+      tags: [metas]
+      operationId: criarMeta
+      summary: Cria uma meta (RF017)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [nome, valorAlvoCentavos, dataAlvo]
+              properties:
+                nome: { type: string, maxLength: 60, example: Notebook }
+                valorAlvoCentavos: { type: integer, format: int64, minimum: 100, example: 350000 }
+                dataAlvo: { type: string, format: date, example: '2027-06-30' }
+                imagemUrl: { type: string, format: uri }
+      responses:
+        '201':
+          description: Meta criada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Meta' }
+        '400': { $ref: '#/components/responses/Invalido' }
+        '401': { $ref: '#/components/responses/NaoAutenticado' }
+
+  /metas/{id}/depositos:
+    post:
+      tags: [metas]
+      operationId: guardarNaMeta
+      summary: Guarda dinheiro na meta
+      parameters:
+        - $ref: '#/components/parameters/Id'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody: { $ref: '#/components/requestBodies/Valor' }
+      responses:
+        '201':
+          description: Movimento criado
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Transacao' }
+        '401': { $ref: '#/components/responses/NaoAutenticado' }
+        '404': { $ref: '#/components/responses/NaoEncontrado' }
+        '422': { $ref: '#/components/responses/RegraDeNegocio' }
+
+  /metas/{id}/resgates:
+    post:
+      tags: [metas]
+      operationId: resgatarDaMeta
+      summary: Resgata dinheiro da meta para o saldo
+      parameters:
+        - $ref: '#/components/parameters/Id'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody: { $ref: '#/components/requestBodies/Valor' }
+      responses:
+        '201':
+          description: Movimento criado
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Transacao' }
+        '401': { $ref: '#/components/responses/NaoAutenticado' }
+        '404': { $ref: '#/components/responses/NaoEncontrado' }
+        '422': { $ref: '#/components/responses/RegraDeNegocio' }
+
+  # ------------------------------------------------------------------- familia
+  /familia/convites-responsavel:
+    post:
+      tags: [familia]
+      operationId: convidarResponsavel
+      summary: O menor convida o responsável (RF014)
+      description: Convite vale 7 dias. Sem aceite, o cadastro é cancelado e os dados apagados (US09).
+      security:
+        - tokenCadastro: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [cadastroId, cpfResponsavel, celularResponsavel]
+              properties:
+                cadastroId: { type: string, format: uuid }
+                cpfResponsavel: { type: string, pattern: '^[0-9]{11}$' }
+                celularResponsavel: { type: string }
+      responses:
+        '201':
+          description: Convite enviado
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Vinculo' }
+        '400': { $ref: '#/components/responses/Invalido' }
+        '422': { $ref: '#/components/responses/RegraDeNegocio' }
+
+  /familia/vinculos/{id}/aceite:
+    post:
+      tags: [familia]
+      operationId: aceitarVinculo
+      summary: O responsável aceita o vínculo
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [aceiteTermosVersao, limiteDiarioCentavos, limiteMensalCentavos]
+              properties:
+                aceiteTermosVersao: { type: string }
+                limiteDiarioCentavos: { type: integer, format: int64, minimum: 0 }
+                limiteMensalCentavos: { type: integer, format: int64, minimum: 0 }
+      responses:
+        '200':
+          description: Vínculo ativo
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Vinculo' }
+        '401': { $ref: '#/components/responses/NaoAutenticado' }
+        '403': { $ref: '#/components/responses/Proibido' }
+        '410':
+          description: Convite expirado
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Erro' }
+
+  /familia/vinculos/{id}/limites:
+    put:
+      tags: [familia]
+      operationId: definirLimites
+      summary: O responsável define os limites do menor (RF015)
+      description: Autorização por atributo (ABAC) - só o responsável do vínculo ativo.
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [limiteDiarioCentavos, limiteMensalCentavos]
+              properties:
+                limiteDiarioCentavos: { type: integer, format: int64, minimum: 0 }
+                limiteMensalCentavos: { type: integer, format: int64, minimum: 0 }
+      responses:
+        '200':
+          description: Limites atualizados
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Vinculo' }
+        '401': { $ref: '#/components/responses/NaoAutenticado' }
+        '403': { $ref: '#/components/responses/Proibido' }
+        '404': { $ref: '#/components/responses/NaoEncontrado' }
+
+  /familia/pedidos-aprovacao:
+    post:
+      tags: [familia]
+      operationId: pedirAprovacao
+      summary: O menor pede aprovação de uma saída acima do limite (RF016)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [transacaoId]
+              properties:
+                transacaoId: { type: string, format: uuid }
+      responses:
+        '201':
+          description: Pedido criado. Expira em 24 horas.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PedidoAprovacao' }
+        '401': { $ref: '#/components/responses/NaoAutenticado' }
+        '422': { $ref: '#/components/responses/RegraDeNegocio' }
+
+  /familia/pedidos-aprovacao/{id}/decisao:
+    post:
+      tags: [familia]
+      operationId: decidirPedidoAprovacao
+      summary: O responsável aprova ou recusa
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [decisao]
+              properties:
+                decisao: { type: string, enum: [APROVADO, RECUSADO] }
+      responses:
+        '200':
+          description: Decisão registrada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PedidoAprovacao' }
+        '401': { $ref: '#/components/responses/NaoAutenticado' }
+        '403': { $ref: '#/components/responses/Proibido' }
+        '410':
+          description: Pedido expirado
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Erro' }
+
+  /contatos-confianca:
+    post:
+      tags: [familia]
+      operationId: cadastrarContatoConfianca
+      summary: Cadastra um contato de confiança (RF018)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [nome, celular]
+              properties:
+                nome: { type: string, example: Lucas }
+                celular: { type: string, example: '+5583977776666' }
+      responses:
+        '201':
+          description: Convite enviado ao contato
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ContatoConfianca' }
+        '400': { $ref: '#/components/responses/Invalido' }
+        '401': { $ref: '#/components/responses/NaoAutenticado' }
+
+  /contatos-confianca/{id}:
+    delete:
+      tags: [familia]
+      operationId: removerContatoConfianca
+      summary: Remove um contato de confiança
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      responses:
+        '204': { description: Removido }
+        '401': { $ref: '#/components/responses/NaoAutenticado' }
+        '404': { $ref: '#/components/responses/NaoEncontrado' }
+
+  # ----------------------------------------------------------- voz e lembretes
+  /falas:
+    post:
+      tags: [voz-e-lembretes]
+      operationId: gerarFala
+      summary: Converte texto em áudio (RF007, ADR-011)
+      description: Frase fixa (com `idFrase`) sai do cache no S3. Frase com dados é gerada na hora e não é guardada.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                idFrase: { type: string, example: onboarding.selfie.instrucao }
+                texto: { type: string, maxLength: 500 }
+      responses:
+        '200':
+          description: Endereço do áudio
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  urlAudio: { type: string, format: uri }
+                  expiraEm: { type: string, format: date-time }
+        '400': { $ref: '#/components/responses/Invalido' }
+        '401': { $ref: '#/components/responses/NaoAutenticado' }
+        '503': { $ref: '#/components/responses/ParceiroIndisponivel' }
+
+  /lembretes:
+    post:
+      tags: [voz-e-lembretes]
+      operationId: criarLembrete
+      summary: Lembrete de conta a vencer (RF022)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [descricao, diaVencimento]
+              properties:
+                descricao: { type: string, example: Conta de água }
+                diaVencimento: { type: integer, minimum: 1, maximum: 31 }
+      responses:
+        '201':
+          description: Lembrete criado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id: { type: string, format: uuid }
+                  descricao: { type: string }
+                  diaVencimento: { type: integer }
+        '400': { $ref: '#/components/responses/Invalido' }
+        '401': { $ref: '#/components/responses/NaoAutenticado' }
+
+  # --------------------------------------------------------------- atendimento
+  /chamados:
+    post:
+      tags: [atendimento]
+      operationId: abrirChamado
+      summary: Abre um chamado de dentro do app (RF024)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [assunto]
+              properties:
+                assunto: { type: string, maxLength: 120 }
+      responses:
+        '201':
+          description: Chamado aberto
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Chamado' }
+        '401': { $ref: '#/components/responses/NaoAutenticado' }
+
+  /chamados/{id}/mensagens:
+    get:
+      tags: [atendimento]
+      operationId: listarMensagensChamado
+      summary: Mensagens do chamado
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: Mensagens em ordem
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Mensagem' }
+        '401': { $ref: '#/components/responses/NaoAutenticado' }
+        '404': { $ref: '#/components/responses/NaoEncontrado' }
+    post:
+      tags: [atendimento]
+      operationId: enviarMensagemChamado
+      summary: Envia mensagem de texto ou áudio
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      requestBody: { $ref: '#/components/requestBodies/NovaMensagem' }
+      responses:
+        '201':
+          description: Mensagem enviada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Mensagem' }
+        '401': { $ref: '#/components/responses/NaoAutenticado' }
+        '404': { $ref: '#/components/responses/NaoEncontrado' }
+
+  # ------------------------------------------------------------------- titular
+  /titular/exportacoes:
+    post:
+      tags: [titular]
+      operationId: exportarDados
+      summary: Gera arquivo com os dados do titular (RF029, LGPD art. 18)
+      responses:
+        '202':
+          description: Exportação agendada. O arquivo chega por notificação no app.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  protocolo: { type: string, format: uuid }
+                  prazoAte: { type: string, format: date-time, description: No máximo 15 dias (RNF07) }
+        '401': { $ref: '#/components/responses/NaoAutenticado' }
+
+  /titular/encerramento:
+    post:
+      tags: [titular]
+      operationId: encerrarConta
+      summary: Encerra a conta (saldo precisa estar zerado)
+      responses:
+        '202':
+          description: Encerramento agendado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  protocolo: { type: string, format: uuid }
+        '401': { $ref: '#/components/responses/NaoAutenticado' }
+        '422': { $ref: '#/components/responses/RegraDeNegocio' }
+
+  # ------------------------------------------------------------------ webhooks
+  /webhooks/baas:
+    post:
+      tags: [webhooks]
+      operationId: receberAvisoParceiro
+      summary: Aviso do parceiro BaaS (Pix recebido, Pix confirmado, boleto liquidado)
+      description: Assinado com HMAC-SHA256 do corpo no cabeçalho `X-Assinatura`. Idempotente pelo `idEvento`.
+      security:
+        - assinaturaParceiro: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AvisoParceiro' }
+      responses:
+        '204': { description: Aviso aceito }
+        '400': { $ref: '#/components/responses/Invalido' }
+        '401': { $ref: '#/components/responses/NaoAutenticado' }
+
+  # --------------------------------------------------------------------- admin
+  /admin/auth/login:
+    post:
+      tags: [admin]
+      operationId: entrarFuncionario
+      summary: Login de funcionário com senha e TOTP
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, senha, codigoTotp]
+              properties:
+                email: { type: string, format: email }
+                senha: { type: string, format: password }
+                codigoTotp: { type: string, pattern: '^[0-9]{6}$' }
+      responses:
+        '200':
+          description: Token de funcionário
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Tokens' }
+        '401': { $ref: '#/components/responses/NaoAutenticado' }
+        '429': { $ref: '#/components/responses/MuitasRequisicoes' }
+
+  /admin/analises:
+    get:
+      tags: [admin]
+      operationId: listarAnalises
+      summary: Fila de Pix retidos (RF027)
+      x-papel: ANALISTA_ANTIFRAUDE
+      parameters:
+        - name: resultado
+          in: query
+          schema: { $ref: '#/components/schemas/ResultadoAnalise' }
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/Limite'
+      responses:
+        '200':
+          description: Análises
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/AnaliseRisco' }
+        '401': { $ref: '#/components/responses/NaoAutenticado' }
+        '403': { $ref: '#/components/responses/Proibido' }
+
+  /admin/analises/{id}/decisao:
+    post:
+      tags: [admin]
+      operationId: decidirAnalise
+      summary: Libera, recusa ou recusa e bloqueia a conta
+      x-papel: ANALISTA_ANTIFRAUDE
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [decisao, justificativa]
+              properties:
+                decisao: { type: string, enum: [LIBERAR, RECUSAR, RECUSAR_E_BLOQUEAR] }
+                justificativa: { type: string, minLength: 10 }
+      responses:
+        '200':
+          description: Decisão registrada e auditada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AnaliseRisco' }
+        '401': { $ref: '#/components/responses/NaoAutenticado' }
+        '403': { $ref: '#/components/responses/Proibido' }
+        '409': { $ref: '#/components/responses/Conflito' }
+
+  /admin/chamados:
+    get:
+      tags: [admin]
+      operationId: listarChamadosAdmin
+      summary: Fila de chamados do SAC (RF025)
+      x-papel: ATENDENTE
+      parameters:
+        - name: status
+          in: query
+          schema: { type: string, enum: [ABERTO, EM_ATENDIMENTO, RESOLVIDO] }
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/Limite'
+      responses:
+        '200':
+          description: Chamados
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Chamado' }
+        '401': { $ref: '#/components/responses/NaoAutenticado' }
+        '403': { $ref: '#/components/responses/Proibido' }
+
+  /admin/chamados/{id}/mensagens:
+    post:
+      tags: [admin]
+      operationId: responderChamado
+      summary: Atendente responde o chamado
+      x-papel: ATENDENTE
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      requestBody: { $ref: '#/components/requestBodies/NovaMensagem' }
+      responses:
+        '201':
+          description: Resposta enviada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Mensagem' }
+        '401': { $ref: '#/components/responses/NaoAutenticado' }
+        '403': { $ref: '#/components/responses/Proibido' }
+        '404': { $ref: '#/components/responses/NaoEncontrado' }
+
+  /admin/clientes/{id}/historico:
+    get:
+      tags: [admin]
+      operationId: historicoCliente
+      summary: Chamados anteriores e últimas 10 movimentações (gera auditoria, RNF14)
+      x-papel: ATENDENTE
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: Histórico
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  chamados:
+                    type: array
+                    items: { $ref: '#/components/schemas/Chamado' }
+                  ultimasMovimentacoes:
+                    type: array
+                    maxItems: 10
+                    items: { $ref: '#/components/schemas/ItemExtrato' }
+        '401': { $ref: '#/components/responses/NaoAutenticado' }
+        '403': { $ref: '#/components/responses/Proibido' }
+        '404': { $ref: '#/components/responses/NaoEncontrado' }
+
+  /admin/funcionarios:
+    post:
+      tags: [admin]
+      operationId: cadastrarFuncionario
+      summary: Cadastra funcionário com papel (RF030)
+      x-papel: ADMINISTRADOR
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [nome, email, papel]
+              properties:
+                nome: { type: string }
+                email: { type: string, format: email }
+                papel: { $ref: '#/components/schemas/Papel' }
+      responses:
+        '201':
+          description: Funcionário criado. Configura o TOTP no primeiro acesso.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Funcionario' }
+        '401': { $ref: '#/components/responses/NaoAutenticado' }
+        '403': { $ref: '#/components/responses/Proibido' }
+        '409': { $ref: '#/components/responses/Conflito' }
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Token de acesso de 15 minutos (ADR-010). Funcionário recebe token com o papel.
+    tokenCadastro:
+      type: http
+      scheme: bearer
+      description: Token temporário devolvido por POST /onboarding/cadastros, válido só para o próprio cadastro.
+    assinaturaParceiro:
+      type: apiKey
+      in: header
+      name: X-Assinatura
+      description: HMAC-SHA256 do corpo com o segredo BAAS_WEBHOOK_SEGREDO.
+
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      description: UUID gerado pelo app antes do primeiro envio e reutilizado em toda nova tentativa (RNF11).
+      schema: { type: string, format: uuid }
+    Cursor:
+      name: cursor
+      in: query
+      required: false
+      description: Valor de `proximoCursor` da página anterior.
+      schema: { type: string }
+    Limite:
+      name: limite
+      in: query
+      required: false
+      schema: { type: integer, minimum: 1, maximum: 50, default: 20 }
+
+  requestBodies:
+    Valor:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [valorCentavos]
+            properties:
+              valorCentavos: { type: integer, format: int64, minimum: 1 }
+    NovaMensagem:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              texto: { type: string, maxLength: 2000 }
+              audioUrl: { type: string, format: uri }
+
+  responses:
+    Invalido:
+      description: Requisição inválida
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Erro' }
+          example: { codigo: CAMPO_INVALIDO, mensagem: 'O valor precisa ser maior que zero.', correlacaoId: 9b1c3f0e-2a4d-4c8e-9f1a-7d3e5b6a8c90, campos: [{ campo: valorCentavos, problema: minimo 1 }] }
+    NaoAutenticado:
+      description: Token ausente, expirado ou inválido
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Erro' }
+          example: { codigo: NAO_AUTENTICADO, mensagem: 'Entre de novo no app.', correlacaoId: 9b1c3f0e-2a4d-4c8e-9f1a-7d3e5b6a8c90 }
+    Proibido:
+      description: Autenticado, mas sem permissão (papel ou vínculo)
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Erro' }
+          example: { codigo: SEM_PERMISSAO, mensagem: 'Você não tem permissão para isso.', correlacaoId: 9b1c3f0e-2a4d-4c8e-9f1a-7d3e5b6a8c90 }
+    NaoEncontrado:
+      description: Recurso não encontrado
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Erro' }
+    Conflito:
+      description: Conflito com o estado atual (já existe, já decidido)
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Erro' }
+    RegraDeNegocio:
+      description: Regra de negócio impediu a operação (saldo, limite, conta bloqueada)
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Erro' }
+          example: { codigo: LIMITE_DESTINATARIO_NOVO, mensagem: 'Para alguém novo, o limite é de 300 reais nas primeiras 24 horas.', correlacaoId: 9b1c3f0e-2a4d-4c8e-9f1a-7d3e5b6a8c90 }
+    MuitasRequisicoes:
+      description: Limite de requisições atingido
+      headers:
+        Retry-After:
+          schema: { type: integer }
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Erro' }
+    ParceiroIndisponivel:
+      description: Parceiro BaaS ou serviço de voz fora do ar (circuit breaker aberto)
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Erro' }
+          example: { codigo: PARCEIRO_INDISPONIVEL, mensagem: 'O Pix está fora do ar agora. Seu dinheiro não saiu. Tente em alguns minutos.', correlacaoId: 9b1c3f0e-2a4d-4c8e-9f1a-7d3e5b6a8c90 }
+
+  schemas:
+    Erro:
+      type: object
+      required: [codigo, mensagem, correlacaoId]
+      properties:
+        codigo: { type: string, description: 'Código estável para o app tratar, em MAIUSCULAS_COM_SUBLINHADO' }
+        mensagem: { type: string, description: 'Frase curta e simples, pronta para mostrar e falar ao cliente' }
+        correlacaoId: { type: string, format: uuid }
+        campos:
+          type: array
+          items:
+            type: object
+            properties:
+              campo: { type: string }
+              problema: { type: string }
+    Saude:
+      type: object
+      properties:
+        status: { type: string, enum: [ok, erro] }
+        banco: { type: string, enum: [ok, indisponivel] }
+        versao: { type: string }
+    NovoCadastro:
+      type: object
+      required: [nomeCompleto, cpf, dataNascimento, celular, aceiteTermosVersao]
+      properties:
+        nomeCompleto: { type: string, maxLength: 120 }
+        cpf: { type: string, pattern: '^[0-9]{11}$', description: Dado pessoal (PII) }
+        dataNascimento: { type: string, format: date, description: Dado pessoal (PII) }
+        celular: { type: string, description: Dado pessoal (PII) }
+        email: { type: string, format: email }
+        aceiteTermosVersao: { type: string }
+    Cadastro:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        tipo: { type: string, enum: [TITULAR, MENOR] }
+        situacao: { type: string, enum: [AGUARDANDO_DOCUMENTO, AGUARDANDO_SELFIE, AGUARDANDO_RESPONSAVEL, EM_ANALISE, APROVADO, RECUSADO] }
+        tokenCadastro: { type: string, description: Só na resposta de criação }
+        motivoRecusa: { type: string }
+    PedidoLogin:
+      type: object
+      required: [cpf, senha, assinaturaDispositivo, desafio]
+      properties:
+        cpf: { type: string, pattern: '^[0-9]{11}$' }
+        senha: { type: string, pattern: '^[0-9]{6}$', format: password }
+        desafio: { type: string, description: Valor aleatório gerado pelo app e assinado pela chave do aparelho }
+        assinaturaDispositivo: { type: string }
+    Tokens:
+      type: object
+      properties:
+        tokenAcesso: { type: string }
+        expiraEmSegundos: { type: integer, example: 900 }
+        tokenRenovacao: { type: string }
+    StatusConta:
+      type: string
+      enum: [ATIVA, BLOQUEADA_TOTAL, ENCERRADA]
+    Conta:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        agencia: { type: string }
+        numero: { type: string }
+        status: { $ref: '#/components/schemas/StatusConta' }
+        tipoCliente: { type: string, enum: [TITULAR, MENOR] }
+        bloqueadaEm: { type: string, format: date-time, nullable: true }
+    Saldo:
+      type: object
+      properties:
+        saldoCentavos: { type: integer, format: int64 }
+        textoFalado: { type: string }
+        atualizadoEm: { type: string, format: date-time }
+    ItemExtrato:
+      type: object
+      properties:
+        transacaoId: { type: string, format: uuid }
+        tipo: { $ref: '#/components/schemas/TipoTransacao' }
+        valorCentavos: { type: integer, format: int64, description: 'Positivo entrou, negativo saiu' }
+        descricao: { type: string, example: Recebeu de José }
+        icone: { type: string, example: pix-entrada }
+        textoFalado: { type: string, example: 'Recebeu 120 reais de José, ontem' }
+        ocorridoEm: { type: string, format: date-time }
+    PaginaExtrato:
+      type: object
+      properties:
+        itens:
+          type: array
+          items: { $ref: '#/components/schemas/ItemExtrato' }
+        proximoCursor: { type: string, nullable: true }
+    TipoTransacao:
+      type: string
+      enum: [PIX_ENVIO, PIX_RECEBIMENTO, BOLETO, META_GUARDAR, META_RESGATAR]
+    StatusTransacao:
+      type: string
+      enum: [PENDENTE, RETIDA, ENVIADA, CONCLUIDA, RECUSADA, ESTORNADA]
+    Transacao:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        tipo: { $ref: '#/components/schemas/TipoTransacao' }
+        valorCentavos: { type: integer, format: int64 }
+        status: { $ref: '#/components/schemas/StatusTransacao' }
+        nomeRecebedor: { type: string }
+        bancoRecebedor: { type: string }
+        criadaEm: { type: string, format: date-time }
+        concluidaEm: { type: string, format: date-time, nullable: true }
+        mensagem: { type: string, description: Frase para mostrar e falar ao cliente }
+    PedidoPix:
+      type: object
+      required: [chaveDestino, valorCentavos, assinaturaDispositivo]
+      properties:
+        chaveDestino: { type: string }
+        valorCentavos: { type: integer, format: int64, minimum: 1 }
+        descricao: { type: string, maxLength: 140 }
+        assinaturaDispositivo: { type: string, description: 'Assinatura do pedido com a chave do aparelho, destravada pela biometria' }
+    DadosRecebedor:
+      type: object
+      properties:
+        nomeRecebedor: { type: string, example: José Carlos Lima }
+        documentoMascarado: { type: string, example: '***.456.789-**' }
+        bancoRecebedor: { type: string, example: Banco Exemplo S.A. }
+        destinatarioNovo: { type: boolean }
+        textoFalado: { type: string, example: 'Você vai mandar para José Carlos Lima, do Banco Exemplo.' }
+    Comprovante:
+      type: object
+      properties:
+        transacaoId: { type: string, format: uuid }
+        idFimAFim: { type: string }
+        valorCentavos: { type: integer, format: int64 }
+        recebedor: { type: string }
+        pagador: { type: string }
+        ocorridoEm: { type: string, format: date-time }
+        textoFalado: { type: string }
+    CobrancaPix:
+      type: object
+      properties:
+        qrCodeCopiaECola: { type: string }
+        qrCodeImagemPng: { type: string, format: byte }
+        valorCentavos: { type: integer, format: int64, nullable: true }
+        expiraEm: { type: string, format: date-time }
+    TipoChavePix:
+      type: string
+      enum: [CPF, CELULAR, ALEATORIA]
+    ChavePix:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        tipo: { $ref: '#/components/schemas/TipoChavePix' }
+        valor: { type: string }
+        status: { type: string, enum: [ATIVA, EXCLUIDA] }
+        criadaEm: { type: string, format: date-time }
+    DadosBoleto:
+      type: object
+      properties:
+        beneficiario: { type: string, example: Energisa Paraíba }
+        valorCentavos: { type: integer, format: int64 }
+        jurosCentavos: { type: integer, format: int64 }
+        vencimento: { type: string, format: date }
+        vencido: { type: boolean }
+        textoFalado: { type: string }
+    Meta:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        nome: { type: string }
+        valorAlvoCentavos: { type: integer, format: int64 }
+        saldoCentavos: { type: integer, format: int64 }
+        dataAlvo: { type: string, format: date }
+        imagemUrl: { type: string, format: uri }
+        status: { type: string, enum: [ATIVA, CONCLUIDA, CANCELADA] }
+    Vinculo:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        menorClienteId: { type: string, format: uuid }
+        responsavelClienteId: { type: string, format: uuid }
+        status: { type: string, enum: [CONVIDADO, ATIVO, ENCERRADO] }
+        limiteDiarioCentavos: { type: integer, format: int64 }
+        limiteMensalCentavos: { type: integer, format: int64 }
+        expiraEm: { type: string, format: date-time }
+    PedidoAprovacao:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        transacaoId: { type: string, format: uuid }
+        status: { type: string, enum: [PENDENTE, APROVADO, RECUSADO, EXPIRADO] }
+        expiraEm: { type: string, format: date-time }
+    ContatoConfianca:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        nome: { type: string }
+        status: { type: string, enum: [CONVIDADO, ATIVO, REMOVIDO] }
+    Chamado:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        assunto: { type: string }
+        status: { type: string, enum: [ABERTO, EM_ATENDIMENTO, RESOLVIDO] }
+        abertoEm: { type: string, format: date-time }
+        fechadoEm: { type: string, format: date-time, nullable: true }
+    Mensagem:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        autor: { type: string, enum: [CLIENTE, ATENDENTE] }
+        texto: { type: string }
+        audioUrl: { type: string, format: uri, nullable: true }
+        enviadaEm: { type: string, format: date-time }
+    ResultadoAnalise:
+      type: string
+      enum: [LIBERADA_AUTOMATICA, RETIDA, LIBERADA_ANALISTA, RECUSADA_ANALISTA]
+    AnaliseRisco:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        transacaoId: { type: string, format: uuid }
+        nota: { type: integer, minimum: 0, maximum: 100 }
+        motivos:
+          type: array
+          items: { type: string }
+          example: [destinatario_novo, horario_noturno]
+        resultado: { $ref: '#/components/schemas/ResultadoAnalise' }
+        decididaEm: { type: string, format: date-time, nullable: true }
+    AvisoParceiro:
+      type: object
+      required: [idEvento, tipo, ocorridoEm]
+      properties:
+        idEvento: { type: string }
+        tipo: { type: string, enum: [PIX_RECEBIDO, PIX_CONFIRMADO, PIX_RECUSADO, BOLETO_LIQUIDADO, IDENTIDADE_VALIDADA] }
+        idParceiro: { type: string }
+        idContaParceiro: { type: string }
+        valorCentavos: { type: integer, format: int64 }
+        ocorridoEm: { type: string, format: date-time }
+    Papel:
+      type: string
+      enum: [ATENDENTE, ANALISTA_ANTIFRAUDE, ADMINISTRADOR]
+    Funcionario:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        nome: { type: string }
+        email: { type: string, format: email }
+        papel: { $ref: '#/components/schemas/Papel' }
+        ativo: { type: boolean }

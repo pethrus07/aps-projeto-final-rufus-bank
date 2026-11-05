@@ -1,0 +1,34 @@
+{
+  "nome": "Rufus Bank",
+  "ideia": "Luz e clareza: o Rufus ilumina a vida financeira. Azul-noite para contraste e confiança, amarelo-luz como acento. Contraste sempre WCAG AA ou melhor, porque o público lê com dificuldade.",
+  "cores": {
+    "noite": "14213D",
+    "noite_2": "24365E",
+    "luz": "FFC531",
+    "luz_suave": "FFF4D6",
+    "fundo": "FFFFFF",
+    "superficie": "F4F6FA",
+    "borda": "DDE3EC",
+    "texto": "14213D",
+    "texto_2": "4A5872",
+    "sucesso": "0B7A53",
+    "alerta": "B45309",
+    "perigo": "C0392B"
+  },
+  "contraste_conferido": {
+    "texto sobre fundo": "16,0:1",
+    "noite sobre luz": "10,1:1",
+    "texto_2 sobre fundo": "7,2:1",
+    "texto_2 sobre superficie": "6,6:1",
+    "branco sobre noite": "16,0:1",
+    "branco sobre sucesso": "5,4:1",
+    "branco sobre alerta": "5,0:1",
+    "branco sobre perigo": "5,4:1"
+  },
+  "fontes": {
+    "documento_e_slides": "Arial",
+    "app": "Roboto (Material Design no Android)"
+  },
+  "motivo_visual": "Círculo amarelo-luz atrás do ícone (a 'luz' do Rufus). Cantos arredondados de 12 px nos cartões.",
+  "mascote": "Rufus, um cão-guia: o 'melhor amigo' que conduz com segurança. Só como ícone simples, nunca como ilustração pesada."
+}

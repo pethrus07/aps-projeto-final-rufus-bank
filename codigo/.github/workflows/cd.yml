@@ -1,0 +1,137 @@
+# Entrega contínua do Rufus Bank (Bloco 6, pipeline CI/CD).
+# Dispara quando o CI termina verde na main.
+# Ordem: publicar imagens > homologação > smoke test > aprovação humana > produção > smoke test.
+#
+# Credenciais AWS por OIDC (sem chave de acesso guardada no GitHub). Cada ambiente
+# do GitHub (homologacao, producao) tem a sua role. "producao" exige aprovação de
+# 1 revisor que não seja o autor do commit (regra configurada no ambiente).
+
+name: cd
+
+on:
+  workflow_run:
+    workflows: [ci]
+    types: [completed]
+    branches: [main]
+
+concurrency:
+  group: cd-main
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  AWS_REGION: sa-east-1
+  CLUSTER: rufus
+  TAG: ${{ github.event.workflow_run.head_sha }}
+
+jobs:
+  publicar:
+    name: 5. publicar imagens no ECR
+    # BLOQUEIA: só segue se o CI inteiro (lint, testes, build, segurança) ficou verde
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-24.04
+    environment: homologacao
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+      - id: ecr
+        uses: aws-actions/amazon-ecr-login@v2
+      - name: build e push
+        working-directory: codigo/backend
+        run: |
+          for s in api worker; do
+            docker build -f ../docker/$s.Dockerfile -t ${{ steps.ecr.outputs.registry }}/rufus-$s:${TAG} .
+            docker push ${{ steps.ecr.outputs.registry }}/rufus-$s:${TAG}
+          done
+
+  homologacao:
+    name: 6. deploy em homologação
+    needs: publicar
+    runs-on: ubuntu-24.04
+    environment:
+      name: homologacao
+      url: https://api-hml.rufusbank.com.br
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: migrações do banco (só expandir, Bloco 5)
+        run: aws ecs run-task --cluster ${CLUSTER}-hml --task-definition rufus-migracao --launch-type FARGATE --network-configuration "${{ vars.REDE_TAREFA }}" --overrides '{"containerOverrides":[{"name":"migracao","environment":[{"name":"TAG","value":"'"${TAG}"'"}]}]}'
+      # BLOQUEIA: o ECS só conclui se as novas tarefas passarem no /health do balanceador.
+      # O circuit breaker do ECS desfaz o deploy sozinho se elas não ficarem saudáveis.
+      - name: atualizar serviços
+        run: |
+          for s in api worker; do
+            aws ecs update-service --cluster ${CLUSTER}-hml --service rufus-$s --force-new-deployment \
+              --task-definition $(aws ecs register-task-definition --cli-input-json "$(sed "s/{{TAG}}/${TAG}/" codigo/infra/ecs/$s-hml.json)" --query 'taskDefinition.taskDefinitionArn' --output text)
+          done
+          aws ecs wait services-stable --cluster ${CLUSTER}-hml --services rufus-api rufus-worker
+
+  smoke-homologacao:
+    name: 7. smoke test em homologação
+    needs: homologacao
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+      # BLOQUEIA: /health diferente de 200, versão diferente do commit, ou p95 acima de 300 ms (RNF01)
+      - name: health e versão
+        run: |
+          r=$(curl -fsS https://api-hml.rufusbank.com.br/health)
+          echo "$r"
+          echo "$r" | grep -q '"status":"ok"'
+          echo "$r" | grep -q "\"versao\":\"${TAG:0:7}\""
+      - name: carga curta (k6)
+        uses: grafana/k6-action@v0.3.1
+        with:
+          filename: codigo/backend/test/carga/smoke.js
+        env:
+          BASE_URL: https://api-hml.rufusbank.com.br
+
+  producao:
+    name: 8. deploy em produção (com aprovação)
+    needs: smoke-homologacao
+    runs-on: ubuntu-24.04
+    # BLOQUEIA: o ambiente "producao" pede aprovação manual de 1 revisor
+    environment:
+      name: producao
+      url: https://api.rufusbank.com.br
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: migrações do banco (só expandir)
+        run: aws ecs run-task --cluster ${CLUSTER}-prd --task-definition rufus-migracao --launch-type FARGATE --network-configuration "${{ vars.REDE_TAREFA }}" --overrides '{"containerOverrides":[{"name":"migracao","environment":[{"name":"TAG","value":"'"${TAG}"'"}]}]}'
+      - name: atualizar serviços (rolling, mínimo 100% saudável)
+        run: |
+          for s in api worker; do
+            aws ecs update-service --cluster ${CLUSTER}-prd --service rufus-$s --force-new-deployment \
+              --task-definition $(aws ecs register-task-definition --cli-input-json "$(sed "s/{{TAG}}/${TAG}/" codigo/infra/ecs/$s-prd.json)" --query 'taskDefinition.taskDefinitionArn' --output text)
+          done
+          aws ecs wait services-stable --cluster ${CLUSTER}-prd --services rufus-api rufus-worker
+      # BLOQUEIA e avisa: falha aqui abre incidente; o rollback é reaplicar a task definition anterior
+      - name: smoke test em produção
+        run: |
+          r=$(curl -fsS https://api.rufusbank.com.br/health)
+          echo "$r" | grep -q '"status":"ok"'

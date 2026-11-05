@@ -1,0 +1,112 @@
+{
+  "family": "rufus-hml-api",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "runtimePlatform": {
+    "cpuArchitecture": "ARM64",
+    "operatingSystemFamily": "LINUX"
+  },
+  "cpu": "512",
+  "memory": "1024",
+  "executionRoleArn": "arn:aws:iam::${CONTA}:role/rufus-hml-execucao",
+  "taskRoleArn": "arn:aws:iam::${CONTA}:role/rufus-hml-api",
+  "containerDefinitions": [
+    {
+      "name": "api",
+      "image": "${CONTA}.dkr.ecr.sa-east-1.amazonaws.com/rufus-api:{{TAG}}",
+      "essential": true,
+      "environment": [
+        {
+          "name": "NODE_ENV",
+          "value": "homologacao"
+        },
+        {
+          "name": "SERVICO",
+          "value": "rufus-api"
+        },
+        {
+          "name": "VERSAO",
+          "value": "{{TAG}}"
+        },
+        {
+          "name": "LOG_NIVEL",
+          "value": "info"
+        },
+        {
+          "name": "BAAS_ADAPTADOR",
+          "value": "http"
+        },
+        {
+          "name": "VOZ_ADAPTADOR",
+          "value": "polly"
+        },
+        {
+          "name": "PUSH_ADAPTADOR",
+          "value": "expo"
+        },
+        {
+          "name": "AWS_REGION",
+          "value": "sa-east-1"
+        }
+      ],
+      "secrets": [
+        {
+          "name": "DATABASE_URL",
+          "valueFrom": "arn:aws:secretsmanager:sa-east-1:${CONTA}:secret:rufus-hml/database_url"
+        },
+        {
+          "name": "JWT_SEGREDO",
+          "valueFrom": "arn:aws:secretsmanager:sa-east-1:${CONTA}:secret:rufus-hml/jwt_segredo"
+        },
+        {
+          "name": "CHAVE_CIFRA_PII",
+          "valueFrom": "arn:aws:secretsmanager:sa-east-1:${CONTA}:secret:rufus-hml/chave_cifra_pii"
+        },
+        {
+          "name": "BAAS_CLIENT_ID",
+          "valueFrom": "arn:aws:secretsmanager:sa-east-1:${CONTA}:secret:rufus-hml/baas_client_id"
+        },
+        {
+          "name": "BAAS_CLIENT_SECRET",
+          "valueFrom": "arn:aws:secretsmanager:sa-east-1:${CONTA}:secret:rufus-hml/baas_client_secret"
+        },
+        {
+          "name": "BAAS_WEBHOOK_SEGREDO",
+          "valueFrom": "arn:aws:secretsmanager:sa-east-1:${CONTA}:secret:rufus-hml/baas_webhook_segredo"
+        },
+        {
+          "name": "EXPO_ACCESS_TOKEN",
+          "valueFrom": "arn:aws:secretsmanager:sa-east-1:${CONTA}:secret:rufus-hml/expo_access_token"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/rufus-hml/api",
+          "awslogs-region": "sa-east-1",
+          "awslogs-stream-prefix": "api"
+        }
+      },
+      "readonlyRootFilesystem": true,
+      "user": "node",
+      "portMappings": [
+        {
+          "containerPort": 3000,
+          "protocol": "tcp"
+        }
+      ],
+      "healthCheck": {
+        "command": [
+          "CMD-SHELL",
+          "wget -qO- http://127.0.0.1:3000/health || exit 1"
+        ],
+        "interval": 30,
+        "timeout": 3,
+        "retries": 3,
+        "startPeriod": 20
+      }
+    }
+  ]
+}

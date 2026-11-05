@@ -1,0 +1,96 @@
+{
+  "family": "rufus-prd-worker",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "runtimePlatform": {
+    "cpuArchitecture": "ARM64",
+    "operatingSystemFamily": "LINUX"
+  },
+  "cpu": "256",
+  "memory": "512",
+  "executionRoleArn": "arn:aws:iam::${CONTA}:role/rufus-prd-execucao",
+  "taskRoleArn": "arn:aws:iam::${CONTA}:role/rufus-prd-worker",
+  "containerDefinitions": [
+    {
+      "name": "worker",
+      "image": "${CONTA}.dkr.ecr.sa-east-1.amazonaws.com/rufus-worker:{{TAG}}",
+      "essential": true,
+      "environment": [
+        {
+          "name": "NODE_ENV",
+          "value": "producao"
+        },
+        {
+          "name": "SERVICO",
+          "value": "rufus-worker"
+        },
+        {
+          "name": "VERSAO",
+          "value": "{{TAG}}"
+        },
+        {
+          "name": "LOG_NIVEL",
+          "value": "info"
+        },
+        {
+          "name": "BAAS_ADAPTADOR",
+          "value": "http"
+        },
+        {
+          "name": "VOZ_ADAPTADOR",
+          "value": "polly"
+        },
+        {
+          "name": "PUSH_ADAPTADOR",
+          "value": "expo"
+        },
+        {
+          "name": "AWS_REGION",
+          "value": "sa-east-1"
+        }
+      ],
+      "secrets": [
+        {
+          "name": "DATABASE_URL",
+          "valueFrom": "arn:aws:secretsmanager:sa-east-1:${CONTA}:secret:rufus-prd/database_url"
+        },
+        {
+          "name": "JWT_SEGREDO",
+          "valueFrom": "arn:aws:secretsmanager:sa-east-1:${CONTA}:secret:rufus-prd/jwt_segredo"
+        },
+        {
+          "name": "CHAVE_CIFRA_PII",
+          "valueFrom": "arn:aws:secretsmanager:sa-east-1:${CONTA}:secret:rufus-prd/chave_cifra_pii"
+        },
+        {
+          "name": "BAAS_CLIENT_ID",
+          "valueFrom": "arn:aws:secretsmanager:sa-east-1:${CONTA}:secret:rufus-prd/baas_client_id"
+        },
+        {
+          "name": "BAAS_CLIENT_SECRET",
+          "valueFrom": "arn:aws:secretsmanager:sa-east-1:${CONTA}:secret:rufus-prd/baas_client_secret"
+        },
+        {
+          "name": "BAAS_WEBHOOK_SEGREDO",
+          "valueFrom": "arn:aws:secretsmanager:sa-east-1:${CONTA}:secret:rufus-prd/baas_webhook_segredo"
+        },
+        {
+          "name": "EXPO_ACCESS_TOKEN",
+          "valueFrom": "arn:aws:secretsmanager:sa-east-1:${CONTA}:secret:rufus-prd/expo_access_token"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/rufus-prd/worker",
+          "awslogs-region": "sa-east-1",
+          "awslogs-stream-prefix": "worker"
+        }
+      },
+      "readonlyRootFilesystem": true,
+      "user": "node"
+    }
+  ]
+}

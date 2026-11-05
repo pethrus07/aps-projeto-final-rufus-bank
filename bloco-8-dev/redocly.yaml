@@ -1,0 +1,6 @@
+# Configuração do lint do contrato (npx @redocly/cli lint openapi.yaml)
+extends:
+  - recommended
+rules:
+  # localhost é proposital: é o servidor do docker compose (README do dev)
+  no-server-example.com: off

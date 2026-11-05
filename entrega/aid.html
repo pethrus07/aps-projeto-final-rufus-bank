@@ -1,0 +1,3666 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
+<title>AID · Rufus Bank</title><style>@page { size: A4; margin: 18mm 16mm 20mm 16mm; }
+* { box-sizing: border-box; }
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { font-family: Arial, Helvetica, sans-serif; font-size: 10pt; line-height: 1.45; color: #111827; margin: 0; }
+
+/* capa: uma folha inteira */
+.capa { height: 255mm; display: flex; flex-direction: column; justify-content: space-between; page-break-after: always; }
+.capa .sup { font-size: 10pt; color: #4B5563; letter-spacing: .02em; }
+.capa .meio { margin-top: 40mm; }
+.capa .nome { font-size: 40pt; font-weight: 700; color: #111827; }
+.capa .slogan { font-size: 15pt; color: #6D28D9; margin-top: 4mm; }
+.capa .tipo { font-size: 12pt; color: #374151; margin-top: 10mm; }
+.capa .equipe { width: 60%; border-collapse: collapse; margin-top: 20mm; }
+.capa .equipe th, .capa .equipe td { text-align: left; padding: 2.2mm 3mm; border-bottom: 1px solid #E5E7EB; font-size: 10.5pt; }
+.capa .inf { font-size: 10pt; color: #4B5563; }
+
+/* sumário */
+.sumario { page-break-after: always; }
+h1.sum { font-size: 20pt; margin: 0 0 6mm; }
+.toc { display: flex; align-items: baseline; gap: 2mm; padding: 1mm 0; }
+.toc.n1 { font-weight: 700; margin-top: 3mm; font-size: 10.5pt; }
+.toc.n2 { padding-left: 6mm; font-size: 9.5pt; color: #374151; }
+.toc .dots { flex: 1; border-bottom: 1px dotted #9CA3AF; transform: translateY(-2px); }
+.toc .p { min-width: 8mm; text-align: right; }
+.marca { color: #FFFFFF; font-size: 1pt; }
+
+/* blocos */
+.bloco-wrap { page-break-before: always; }
+h1.bloco { font-size: 22pt; color: #FFFFFF; background: #111827; padding: 6mm 6mm; margin: 0 0 6mm; border-left: 6mm solid #6D28D9; }
+h2 { font-size: 15pt; margin: 8mm 0 3mm; padding-bottom: 1.5mm; border-bottom: 2px solid #E5E7EB; page-break-after: avoid; }
+h3 { font-size: 12pt; margin: 6mm 0 2mm; page-break-after: avoid; }
+h4, h5, h6 { font-size: 10.5pt; margin: 4mm 0 1.5mm; page-break-after: avoid; }
+section.arquivo + section.arquivo h2:first-child { page-break-before: always; margin-top: 0; }
+p { margin: 1.5mm 0 2.5mm; }
+ul, ol { margin: 1mm 0 3mm; padding-left: 6mm; }
+li { margin: .6mm 0; }
+blockquote { margin: 3mm 0; padding: 2mm 4mm; border-left: 3px solid #6D28D9; background: #F5F3FF; color: #374151; }
+
+table { width: 100%; border-collapse: collapse; margin: 2mm 0 4mm; font-size: 8.4pt; line-height: 1.3; }
+th { background: #F3F4F6; text-align: left; font-weight: 700; }
+th, td { border: 1px solid #E5E7EB; padding: 1.4mm 1.8mm; vertical-align: top; }
+tr { page-break-inside: avoid; }
+thead { display: table-header-group; }
+
+code { font-family: Consolas, "Courier New", monospace; font-size: 8.4pt; background: #F3F4F6; padding: 0 1mm; border-radius: 1mm; }
+pre { background: #F9FAFB; border: 1px solid #E5E7EB; padding: 3mm; font-size: 7.6pt; line-height: 1.35; white-space: pre-wrap; word-break: break-word; }
+pre code { background: none; padding: 0; font-size: inherit; }
+
+img { max-width: 100%; max-height: 235mm; display: block; margin: 3mm auto 4mm; page-break-inside: avoid; border: 1px solid #E5E7EB; }
+a { color: #4C1D95; text-decoration: none; }
+</style></head><body>
+<section class="capa">
+  <div class="sup">UNIPÊ · Centro Universitário de João Pessoa<br>Análise e Projeto de Sistemas · Projeto Final · 2026.2</div>
+  <div class="meio"><div class="nome">Rufus Bank</div>
+  <div class="slogan">"Rufus, iluminando sua vida financeira"</div>
+  <div class="tipo">Documento de Apoio (AID) · Da Concepção ao Dia 1 do Dev</div></div>
+  <table class="equipe"><tr><th>Integrante</th><th>Papel</th></tr><tr><td>Pedro Oliveira</td><td>Analista / PO</td></tr><tr><td>Izaias Terto</td><td>Arquiteto de Software</td></tr><tr><td>Carlos Eduardo</td><td>Engenheiro / DBA</td></tr></table>
+  <div class="inf">Professor: Israel Cunha · 04/11/2026</div>
+</section>
+<section class="sumario"><h1 class="sum">Sumário</h1><div class="toc n1"><span class="t">Bloco 1 · Concepção e Escopo</span><span class="dots"></span><span class="p">3</span></div><div class="toc n2"><span class="t">1. Documento de Visão</span><span class="dots"></span><span class="p">3</span></div><div class="toc n2"><span class="t">2. Personas</span><span class="dots"></span><span class="p">6</span></div><div class="toc n2"><span class="t">3. Mapa de Stakeholders</span><span class="dots"></span><span class="p">8</span></div><div class="toc n2"><span class="t">4. Estudo de Viabilidade</span><span class="dots"></span><span class="p">10</span></div><div class="toc n2"><span class="t">Custo mensal de infraestrutura (gerado)</span><span class="dots"></span><span class="p">13</span></div><div class="toc n2"><span class="t">5. Riscos iniciais</span><span class="dots"></span><span class="p">15</span></div><div class="toc n1"><span class="t">Bloco 2 · Requisitos</span><span class="dots"></span><span class="p">17</span></div><div class="toc n2"><span class="t">2.1 Requisitos Funcionais</span><span class="dots"></span><span class="p">17</span></div><div class="toc n2"><span class="t">2.2 Requisitos Não Funcionais</span><span class="dots"></span><span class="p">20</span></div><div class="toc n2"><span class="t">2.3 Histórias de Usuário</span><span class="dots"></span><span class="p">22</span></div><div class="toc n1"><span class="t">Bloco 3 · Arquitetura de Software</span><span class="dots"></span><span class="p">28</span></div><div class="toc n2"><span class="t">3.1 Architecture Decision Records (ADR)</span><span class="dots"></span><span class="p">28</span></div><div class="toc n2"><span class="t">3.3 Stack tecnológica</span><span class="dots"></span><span class="p">34</span></div><div class="toc n2"><span class="t">3.4 Padrões de design</span><span class="dots"></span><span class="p">36</span></div><div class="toc n2"><span class="t">3.5 Modelo de domínio (fonte única)</span><span class="dots"></span><span class="p">38</span></div><div class="toc n2"><span class="t">3.6 Rotas da API (fonte única)</span><span class="dots"></span><span class="p">43</span></div><div class="marca">FIMDOSUMARIO</div></section>
+<div class="bloco-wrap"><h1 id="b1" class="bloco">Bloco 1 · Concepção e Escopo</h1><section class="arquivo"><h2 id="s1">1. Documento de Visão</h2>
+<h3 id="s2">Nome e slogan</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Nome</td>
+<td><strong>Rufus Bank</strong></td>
+</tr>
+<tr>
+<td>Slogan</td>
+<td><strong>"Rufus, iluminando sua vida financeira"</strong></td>
+</tr>
+<tr>
+<td>Domínio</td>
+<td>Fintech: conta digital, pagamentos e controle financeiro</td>
+</tr>
+</tbody>
+</table>
+<h3 id="s3">Problema real</h3>
+<p>Bancos digitais têm interfaces complexas, cheias de jargão e com menus escondidos. Isso exclui quem tem pouca leitura, pouca familiaridade com tecnologia ou com finanças. O problema hoje não é ter conta: é conseguir usar a conta sozinho e com segurança.</p>
+<p>Os dados mostram isso:</p>
+<table>
+<thead>
+<tr>
+<th>Dado</th>
+<th>Número</th>
+<th>Fonte</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Adultos que não usaram nenhum produto financeiro em 2024 (nem Pix, nem boleto, nem crédito)</td>
+<td>21,1 milhões (11,6% dos adultos). Predominam idosos e pessoas sem emprego formal</td>
+<td><a href="https://www.bcb.gov.br/content/cidadaniafinanceira/documentos_cidadania/RIF/relatorio_de_cidadania_financeira_2025.pdf">Banco Central, Relatório de Cidadania Financeira 2025</a>, seção 1.1</td>
+</tr>
+<tr>
+<td>Acerto médio nas perguntas de conhecimento financeiro</td>
+<td>53%. O Brasil fica em 33º lugar, abaixo da média mundial</td>
+<td>Idem, seção 1.2 (pesquisa OCDE/INFE de 2023)</td>
+</tr>
+<tr>
+<td>Pessoas que erraram uma conta simples de juros</td>
+<td>87%</td>
+<td>Idem, seção 1.2</td>
+</tr>
+<tr>
+<td>Relação do letramento financeiro com idade e escolaridade</td>
+<td>Cai com a idade e sobe com a escolaridade</td>
+<td>Idem, seção 1.2</td>
+</tr>
+<tr>
+<td>Idosos (60+) que usam internet</td>
+<td>59%, contra 43% em 2022</td>
+<td>Idem, citando a TIC Domicílios 2024</td>
+</tr>
+<tr>
+<td>Analfabetos funcionais (15 a 64 anos)</td>
+<td>29%. Na faixa de 50 a 64 anos, 51%</td>
+<td><a href="https://www.unicef.org/brazil/comunicados-de-imprensa/analfabetismo-funcional-nao-apresenta-melhora-e-alcanca-29-por-cento-dos-brasileiros-mesmo-patamar-de-2018-aponta-novo-levantamento-do-inaf">Inaf 2024, divulgado em 05/05/2025</a></td>
+</tr>
+<tr>
+<td>Analfabetos funcionais que usam internet</td>
+<td>73%, mas 60% deles estão no nível mais baixo de habilidade digital</td>
+<td>Idem</td>
+</tr>
+<tr>
+<td>Golpe da falsa central ou falso funcionário de banco</td>
+<td>139 mil relatos no 1º semestre de 2025, alta de 195,7% sobre 2024</td>
+<td><a href="https://conexaoto.com.br/2025/11/11/golpe-da-falsa-venda-e-o-mais-aplicado-contra-clientes-bancarios-no-1o-semestre-do-ano">Febraban, divulgado em 11/11/2025</a></td>
+</tr>
+</tbody>
+</table>
+<p>Leitura dos dados: quase todo mundo já tem acesso, mas uma parte grande da população lê com dificuldade, entende pouco de juros e é alvo de golpes. São exatamente as pessoas que os apps atuais atendem mal.</p>
+<h3 id="s4">Proposta de valor</h3>
+<p>Um banco digital com interface simples, linguagem clara e foco em quem os bancos tradicionais atendem mal.</p>
+<p>Na prática, isso vira cinco princípios que valem para todas as telas e que os próximos blocos precisam cumprir:</p>
+<ol>
+<li><strong>Ícone e áudio em toda tela.</strong> Tudo que está escrito pode ser ouvido. Quem não lê bem não fica de fora.</li>
+<li><strong>Poucos passos.</strong> As ações principais (ver saldo, mandar Pix, pagar conta) terminam em no máximo 3 toques depois do login.</li>
+<li><strong>Linguagem do dia a dia.</strong> Frases curtas, sem jargão. "Dinheiro que você tem" no lugar de "saldo disponível".</li>
+<li><strong>Proteção contra golpe por padrão.</strong> O Rufus nunca liga para o cliente. Antes de mandar dinheiro, o app fala em voz alta para quem vai e quanto.</li>
+<li><strong>Autonomia com rede de apoio.</strong> O cliente usa sozinho, mas pode ter um contato de confiança e, no caso de menor de idade, um responsável vinculado.</li>
+</ol>
+<h3 id="s5">Público-alvo</h3>
+<p>Adultos com baixa escolaridade ou pouca familiaridade digital, idosos e adolescentes de 16 e 17 anos com renda própria. As três personas do item 2 representam esses grupos.</p>
+<h3 id="s6">Atores do sistema</h3>
+<p>O enunciado pede no mínimo 4 atores. O Rufus tem 6 humanos e 3 sistemas externos:</p>
+<table>
+<thead>
+<tr>
+<th>Ator</th>
+<th>Tipo</th>
+<th>O que faz</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cliente titular</td>
+<td>Humano</td>
+<td>Usa a conta: saldo, Pix, contas, metas</td>
+</tr>
+<tr>
+<td>Cliente menor (16 e 17 anos)</td>
+<td>Humano</td>
+<td>Usa a conta dentro dos limites aprovados pelo responsável</td>
+</tr>
+<tr>
+<td>Responsável legal</td>
+<td>Humano</td>
+<td>Autoriza a conta do menor, define limites e aprova pedidos</td>
+</tr>
+<tr>
+<td>Contato de confiança</td>
+<td>Humano</td>
+<td>Recebe aviso de movimentação fora do padrão (familiar ou cuidador)</td>
+</tr>
+<tr>
+<td>Atendente do SAC</td>
+<td>Humano</td>
+<td>Atende chamados abertos dentro do app</td>
+</tr>
+<tr>
+<td>Analista antifraude</td>
+<td>Humano</td>
+<td>Analisa transações suspeitas e bloqueia contas</td>
+</tr>
+<tr>
+<td>Parceiro BaaS</td>
+<td>Sistema externo</td>
+<td>Instituição autorizada pelo Banco Central que mantém a conta e liquida o Pix</td>
+</tr>
+<tr>
+<td>Serviço de voz</td>
+<td>Sistema externo</td>
+<td>Transforma texto em fala (Amazon Polly)</td>
+</tr>
+<tr>
+<td>Serviço de notificação</td>
+<td>Sistema externo</td>
+<td>Envia push e SMS</td>
+</tr>
+</tbody>
+</table>
+<h3 id="s7">Funcionalidades macro</h3>
+<p>O enunciado pede no mínimo 12. São 16, que o Bloco 2 detalha em requisitos com MoSCoW:</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Funcionalidade</th>
+<th>Persona que mais precisa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>F01</td>
+<td>Abertura de conta guiada por voz, com foto do documento e selfie</td>
+<td>Antônio, Dona Marlene</td>
+</tr>
+<tr>
+<td>F02</td>
+<td>Entrada no app por biometria do celular ou senha de 6 números</td>
+<td>Todas</td>
+</tr>
+<tr>
+<td>F03</td>
+<td>Saldo e extrato com ícones e leitura em voz alta</td>
+<td>Antônio, Dona Marlene</td>
+</tr>
+<tr>
+<td>F04</td>
+<td>Enviar Pix por contato, chave ou QR Code, com confirmação falada</td>
+<td>Todas</td>
+</tr>
+<tr>
+<td>F05</td>
+<td>Receber Pix por QR Code ou chave</td>
+<td>Antônio</td>
+</tr>
+<tr>
+<td>F06</td>
+<td>Pagar boleto e contas de consumo apontando a câmera</td>
+<td>Dona Marlene</td>
+</tr>
+<tr>
+<td>F07</td>
+<td>Conta de menor vinculada ao responsável</td>
+<td>Camila</td>
+</tr>
+<tr>
+<td>F08</td>
+<td>Limites e pedidos de aprovação ao responsável</td>
+<td>Camila</td>
+</tr>
+<tr>
+<td>F09</td>
+<td>Metas de economia com progresso em imagem ("cofrinho")</td>
+<td>Camila</td>
+</tr>
+<tr>
+<td>F10</td>
+<td>Contato de confiança, avisado em movimentação fora do padrão</td>
+<td>Dona Marlene</td>
+</tr>
+<tr>
+<td>F11</td>
+<td>Alertas contra golpe e botão "bloquear tudo agora"</td>
+<td>Todas</td>
+</tr>
+<tr>
+<td>F12</td>
+<td>Lembrete de conta a vencer</td>
+<td>Dona Marlene</td>
+</tr>
+<tr>
+<td>F13</td>
+<td>Dicas curtas de educação financeira em áudio</td>
+<td>Camila, Antônio</td>
+</tr>
+<tr>
+<td>F14</td>
+<td>Atendimento humano iniciado só de dentro do app</td>
+<td>Todas</td>
+</tr>
+<tr>
+<td>F15</td>
+<td>Painel antifraude para análise de transações suspeitas</td>
+<td>Analista antifraude</td>
+</tr>
+<tr>
+<td>F16</td>
+<td>Painel do SAC com histórico do cliente</td>
+<td>Atendente do SAC</td>
+</tr>
+</tbody>
+</table>
+<h3 id="s8">Fora do escopo</h3>
+<table>
+<thead>
+<tr>
+<th>Fora do escopo</th>
+<th>Por quê</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Atendimento presencial (agências, postos)</td>
+<td>O produto é 100% digital. O atendimento humano existe, mas dentro do app (F14)</td>
+</tr>
+<tr>
+<td>Crédito, empréstimo e cartão de crédito</td>
+<td>Endividamento é um risco alto para o público-alvo, e crédito exige outra regulação. Fica para uma fase futura</td>
+</tr>
+<tr>
+<td>Investimentos</td>
+<td>Exige outra autorização e outro nível de letramento. Fica para uma fase futura</td>
+</tr>
+<tr>
+<td>Conta para empresa (PJ ou MEI)</td>
+<td>O público é pessoa física</td>
+</tr>
+<tr>
+<td>Cartão físico e saque em dinheiro</td>
+<td>Dependem de logística e de rede de terceiros. O MVP fica no Pix e no boleto</td>
+</tr>
+<tr>
+<td>Câmbio, conta em outra moeda e criptoativos</td>
+<td>Fora do problema que o projeto resolve</td>
+</tr>
+<tr>
+<td>Versão web completa para o cliente</td>
+<td>O público usa celular. Na web existe só o site institucional e os painéis internos (F15 e F16)</td>
+</tr>
+<tr>
+<td>Core bancário próprio</td>
+<td>A conta e a liquidação ficam com o parceiro BaaS (ver item 4)</td>
+</tr>
+</tbody>
+</table></section><section class="arquivo"><h2 id="s9">2. Personas</h2>
+<p>Três personas, uma para cada grupo que os bancos atuais atendem mal: baixa leitura, menor de idade e idoso. Cada uma aponta para funcionalidades do Documento de Visão (F01 a F16).</p>
+<h3 id="s10">Antônio, 47 anos</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Profissão</td>
+<td>Ajudante de pedreiro, recebe por diária</td>
+</tr>
+<tr>
+<td>Escolaridade</td>
+<td>Estudou até o 5º ano. Lê com dificuldade</td>
+</tr>
+<tr>
+<td>Celular</td>
+<td>Android de entrada, usa WhatsApp e áudio</td>
+</tr>
+<tr>
+<td>Como lida com dinheiro hoje</td>
+<td>Recebe em dinheiro vivo ou pelo cartão de um parente</td>
+</tr>
+<tr>
+<td>O que já deu errado</td>
+<td>Foi enganado por um golpista que se passou por atendente do banco</td>
+</tr>
+<tr>
+<td>Dores</td>
+<td>Tem vergonha de pedir ajuda. Textos longos o fazem desistir. Depende de outra pessoa para receber o próprio pagamento</td>
+</tr>
+<tr>
+<td>Motivação</td>
+<td>Ter uma conta própria que consiga usar por ícones, áudio e poucos passos, sem depender de ler textos longos nem de ninguém</td>
+</tr>
+<tr>
+<td>O que o Rufus entrega</td>
+<td>Abertura guiada por voz (F01), receber diária por QR Code (F05), saldo falado (F03), confirmação falada antes do Pix (F04), aviso de que o Rufus nunca liga (F11)</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>"Eu só quero ver quanto eu tenho e mandar pro mercado sem pedir pra ninguém ler pra mim."</p>
+</blockquote>
+<h3 id="s11">Camila, 17 anos</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Profissão</td>
+<td>Estudante do ensino médio e jovem aprendiz (contrato da Lei 10.097/2000)</td>
+</tr>
+<tr>
+<td>Renda</td>
+<td>Um salário pequeno de aprendiz</td>
+</tr>
+<tr>
+<td>Celular</td>
+<td>Usa bem, nativa digital</td>
+</tr>
+<tr>
+<td>Objetivo</td>
+<td>Juntar dinheiro para comprar um notebook</td>
+</tr>
+<tr>
+<td>Situação legal</td>
+<td>Menor de 16 a 18 anos precisa ser assistida pelos pais para atos da vida civil, como abrir conta</td>
+</tr>
+<tr>
+<td>Dores</td>
+<td>Os bancos atuais ou bloqueiam a conta dela ou a tratam como adulta, sem nenhuma educação financeira. Os pais precisam autorizar tudo</td>
+</tr>
+<tr>
+<td>Motivação</td>
+<td>Ter autonomia dentro de limites seguros, com conta vinculada ao responsável e metas de economia fáceis de entender</td>
+</tr>
+<tr>
+<td>O que o Rufus entrega</td>
+<td>Conta de menor vinculada (F07), limites e pedidos de aprovação ao responsável (F08), meta "notebook" com progresso em imagem (F09), dicas curtas em áudio (F13)</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>"Eu quero decidir o que fazer com o meu dinheiro, mas sem meus pais terem que aprovar cada lanche."</p>
+</blockquote>
+<h3 id="s12">Dona Marlene, 68 anos</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Profissão</td>
+<td>Aposentada</td>
+</tr>
+<tr>
+<td>Celular</td>
+<td>Usa só para WhatsApp</td>
+</tr>
+<tr>
+<td>Como lida com o banco hoje</td>
+<td>Depende do neto para mexer no app do banco</td>
+</tr>
+<tr>
+<td>Dores</td>
+<td>Tem medo de errar e perder dinheiro. Letra pequena e muitos menus confundem. Tem medo de golpe por telefone</td>
+</tr>
+<tr>
+<td>Motivação</td>
+<td>Ter autonomia para pagar as próprias contas sem pedir ajuda</td>
+</tr>
+<tr>
+<td>O que o Rufus entrega</td>
+<td>Pagar conta apontando a câmera (F06), lembrete de conta a vencer (F12), neto como contato de confiança (F10), botão "bloquear tudo agora" (F11), atendimento humano só pelo app (F14)</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>"Eu pago minhas contas desde sempre. Só não quero ter que esperar meu neto ter tempo."</p>
+</blockquote>
+<h3 id="s13">Como as personas viram requisito</h3>
+<p>As dores das três personas se repetem em quatro pontos, e cada ponto vira um requisito não funcional com número no Bloco 2:</p>
+<table>
+<thead>
+<tr>
+<th>Dor em comum</th>
+<th>Personas</th>
+<th>Vira no Bloco 2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ler com dificuldade</td>
+<td>Antônio, Dona Marlene</td>
+<td>Toda tela com leitura em voz alta e texto em nível de leitura simples</td>
+</tr>
+<tr>
+<td>Medo de errar</td>
+<td>Dona Marlene, Antônio</td>
+<td>Confirmação antes de mover dinheiro e desfazer enquanto não confirmado</td>
+</tr>
+<tr>
+<td>Medo de golpe</td>
+<td>Antônio, Dona Marlene</td>
+<td>Regras antifraude e contato de confiança</td>
+</tr>
+<tr>
+<td>Autonomia com limite</td>
+<td>Camila, Dona Marlene</td>
+<td>Papéis de responsável e de contato de confiança com permissões diferentes</td>
+</tr>
+</tbody>
+</table></section><section class="arquivo"><h2 id="s14">3. Mapa de Stakeholders</h2>
+<p>Os stakeholders foram classificados pela matriz poder x interesse: <strong>poder</strong> é quanto a pessoa ou instituição pode mudar ou barrar o projeto, <strong>interesse</strong> é quanto o resultado a afeta. O quadrante define como o grupo vai se relacionar com cada um.</p>
+<h3 id="s15">Tabela</h3>
+<table>
+<thead>
+<tr>
+<th>Stakeholder</th>
+<th>Tipo</th>
+<th>Interesse no projeto</th>
+<th>Influência sobre o projeto</th>
+<th>Poder</th>
+<th>Interesse</th>
+<th>Estratégia</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sócios fundadores</td>
+<td>Interno</td>
+<td>Produto viável, que cresça e dê retorno</td>
+<td>Decidem escopo, prioridade e orçamento</td>
+<td>Alto</td>
+<td>Alto</td>
+<td>Gerenciar de perto</td>
+</tr>
+<tr>
+<td>Investidores</td>
+<td>Externo</td>
+<td>Retorno do capital, crescimento da base de clientes</td>
+<td>Liberam ou cortam o dinheiro. Cobram metas de adesão e custo</td>
+<td>Alto</td>
+<td>Alto</td>
+<td>Gerenciar de perto</td>
+</tr>
+<tr>
+<td>Parceiro BaaS (instituição autorizada)</td>
+<td>Externo</td>
+<td>Volume de contas e transações com baixo risco de fraude</td>
+<td>Sem ele não existe conta nem Pix. Impõe requisitos de segurança e de prevenção à lavagem de dinheiro</td>
+<td>Alto</td>
+<td>Alto</td>
+<td>Gerenciar de perto</td>
+</tr>
+<tr>
+<td>Banco Central</td>
+<td>Regulador</td>
+<td>Inclusão financeira com segurança e sistema estável</td>
+<td>Regula o parceiro e o Pix. Uma regra nova pode mudar funcionalidades</td>
+<td>Alto</td>
+<td>Médio</td>
+<td>Manter satisfeito</td>
+</tr>
+<tr>
+<td>ANPD</td>
+<td>Regulador</td>
+<td>Cumprimento da LGPD, com atenção a dados de menores e dados biométricos</td>
+<td>Pode fiscalizar e multar. Exige comunicação de incidente</td>
+<td>Alto</td>
+<td>Baixo</td>
+<td>Manter satisfeito</td>
+</tr>
+<tr>
+<td>Usuários finais (Antônio, Camila, Dona Marlene)</td>
+<td>Externo</td>
+<td>Usar a conta sozinhos e sem cair em golpe</td>
+<td>Decidem se o produto dá certo: adesão, uso e avaliação nas lojas</td>
+<td>Médio</td>
+<td>Alto</td>
+<td>Manter informado e envolver nos testes</td>
+</tr>
+<tr>
+<td>Famílias e cuidadores</td>
+<td>Externo</td>
+<td>Segurança do parente sem precisar fazer tudo por ele</td>
+<td>Indicam ou desaconselham o app. São responsáveis legais e contatos de confiança</td>
+<td>Médio</td>
+<td>Alto</td>
+<td>Manter informado</td>
+</tr>
+<tr>
+<td>Equipe de desenvolvimento</td>
+<td>Interno</td>
+<td>Requisitos claros, prazo realista, stack bem decidida</td>
+<td>Define o que é tecnicamente possível e em quanto tempo</td>
+<td>Médio</td>
+<td>Alto</td>
+<td>Manter informado e envolver nas decisões</td>
+</tr>
+<tr>
+<td>Equipe do SAC</td>
+<td>Interno</td>
+<td>Ferramentas para atender rápido e identificar golpe</td>
+<td>Traz as reclamações reais. Influencia as melhorias</td>
+<td>Baixo</td>
+<td>Alto</td>
+<td>Manter informado</td>
+</tr>
+<tr>
+<td>Concorrentes (bancos e fintechs)</td>
+<td>Externo</td>
+<td>Manter a base de clientes</td>
+<td>Podem copiar a ideia ou baixar preço</td>
+<td>Médio</td>
+<td>Baixo</td>
+<td>Monitorar</td>
+</tr>
+</tbody>
+</table>
+<p>O parceiro BaaS não estava na lista inicial do grupo e foi incluído porque o projeto depende dele para existir (ver item 4 e risco R04).</p>
+<h3 id="s16">Matriz poder x interesse</h3>
+<p><img alt="Matriz poder x interesse dos stakeholders" src="file:///C:/Users/olive/Projetos/faculdade/2026-2/2759-analise-e-projeto-de-sistemas/aps-projeto-final-rufus-bank/bloco-1-concepcao/diagramas/img/stakeholders.svg" /></p>
+<p>Fonte do diagrama: diagramas/stakeholders.mmd.</p>
+<p>Os quatro quadrantes, em uma linha cada:</p>
+<ul>
+<li><strong>Gerenciar de perto</strong> (alto poder, alto interesse): sócios, investidores e parceiro BaaS. Reunião periódica e aprovação das decisões grandes.</li>
+<li><strong>Manter satisfeito</strong> (alto poder, interesse menor): Banco Central e ANPD. Cumprir as regras e documentar, sem envolver no dia a dia.</li>
+<li><strong>Manter informado</strong> (poder menor, alto interesse): usuários, famílias, equipe de desenvolvimento e SAC. Testes de uso, comunicação clara e canal de retorno.</li>
+<li><strong>Monitorar</strong> (poder e interesse menores): concorrentes. Acompanhar lançamentos e preços.</li>
+</ul></section><section class="arquivo"><h2 id="s17">4. Estudo de Viabilidade</h2>
+<p><strong>Veredito: o projeto é viável.</strong> Tecnicamente, tudo que o Rufus precisa já existe em serviços maduros. Operacionalmente, a condição é ter um parceiro autorizado pelo Banco Central. A infraestrutura custa cerca de <strong>R$ 4.426 por mês</strong> (produção e homologação), o que dá R$ 0,33 por usuário ativo em produção.</p>
+<h3 id="s18">4.1 Viabilidade técnica</h3>
+<p>Cada necessidade do produto foi comparada com uma tecnologia que já está no mercado. Nenhuma exige pesquisa ou invenção.</p>
+<table>
+<thead>
+<tr>
+<th>Necessidade (do Documento de Visão)</th>
+<th>Como se resolve</th>
+<th>Maturidade</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Conta, saldo e Pix (F03, F04, F05)</td>
+<td>API do parceiro BaaS. O Rufus não constrói core bancário nem se conecta direto ao Pix</td>
+<td>Modelo comum no mercado brasileiro</td>
+</tr>
+<tr>
+<td>Pagar boleto pela câmera (F06)</td>
+<td>Leitura do código de barras no próprio celular e pagamento pela API do parceiro</td>
+<td>Madura</td>
+</tr>
+<tr>
+<td>Leitura em voz alta (princípio 1)</td>
+<td>Serviço de texto para fala. A tabela de preços da AWS em São Paulo lista o Amazon Polly a US$ 4 por milhão de caracteres. Frases fixas são geradas uma vez e guardadas no S3</td>
+<td>Madura</td>
+</tr>
+<tr>
+<td>Entrada por biometria (F02)</td>
+<td>Biometria nativa do Android e do iOS. O dado biométrico fica no celular e não vai para o servidor</td>
+<td>Madura</td>
+</tr>
+<tr>
+<td>Abertura de conta com documento e selfie (F01)</td>
+<td>Serviço de validação de identidade do parceiro ou de um fornecedor especializado</td>
+<td>Madura</td>
+</tr>
+<tr>
+<td>Saldo e movimentação sem erro</td>
+<td>Banco relacional com transação ACID. PostgreSQL é a escolha preliminar. A decisão final, comparada com a alternativa, sai no ADR do Bloco 3 e no Bloco 5</td>
+<td>Madura</td>
+</tr>
+<tr>
+<td>99,9% de disponibilidade</td>
+<td>Serviços gerenciados em 2 zonas de disponibilidade, banco Multi-AZ e balanceador de carga</td>
+<td>Madura</td>
+</tr>
+<tr>
+<td>Conta de menor e contato de confiança (F07, F08, F10)</td>
+<td>Regra de negócio própria do Rufus: papéis e permissões sobre a mesma conta</td>
+<td>Desenvolvimento próprio, sem risco técnico alto</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Desenho preliminar de infraestrutura</strong>, só para calcular o custo: app mobile, uma API e um worker em containers no AWS Fargate, PostgreSQL no Amazon RDS, Application Load Balancer com WAF, tudo na região sa-east-1 (São Paulo). A região foi escolhida pela latência para o usuário brasileiro e por manter os dados no país. O Bloco 3 confirma ou muda cada peça com ADR, e o custo é recalculado se mudar.</p>
+<h3 id="s19">4.2 Viabilidade operacional</h3>
+<table>
+<thead>
+<tr>
+<th>Ponto</th>
+<th>Como o Rufus opera</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Modelo regulatório</td>
+<td>O Rufus começa como empresa de tecnologia, sem autorização própria do Banco Central. A conta e o Pix ficam com um parceiro BaaS (Banking as a Service) que já é autorizado. O Rufus é a interface e a experiência</td>
+</tr>
+<tr>
+<td>Regras que o produto precisa seguir</td>
+<td>LGPD (Lei 13.709/2018), com cuidado especial com dados de adolescentes (art. 14) e dado biométrico, que é dado sensível. Regras do Pix e de segurança que o Banco Central impõe ao parceiro e que o parceiro repassa por contrato</td>
+</tr>
+<tr>
+<td>Conta de menor</td>
+<td>Adolescente de 16 e 17 anos abre conta assistido pelo responsável. O responsável aceita os termos e pode ver e limitar a movimentação</td>
+</tr>
+<tr>
+<td>Atendimento</td>
+<td>SAC humano por chat e telefone, sempre iniciado de dentro do app, depois que o cliente já entrou com biometria. Assim o cliente sabe que quem fala com ele é o Rufus de verdade</td>
+</tr>
+<tr>
+<td>Prevenção a fraude</td>
+<td>Regras automáticas no backend e analista antifraude para os casos suspeitos</td>
+</tr>
+<tr>
+<td>Validação com usuário real</td>
+<td>Teste de uso com pessoas do perfil das personas a cada sprint. A meta numérica entra como RNF no Bloco 2</td>
+</tr>
+<tr>
+<td>Equipe</td>
+<td>O tamanho e o custo da equipe, com pesquisa salarial, ficam no Bloco 7</td>
+</tr>
+</tbody>
+</table>
+<p>O ponto mais frágil da operação é a dependência do parceiro BaaS. Ele vira o risco R04 no item 5.</p>
+<h3 id="s20">4.3 Custo de infraestrutura mensal</h3>
+<p>Preços tirados da tabela oficial da AWS (Price List API pública, a mesma base da calculadora em calculator.aws), região South America (São Paulo), preço sob demanda, consultados em 04/11/2026. Dólar pela PTAX de venda do Banco Central de 04/11/2026: <strong>R$ 5,4778</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Ambiente</th>
+<th>Para que serve</th>
+<th>USD por mês</th>
+<th>R$ por mês</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Produção</td>
+<td>Clientes reais, alta disponibilidade em 2 zonas</td>
+<td>600,41</td>
+<td>3.288,92</td>
+</tr>
+<tr>
+<td>Homologação (staging)</td>
+<td>Testes antes de publicar, 1 zona, banco menor</td>
+<td>207,50</td>
+<td>1.136,64</td>
+</tr>
+<tr>
+<td>Desenvolvimento</td>
+<td>Cada dev roda tudo na própria máquina com Docker Compose</td>
+<td>0,00</td>
+<td>0,00</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td></td>
+<td><strong>807,91</strong></td>
+<td><strong>4.425,55</strong></td>
+</tr>
+</tbody>
+</table>
+<p>A tabela item a item (quantidade, preço unitário e total de cada serviço) está em ferramentas/custo-infra/custo-gerado.md. Ela é gerada pelo script custo_infra.py, que baixa os preços oficiais e para com erro se algum preço não for encontrado.</p>
+<h4 id="s21">Onde está o dinheiro em produção</h4>
+<table>
+<thead>
+<tr>
+<th>Serviço</th>
+<th>USD por mês</th>
+<th>Por que custa isso</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Banco PostgreSQL (RDS Multi-AZ, disco e backup)</td>
+<td>227,40</td>
+<td>Multi-AZ mantém uma cópia em outra zona e assume em caso de falha. É o que sustenta os 99,9%</td>
+</tr>
+<tr>
+<td>NAT Gateway (2)</td>
+<td>137,64</td>
+<td>Um por zona, para a API falar com o parceiro BaaS mesmo se uma zona cair</td>
+</tr>
+<tr>
+<td>Containers (Fargate)</td>
+<td>62,00</td>
+<td>2 tarefas da API, uma em cada zona, e 1 worker</td>
+</tr>
+<tr>
+<td>Leitura em voz alta (Polly)</td>
+<td>48,00</td>
+<td>Fala gerada na hora para saldo, valores e nomes</td>
+</tr>
+<tr>
+<td>Restante (balanceador, WAF, logs, saída de dados, IPs, segredos, S3, ECR)</td>
+<td>125,37</td>
+<td>Rede, segurança e observabilidade</td>
+</tr>
+</tbody>
+</table>
+<h4 id="s21">Premissas de uso</h4>
+<table>
+<thead>
+<tr>
+<th>Premissa</th>
+<th>Valor</th>
+<th>De onde vem</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Usuários ativos por mês no 1º ano</td>
+<td>10.000</td>
+<td>Meta inicial. O Bloco 2 usa o mesmo número no RNF de escalabilidade</td>
+</tr>
+<tr>
+<td>Requisições à API por mês</td>
+<td>6 milhões</td>
+<td>10.000 usuários x 20 acessos x 30 requisições</td>
+</tr>
+<tr>
+<td>Dados enviados para a internet</td>
+<td>120 GB</td>
+<td>6 milhões de respostas de 20 KB</td>
+</tr>
+<tr>
+<td>Caracteres falados por mês</td>
+<td>12 milhões</td>
+<td>Metade dos usuários usa áudio: 5.000 x 30 falas x 80 caracteres</td>
+</tr>
+<tr>
+<td>Logs</td>
+<td>20 GB por mês, guardados por 90 dias</td>
+<td>Estimativa para API e worker com log estruturado</td>
+</tr>
+<tr>
+<td>Disponibilidade</td>
+<td>99,9%</td>
+<td>Meta que obriga 2 zonas, banco Multi-AZ, 2 NAT e balanceador</td>
+</tr>
+</tbody>
+</table>
+<h4 id="s21">O que este valor não inclui</h4>
+<ul>
+<li>Tarifa do parceiro BaaS por conta e por transação. Depende de contrato e entra no Bloco 7.</li>
+<li>SMS, contas nas lojas de aplicativos e domínio.</li>
+<li>Salários da equipe (Bloco 7).</li>
+<li>Descontos de reserva (Savings Plans). Com uso estável depois do lançamento, o custo de containers e banco pode cair.</li>
+</ul></section><section class="arquivo"><h2 id="s21">Custo mensal de infraestrutura (gerado)</h2>
+<p>Arquivo gerado por <code>custo_infra.py</code>. Não editar à mão: mude as premissas no script e rode de novo.</p>
+<ul>
+<li>Região: AWS sa-east-1 (São Paulo), preço sob demanda, sem desconto de reserva.</li>
+<li>Tabelas de preço AWS publicadas entre 2026-09-11 e 2026-11-04.</li>
+<li>Câmbio: PTAX de venda de 2026-11-04, R$ 5,4778 por dólar (Banco Central).</li>
+<li>Gerado em 04/11/2026.</li>
+</ul>
+<h4 id="s22">Produção</h4>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Quantidade</th>
+<th>Preço unitário (USD)</th>
+<th>Total (USD)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>API: 2 tarefas Fargate ARM (1 por zona), 0,5 vCPU cada</td>
+<td>730 vCPU-h</td>
+<td>0,0557</td>
+<td>40,66</td>
+</tr>
+<tr>
+<td>API: memória das 2 tarefas, 1 GB cada</td>
+<td>1.460 GB-h</td>
+<td>0,00612</td>
+<td>8,94</td>
+</tr>
+<tr>
+<td>Worker (filas e notificações): 1 tarefa, 0,25 vCPU</td>
+<td>182 vCPU-h</td>
+<td>0,0557</td>
+<td>10,17</td>
+</tr>
+<tr>
+<td>Worker: memória, 0,5 GB</td>
+<td>365 GB-h</td>
+<td>0,00612</td>
+<td>2,23</td>
+</tr>
+<tr>
+<td>PostgreSQL RDS db.t4g.medium Multi-AZ</td>
+<td>730 h</td>
+<td>0,275</td>
+<td>200,75</td>
+</tr>
+<tr>
+<td>Disco do banco: 50 GB gp3 Multi-AZ</td>
+<td>50 GB-mês</td>
+<td>0,438</td>
+<td>21,90</td>
+</tr>
+<tr>
+<td>Backup além da cota grátis (retenção de 35 dias)</td>
+<td>50 GB-mês</td>
+<td>0,095</td>
+<td>4,75</td>
+</tr>
+<tr>
+<td>Application Load Balancer</td>
+<td>730 h</td>
+<td>0,034</td>
+<td>24,82</td>
+</tr>
+<tr>
+<td>ALB: capacidade media de 1 LCU</td>
+<td>730 LCU-h</td>
+<td>0,011</td>
+<td>8,03</td>
+</tr>
+<tr>
+<td>NAT Gateway: 2, um por zona</td>
+<td>1.460 h</td>
+<td>0,093</td>
+<td>135,78</td>
+</tr>
+<tr>
+<td>NAT: tráfego de saída para o parceiro BaaS</td>
+<td>20 GB</td>
+<td>0,093</td>
+<td>1,86</td>
+</tr>
+<tr>
+<td>Saída para a internet (respostas da API)</td>
+<td>120 GB</td>
+<td>0,25</td>
+<td>30,00</td>
+</tr>
+<tr>
+<td>IPv4 público: 2 do ALB e 2 dos NAT</td>
+<td>2.920 IP-h</td>
+<td>0,005</td>
+<td>14,60</td>
+</tr>
+<tr>
+<td>WAF: 1 web ACL</td>
+<td>1 ACL</td>
+<td>5</td>
+<td>5,00</td>
+</tr>
+<tr>
+<td>WAF: 5 regras</td>
+<td>5 regras</td>
+<td>1</td>
+<td>5,00</td>
+</tr>
+<tr>
+<td>WAF: requisições inspecionadas</td>
+<td>6.000.000 req</td>
+<td>0,0000006</td>
+<td>3,60</td>
+</tr>
+<tr>
+<td>Secrets Manager: 10 segredos</td>
+<td>10 segredos</td>
+<td>0,4</td>
+<td>4,00</td>
+</tr>
+<tr>
+<td>CloudWatch Logs: ingestão</td>
+<td>20 GB</td>
+<td>0,9</td>
+<td>18,00</td>
+</tr>
+<tr>
+<td>CloudWatch Logs: armazenamento (90 dias)</td>
+<td>60 GB-mês</td>
+<td>0,0408</td>
+<td>2,45</td>
+</tr>
+<tr>
+<td>CloudWatch: 10 alarmes</td>
+<td>10 alarmes</td>
+<td>0,135</td>
+<td>1,35</td>
+</tr>
+<tr>
+<td>CloudWatch: 20 métricas de negócio</td>
+<td>20 métricas</td>
+<td>0,3</td>
+<td>6,00</td>
+</tr>
+<tr>
+<td>S3: comprovantes, documentos e cache de áudio</td>
+<td>50 GB-mês</td>
+<td>0,0405</td>
+<td>2,02</td>
+</tr>
+<tr>
+<td>ECR: imagens dos containers</td>
+<td>5 GB-mês</td>
+<td>0,1</td>
+<td>0,50</td>
+</tr>
+<tr>
+<td>Polly: leitura em voz alta (12 mi caracteres)</td>
+<td>12.000.000 caracteres</td>
+<td>0,000004</td>
+<td>48,00</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td></td>
+<td></td>
+<td><strong>600,41</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Em reais: <strong>R$ 3.288,92 por mês</strong>.</p>
+<h4 id="s22">Homologação (staging)</h4>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Quantidade</th>
+<th>Preço unitário (USD)</th>
+<th>Total (USD)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>API: 1 tarefa Fargate ARM, 0,5 vCPU</td>
+<td>365 vCPU-h</td>
+<td>0,0557</td>
+<td>20,33</td>
+</tr>
+<tr>
+<td>API: memória, 1 GB</td>
+<td>730 GB-h</td>
+<td>0,00612</td>
+<td>4,47</td>
+</tr>
+<tr>
+<td>Worker: 1 tarefa, 0,25 vCPU</td>
+<td>182 vCPU-h</td>
+<td>0,0557</td>
+<td>10,17</td>
+</tr>
+<tr>
+<td>Worker: memória, 0,5 GB</td>
+<td>365 GB-h</td>
+<td>0,00612</td>
+<td>2,23</td>
+</tr>
+<tr>
+<td>PostgreSQL RDS db.t4g.small Single-AZ</td>
+<td>730 h</td>
+<td>0,069</td>
+<td>50,37</td>
+</tr>
+<tr>
+<td>Disco do banco: 20 GB gp3</td>
+<td>20 GB-mês</td>
+<td>0,219</td>
+<td>4,38</td>
+</tr>
+<tr>
+<td>Application Load Balancer</td>
+<td>730 h</td>
+<td>0,034</td>
+<td>24,82</td>
+</tr>
+<tr>
+<td>ALB: capacidade mínima</td>
+<td>73 LCU-h</td>
+<td>0,011</td>
+<td>0,80</td>
+</tr>
+<tr>
+<td>NAT Gateway: 1</td>
+<td>730 h</td>
+<td>0,093</td>
+<td>67,89</td>
+</tr>
+<tr>
+<td>NAT: tráfego</td>
+<td>2 GB</td>
+<td>0,093</td>
+<td>0,19</td>
+</tr>
+<tr>
+<td>IPv4 público: 2 do ALB e 1 do NAT</td>
+<td>2.190 IP-h</td>
+<td>0,005</td>
+<td>10,95</td>
+</tr>
+<tr>
+<td>Secrets Manager: 10 segredos</td>
+<td>10 segredos</td>
+<td>0,4</td>
+<td>4,00</td>
+</tr>
+<tr>
+<td>CloudWatch Logs: ingestão</td>
+<td>3 GB</td>
+<td>0,9</td>
+<td>2,70</td>
+</tr>
+<tr>
+<td>S3</td>
+<td>5 GB-mês</td>
+<td>0,0405</td>
+<td>0,20</td>
+</tr>
+<tr>
+<td>Polly: testes (1 mi caracteres)</td>
+<td>1.000.000 caracteres</td>
+<td>0,000004</td>
+<td>4,00</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td></td>
+<td></td>
+<td><strong>207,50</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Em reais: <strong>R$ 1.136,64 por mês</strong>.</p>
+<h4 id="s22">Resumo por ambiente</h4>
+<table>
+<thead>
+<tr>
+<th>Ambiente</th>
+<th>USD por mês</th>
+<th>R$ por mês</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Produção</td>
+<td>600,41</td>
+<td>3.288,92</td>
+</tr>
+<tr>
+<td>Homologação</td>
+<td>207,50</td>
+<td>1.136,64</td>
+</tr>
+<tr>
+<td>Desenvolvimento</td>
+<td>0,00</td>
+<td>0,00 (Docker Compose na máquina do dev)</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td><strong>807,91</strong></td>
+<td><strong>4.425,55</strong></td>
+</tr>
+</tbody>
+</table></section><section class="arquivo"><h2 id="s22">5. Riscos iniciais</h2>
+<p>Os dois riscos mais graves são <strong>golpe contra o usuário vulnerável (R01)</strong> e <strong>baixa adesão (R06)</strong>: os dois atacam o motivo de o Rufus existir. Seis riscos vieram do grupo e dois foram acrescentados (R07 e R08) para cobrir as categorias equipe e regulatório, que a matriz do Bloco 7 exige (mínimo de 8).</p>
+<h3 id="s23">Escala</h3>
+<table>
+<thead>
+<tr>
+<th>Nota</th>
+<th>Probabilidade</th>
+<th>Impacto</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Baixa: pode não acontecer no 1º ano</td>
+<td>Baixo: atrasa ou incomoda, sem dano ao cliente</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Média: pode acontecer no 1º ano</td>
+<td>Médio: perda de dinheiro ou prazo que dá para recuperar</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Alta: deve acontecer no 1º ano</td>
+<td>Alto: dano ao cliente, multa ou ameaça à existência do produto</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Severidade = probabilidade x impacto</strong> (de 1 a 9). De 6 para cima, o risco tem dono e plano desde o início.</p>
+<h3 id="s24">Riscos</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Risco</th>
+<th>Categoria</th>
+<th>Prob.</th>
+<th>Impacto</th>
+<th>Severidade</th>
+<th>Mitigação</th>
+<th>Sinal de alerta</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R01</td>
+<td>Fraudes e golpes contra usuários vulneráveis</td>
+<td>Segurança</td>
+<td>3</td>
+<td>3</td>
+<td><strong>9</strong></td>
+<td>O app avisa em toda tela de dinheiro que o Rufus nunca liga pedindo senha. Atendimento só começa de dentro do app. Antes do Pix, o app fala o nome de quem recebe e o valor. Limite menor para destinatário novo e à noite. Contato de confiança avisado em movimentação fora do padrão. Botão "bloquear tudo agora". Analista antifraude para casos suspeitos</td>
+<td>Pedidos de devolução de Pix e contestações por mês</td>
+</tr>
+<tr>
+<td>R02</td>
+<td>Vazamento de dados pessoais</td>
+<td>Segurança e regulatório</td>
+<td>2</td>
+<td>3</td>
+<td><strong>6</strong></td>
+<td>Criptografia em trânsito e em repouso. Coletar só o dado necessário. Segredos no Secrets Manager, nunca no código. WAF na entrada. Acesso administrativo com dois fatores. Log sem dado pessoal. Teste de invasão antes do lançamento. Plano de resposta a incidente com comunicação à ANPD e aos titulares</td>
+<td>Alertas de acesso anormal, achados de teste de invasão</td>
+</tr>
+<tr>
+<td>R03</td>
+<td>Usuários não conseguem usar o app (o oposto do objetivo)</td>
+<td>Negócio</td>
+<td>2</td>
+<td>3</td>
+<td><strong>6</strong></td>
+<td>Teste de uso com pessoas do perfil das personas a cada sprint. Áudio e ícone em toda tela. Linguagem simples revisada. Medir onde as pessoas desistem em cada fluxo</td>
+<td>Taxa de abandono por tela, chamados de "não consigo" no SAC</td>
+</tr>
+<tr>
+<td>R04</td>
+<td>Não conseguir parceria regulatória (BaaS)</td>
+<td>Regulatório e negócio</td>
+<td>2</td>
+<td>3</td>
+<td><strong>6</strong></td>
+<td>Negociar com pelo menos 2 parceiros ao mesmo tempo. Isolar a integração com o parceiro numa camada própria, para trocar de parceiro sem reescrever o sistema (vira ADR no Bloco 3). Começar a conversa antes do desenvolvimento</td>
+<td>Nenhum contrato assinado até o fim do 1º sprint</td>
+</tr>
+<tr>
+<td>R05</td>
+<td>Custo de infraestrutura muito maior que o esperado</td>
+<td>Técnico e financeiro</td>
+<td>2</td>
+<td>2</td>
+<td><strong>4</strong></td>
+<td>Alerta de orçamento na AWS quando o gasto passar de 80% do previsto (R$ 3.288,92 em produção). Tag de custo por ambiente. Homologação desligada fora do horário de trabalho. Frases fixas em áudio geradas uma vez e guardadas. Reserva de capacidade depois de 3 meses de uso estável</td>
+<td>Fatura parcial acima de 80% do orçamento antes do dia 20</td>
+</tr>
+<tr>
+<td>R06</td>
+<td>Baixa adesão</td>
+<td>Negócio</td>
+<td>3</td>
+<td>3</td>
+<td><strong>9</strong></td>
+<td>Conta sem tarifa. Chegar ao público por quem ele confia: a família (o neto convida a avó), associações, igrejas e quem paga diária na construção civil. Programa de indicação. Medir o uso, não só o download</td>
+<td>Contas abertas e usuários ativos por mês abaixo da meta de 10.000</td>
+</tr>
+<tr>
+<td>R07</td>
+<td>Equipe sem experiência em acessibilidade e em produto financeiro</td>
+<td>Equipe</td>
+<td>2</td>
+<td>2</td>
+<td><strong>4</strong></td>
+<td>Guia de acessibilidade no padrão do projeto (Bloco 8). Revisão de acessibilidade na Definition of Done (Bloco 9). Pelo menos uma pessoa com experiência em fintech na equipe (Bloco 7)</td>
+<td>Telas reprovadas no teste de uso por motivo de acessibilidade</td>
+</tr>
+<tr>
+<td>R08</td>
+<td>Erro no tratamento de dados de menores e de dado biométrico</td>
+<td>Regulatório</td>
+<td>2</td>
+<td>3</td>
+<td><strong>6</strong></td>
+<td>Consentimento do responsável registrado com data e versão do termo. Biometria só no celular, sem guardar no servidor. Campos com dado pessoal marcados no dicionário de dados (Bloco 5)</td>
+<td>Pedido de titular ou da ANPD sem resposta no prazo</td>
+</tr>
+</tbody>
+</table>
+<h3 id="s25">Matriz de risco</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Impacto 1</th>
+<th>Impacto 2</th>
+<th>Impacto 3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Probabilidade 3</strong></td>
+<td></td>
+<td></td>
+<td>R01, R06</td>
+</tr>
+<tr>
+<td><strong>Probabilidade 2</strong></td>
+<td></td>
+<td>R05, R07</td>
+<td>R02, R03, R04, R08</td>
+</tr>
+<tr>
+<td><strong>Probabilidade 1</strong></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Nenhum risco ficou com probabilidade baixa: o projeto lida com dinheiro de um público que já é alvo de golpe, então o grupo preferiu ser conservador.</p></section></div><div class="bloco-wrap"><h1 id="b2" class="bloco">Bloco 2 · Requisitos</h1><section class="arquivo"><h2 id="s27">2.1 Requisitos Funcionais</h2>
+<p>32 requisitos, numerados de RF001 a RF032, cada um ligado a uma funcionalidade do Documento de Visão (F01 a F16) e priorizado por MoSCoW.</p>
+<h3 id="s28">Critério de prioridade</h3>
+<table>
+<thead>
+<tr>
+<th>Prioridade</th>
+<th>Quando usamos</th>
+<th>Quantos</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Must</strong></td>
+<td>Sem ele o MVP não resolve o problema do Bloco 1, não passa pelo parceiro BaaS ou descumpre a lei</td>
+<td>22</td>
+</tr>
+<tr>
+<td><strong>Should</strong></td>
+<td>Importante para as personas, mas o MVP funciona sem ele por algumas semanas</td>
+<td>6</td>
+</tr>
+<tr>
+<td><strong>Could</strong></td>
+<td>Melhora a experiência. Entra se sobrar capacidade</td>
+<td>2</td>
+</tr>
+<tr>
+<td><strong>Won't</strong></td>
+<td>Fica fora desta versão, de forma consciente</td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
+<h3 id="s29">Requisitos</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Requisito</th>
+<th>F</th>
+<th>Prioridade</th>
+<th>Justificativa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RF001</td>
+<td>O sistema deve permitir abrir conta com foto do documento e selfie, com cada passo explicado em áudio</td>
+<td>F01</td>
+<td>Must</td>
+<td>Sem conta não há produto. O áudio é o que permite Antônio abrir sozinho</td>
+</tr>
+<tr>
+<td>RF002</td>
+<td>O sistema deve validar a identidade do cliente no parceiro BaaS antes de liberar a conta</td>
+<td>F01</td>
+<td>Must</td>
+<td>Exigência do parceiro e das regras de prevenção à lavagem de dinheiro</td>
+</tr>
+<tr>
+<td>RF003</td>
+<td>O sistema deve pedir uma senha de 6 números e oferecer a biometria do celular no primeiro acesso</td>
+<td>F02</td>
+<td>Must</td>
+<td>Senha numérica é mais fácil para quem lê pouco. Biometria evita digitar</td>
+</tr>
+<tr>
+<td>RF004</td>
+<td>O sistema deve permitir entrar com biometria ou senha e bloquear o acesso por 30 minutos após 5 senhas erradas</td>
+<td>F02</td>
+<td>Must</td>
+<td>Proteção contra tentativa de adivinhar a senha</td>
+</tr>
+<tr>
+<td>RF005</td>
+<td>O sistema deve manter um único celular ativo por conta e exigir nova selfie para trocar de aparelho</td>
+<td>F02</td>
+<td>Must</td>
+<td>Impede que o golpista instale a conta da vítima no próprio celular (risco R01)</td>
+</tr>
+<tr>
+<td>RF006</td>
+<td>O sistema deve mostrar o saldo e o extrato com ícone por tipo de movimentação</td>
+<td>F03</td>
+<td>Must</td>
+<td>É a ação mais usada. Ícone reduz a necessidade de leitura</td>
+</tr>
+<tr>
+<td>RF007</td>
+<td>O sistema deve ler em voz alta o conteúdo de qualquer tela pelo botão fixo "Ouvir"</td>
+<td>F03</td>
+<td>Must</td>
+<td>Princípio 1 do Documento de Visão. Sem isso Antônio e Dona Marlene ficam de fora</td>
+</tr>
+<tr>
+<td>RF008</td>
+<td>O sistema deve permitir enviar Pix por chave, por contato salvo ou por QR Code</td>
+<td>F04</td>
+<td>Must</td>
+<td>Pix é o meio de pagamento do dia a dia das três personas</td>
+</tr>
+<tr>
+<td>RF009</td>
+<td>O sistema deve mostrar e falar o nome do recebedor, o banco e o valor antes da confirmação do Pix</td>
+<td>F04</td>
+<td>Must</td>
+<td>Última barreira contra golpe e contra erro de digitação (R01)</td>
+</tr>
+<tr>
+<td>RF010</td>
+<td>O sistema deve permitir receber Pix por chave e por QR Code com valor</td>
+<td>F05</td>
+<td>Must</td>
+<td>Antônio recebe a diária por Pix. Sem isso ele continua dependendo do parente</td>
+</tr>
+<tr>
+<td>RF011</td>
+<td>O sistema deve permitir cadastrar e excluir chaves Pix de CPF, celular e aleatória</td>
+<td>F05</td>
+<td>Must</td>
+<td>Pré-requisito para receber Pix por chave</td>
+</tr>
+<tr>
+<td>RF012</td>
+<td>O sistema deve gerar comprovante de Pix que pode ser ouvido e compartilhado pelo WhatsApp</td>
+<td>F04</td>
+<td>Should</td>
+<td>O comprovante é pedido pelo patrão e pela família. O Pix funciona sem ele nas primeiras semanas</td>
+</tr>
+<tr>
+<td>RF013</td>
+<td>O sistema deve permitir pagar boleto lendo o código pela câmera ou digitando</td>
+<td>F06</td>
+<td>Must</td>
+<td>Motivação principal da Dona Marlene</td>
+</tr>
+<tr>
+<td>RF014</td>
+<td>O sistema deve permitir abrir conta para adolescente de 16 ou 17 anos com aceite do responsável legal</td>
+<td>F07</td>
+<td>Must</td>
+<td>Persona Camila. O aceite do responsável é exigido por lei</td>
+</tr>
+<tr>
+<td>RF015</td>
+<td>O sistema deve permitir que o responsável defina limite diário e mensal de saída da conta do menor</td>
+<td>F08</td>
+<td>Must</td>
+<td>Garante a "autonomia com limite" que a Camila e os pais querem</td>
+</tr>
+<tr>
+<td>RF016</td>
+<td>O sistema deve permitir que o menor peça aprovação para uma saída acima do limite e que o responsável aprove ou recuse no app</td>
+<td>F08</td>
+<td>Should</td>
+<td>Evita o "tudo bloqueado" dos bancos atuais. O limite fixo já protege no início</td>
+</tr>
+<tr>
+<td>RF017</td>
+<td>O sistema deve permitir criar meta de economia com nome, valor, data e imagem, guardar e resgatar dinheiro da meta</td>
+<td>F09</td>
+<td>Should</td>
+<td>Persona Camila (notebook). Não é necessário para movimentar a conta</td>
+</tr>
+<tr>
+<td>RF018</td>
+<td>O sistema deve permitir cadastrar um contato de confiança, que recebe aviso de movimentação fora do padrão</td>
+<td>F10</td>
+<td>Should</td>
+<td>Rede de apoio da Dona Marlene sem tirar a autonomia dela</td>
+</tr>
+<tr>
+<td>RF019</td>
+<td>O sistema deve aplicar limite menor para destinatário novo nas primeiras 24 horas e para Pix entre 20h e 6h</td>
+<td>F11</td>
+<td>Must</td>
+<td>Os golpes acontecem com destinatário novo e com urgência (R01)</td>
+</tr>
+<tr>
+<td>RF020</td>
+<td>O sistema deve oferecer o botão "bloquear tudo agora", que suspende na hora todas as saídas de dinheiro</td>
+<td>F11</td>
+<td>Must</td>
+<td>Resposta imediata quando o cliente percebe o golpe (R01)</td>
+</tr>
+<tr>
+<td>RF021</td>
+<td>O sistema deve mostrar o aviso "o Rufus nunca liga para você" nas telas de dinheiro e no início do atendimento</td>
+<td>F11</td>
+<td>Must</td>
+<td>Ataca direto o golpe da falsa central, o que mais cresceu em 2025</td>
+</tr>
+<tr>
+<td>RF022</td>
+<td>O sistema deve lembrar o cliente de contas a vencer que ele cadastrou</td>
+<td>F12</td>
+<td>Could</td>
+<td>Ajuda a Dona Marlene, mas ela já paga as contas sem o lembrete</td>
+</tr>
+<tr>
+<td>RF023</td>
+<td>O sistema deve oferecer dicas de educação financeira em áudio de até 60 segundos</td>
+<td>F13</td>
+<td>Could</td>
+<td>Diferencial de educação. Não afeta a movimentação</td>
+</tr>
+<tr>
+<td>RF024</td>
+<td>O sistema deve permitir abrir chamado de atendimento por chat de dentro do app, já identificado</td>
+<td>F14</td>
+<td>Must</td>
+<td>É o único canal humano. Começar dentro do app prova que é o Rufus de verdade</td>
+</tr>
+<tr>
+<td>RF025</td>
+<td>O sistema deve permitir que o atendente veja o histórico do cliente e responda chamados no painel do SAC</td>
+<td>F16</td>
+<td>Must</td>
+<td>Sem o painel o chamado do RF024 não tem quem responda</td>
+</tr>
+<tr>
+<td>RF026</td>
+<td>O sistema deve dar uma nota de risco a cada Pix enviado e reter para análise os que passarem do limite de risco</td>
+<td>F15</td>
+<td>Must</td>
+<td>Prevenção de fraude exigida pelo parceiro e pelo risco R01</td>
+</tr>
+<tr>
+<td>RF027</td>
+<td>O sistema deve permitir que o analista antifraude libere, recuse ou bloqueie a conta a partir do painel</td>
+<td>F15</td>
+<td>Must</td>
+<td>Decisão humana para o Pix retido no RF026</td>
+</tr>
+<tr>
+<td>RF028</td>
+<td>O sistema deve enviar notificação push a cada entrada e saída de dinheiro</td>
+<td>F03</td>
+<td>Should</td>
+<td>O cliente percebe na hora uma saída que não fez. O extrato já mostra o mesmo</td>
+</tr>
+<tr>
+<td>RF029</td>
+<td>O sistema deve permitir encerrar a conta e baixar os próprios dados pessoais</td>
+<td>F14</td>
+<td>Must</td>
+<td>Direitos do titular da LGPD (art. 18)</td>
+</tr>
+<tr>
+<td>RF030</td>
+<td>O sistema deve permitir cadastrar funcionários e atribuir papéis (atendente, analista antifraude, administrador)</td>
+<td>F16</td>
+<td>Should</td>
+<td>Controle de acesso dos painéis. No início os papéis podem ser cadastrados por script</td>
+</tr>
+<tr>
+<td>RF031</td>
+<td>Agendar Pix para data futura</td>
+<td>F04</td>
+<td>Won't</td>
+<td>Pouco valor para as personas e aumenta a superfície de golpe. Fica para a próxima versão</td>
+</tr>
+<tr>
+<td>RF032</td>
+<td>Entrar no app por reconhecimento de voz</td>
+<td>F02</td>
+<td>Won't</td>
+<td>A biometria nativa do celular já resolve, sem custo e com mais precisão</td>
+</tr>
+</tbody>
+</table>
+<h3 id="s30">Rastreabilidade</h3>
+<p>Cada funcionalidade do Bloco 1 tem pelo menos um requisito:</p>
+<table>
+<thead>
+<tr>
+<th>F</th>
+<th>Requisitos</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>F01 Abertura de conta</td>
+<td>RF001, RF002</td>
+</tr>
+<tr>
+<td>F02 Entrada no app</td>
+<td>RF003, RF004, RF005, RF032</td>
+</tr>
+<tr>
+<td>F03 Saldo e extrato</td>
+<td>RF006, RF007, RF028</td>
+</tr>
+<tr>
+<td>F04 Enviar Pix</td>
+<td>RF008, RF009, RF012, RF031</td>
+</tr>
+<tr>
+<td>F05 Receber Pix</td>
+<td>RF010, RF011</td>
+</tr>
+<tr>
+<td>F06 Pagar contas</td>
+<td>RF013</td>
+</tr>
+<tr>
+<td>F07 Conta de menor</td>
+<td>RF014</td>
+</tr>
+<tr>
+<td>F08 Limites e aprovação</td>
+<td>RF015, RF016</td>
+</tr>
+<tr>
+<td>F09 Metas</td>
+<td>RF017</td>
+</tr>
+<tr>
+<td>F10 Contato de confiança</td>
+<td>RF018</td>
+</tr>
+<tr>
+<td>F11 Proteção contra golpe</td>
+<td>RF019, RF020, RF021</td>
+</tr>
+<tr>
+<td>F12 Lembrete de contas</td>
+<td>RF022</td>
+</tr>
+<tr>
+<td>F13 Educação financeira</td>
+<td>RF023</td>
+</tr>
+<tr>
+<td>F14 Atendimento e direitos</td>
+<td>RF024, RF029</td>
+</tr>
+<tr>
+<td>F15 Antifraude</td>
+<td>RF026, RF027</td>
+</tr>
+<tr>
+<td>F16 Painel do SAC</td>
+<td>RF025, RF030</td>
+</tr>
+</tbody>
+</table></section><section class="arquivo"><h2 id="s31">2.2 Requisitos Não Funcionais</h2>
+<p>14 requisitos, todos com um número que pode ser medido e com a forma de medir. Cada um diz de onde veio o número e qual bloco seguinte ele obriga.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Categoria</th>
+<th>Requisito com métrica</th>
+<th>Como medir</th>
+<th>Prioridade</th>
+<th>Por que esse número</th>
+<th>Obriga</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RNF01</td>
+<td>Desempenho</td>
+<td>Rotas de leitura da API (saldo, extrato, metas) respondem em menos de <strong>300 ms no p95</strong>, sem contar o tempo do parceiro BaaS</td>
+<td>Métrica de latência por rota no CloudWatch e teste de carga</td>
+<td>Must</td>
+<td>Acima de 1 s o usuário perde a sensação de resposta imediata. 300 ms deixa folga para a rede móvel</td>
+<td>Bloco 6: alarme de p95</td>
+</tr>
+<tr>
+<td>RNF02</td>
+<td>Desempenho</td>
+<td>Pix enviado fica confirmado ou recusado na tela em até <strong>10 s no p95</strong>, do toque em "confirmar" à resposta</td>
+<td>Métrica de tempo entre pedido e resposta do parceiro</td>
+<td>Must</td>
+<td>Dona Marlene tem medo de errar. Ficar sem resposta gera clique repetido e Pix duplicado</td>
+<td>Bloco 3: chamada ao parceiro com timeout e idempotência</td>
+</tr>
+<tr>
+<td>RNF03</td>
+<td>Disponibilidade</td>
+<td><strong>99,9% ao mês</strong> (até 43 minutos fora do ar por mês)</td>
+<td>Verificação externa a cada 1 minuto no endpoint de saúde</td>
+<td>Must</td>
+<td>Conta é serviço essencial: quem recebe a diária por Pix precisa do app disponível</td>
+<td>Bloco 6: 2 zonas, RDS Multi-AZ, balanceador. Já custeado no Bloco 1</td>
+</tr>
+<tr>
+<td>RNF04</td>
+<td>Escalabilidade</td>
+<td>Suportar <strong>10.000 usuários ativos por mês</strong> e picos de <strong>100 requisições por segundo</strong> mantendo o RNF01</td>
+<td>Teste de carga com k6 antes de cada versão grande</td>
+<td>Must</td>
+<td>10.000 é a meta do 1º ano (Bloco 1). 100 req/s é cerca de 40 vezes a média de 6 milhões de requisições por mês</td>
+<td>Bloco 6: auto scaling de 2 a 6 tarefas</td>
+</tr>
+<tr>
+<td>RNF05</td>
+<td>Segurança</td>
+<td>Senha guardada com <strong>Argon2id</strong>. Token de acesso vale <strong>15 minutos</strong>, token de renovação <strong>30 dias</strong>, trocado a cada uso. Toda conexão em <strong>TLS 1.2 ou superior</strong></td>
+<td>Revisão de código e teste automatizado de configuração</td>
+<td>Must</td>
+<td>Padrão recomendado pela OWASP para senha e sessão em app financeiro</td>
+<td>Bloco 6: seção de segurança</td>
+</tr>
+<tr>
+<td>RNF06</td>
+<td>Segurança</td>
+<td><strong>Nenhuma vulnerabilidade crítica ou alta</strong> conhecida em dependência ou imagem no momento do deploy</td>
+<td>Varredura no pipeline (npm audit e Trivy)</td>
+<td>Must</td>
+<td>Vulnerabilidade conhecida é a porta mais fácil para vazamento (R02)</td>
+<td>Bloco 6: o pipeline bloqueia o deploy</td>
+</tr>
+<tr>
+<td>RNF07</td>
+<td>LGPD</td>
+<td><strong>100% dos campos com dado pessoal marcados</strong> no dicionário de dados. CPF e data de nascimento <strong>criptografados</strong> no banco. Pedido do titular respondido em até <strong>15 dias</strong></td>
+<td>Revisão do dicionário de dados e prazo dos pedidos registrados</td>
+<td>Must</td>
+<td>A LGPD (art. 19) dá 15 dias para a resposta completa ao titular</td>
+<td>Bloco 5: dicionário com coluna LGPD</td>
+</tr>
+<tr>
+<td>RNF08</td>
+<td>Usabilidade</td>
+<td>Ver saldo, enviar Pix e pagar boleto em <strong>no máximo 3 toques</strong> depois do login. Em teste com 5 pessoas do perfil das personas, <strong>pelo menos 4 pagam um boleto sem ajuda em até 3 minutos</strong></td>
+<td>Teste de uso a cada sprint, com cronômetro</td>
+<td>Must</td>
+<td>É a promessa do produto. 5 pessoas por rodada é o número clássico de teste de usabilidade (Nielsen)</td>
+<td>Bloco 9: o teste entra na DoD das telas</td>
+</tr>
+<tr>
+<td>RNF09</td>
+<td>Acessibilidade</td>
+<td>Seguir a <strong>WCAG 2.2 nível AA</strong>: contraste de pelo menos <strong>4,5:1</strong>, área de toque de pelo menos <strong>48 dp</strong>, texto base de <strong>18 sp</strong>, funcionar com TalkBack e VoiceOver. <strong>100% das telas</strong> com o botão "Ouvir"</td>
+<td>Checklist automático e teste manual com leitor de tela</td>
+<td>Must</td>
+<td>Antônio e Dona Marlene leem com dificuldade. 48 dp é o mínimo do guia do Android</td>
+<td>Bloco 9: DoD</td>
+</tr>
+<tr>
+<td>RNF10</td>
+<td>Compatibilidade</td>
+<td>Funcionar em <strong>Android 10 ou superior</strong> e <strong>iOS 16 ou superior</strong>, em celular com <strong>3 GB de RAM</strong></td>
+<td>Teste em aparelho real de entrada antes da publicação</td>
+<td>Must</td>
+<td>Antônio usa um Android de entrada</td>
+<td>Bloco 3: escolha do framework mobile</td>
+</tr>
+<tr>
+<td>RNF11</td>
+<td>Integridade</td>
+<td><strong>Zero Pix duplicado</strong> por clique repetido ou falha de rede. Diferença entre o nosso razão contábil e o parceiro <strong>detectada em até 24 horas</strong></td>
+<td>Teste automatizado de idempotência e conciliação diária</td>
+<td>Must</td>
+<td>Erro de dinheiro destrói a confiança de quem já tem medo de errar</td>
+<td>Bloco 3: chave de idempotência. Bloco 5: razão com partidas dobradas</td>
+</tr>
+<tr>
+<td>RNF12</td>
+<td>Recuperação</td>
+<td>Perda máxima de dados (RPO) de <strong>5 minutos</strong> e volta ao ar (RTO) em até <strong>1 hora</strong> após falha grave</td>
+<td>Teste de restauração do backup a cada 3 meses</td>
+<td>Must</td>
+<td>O RDS restaura para um ponto de até 5 minutos atrás. 1 hora cabe nos 43 minutos do RNF03 quando a falha é rara</td>
+<td>Bloco 5: estratégia de backup</td>
+</tr>
+<tr>
+<td>RNF13</td>
+<td>Observabilidade</td>
+<td><strong>100% das requisições</strong> com identificador de correlação no log. Alerta em até <strong>5 minutos</strong> quando a taxa de erro passar de <strong>2%</strong></td>
+<td>Configuração dos alarmes no CloudWatch</td>
+<td>Should</td>
+<td>Sem isso uma falha só é percebida pela reclamação do cliente</td>
+<td>Bloco 6: observabilidade</td>
+</tr>
+<tr>
+<td>RNF14</td>
+<td>Auditoria</td>
+<td>Toda ação de funcionário (consulta e alteração) registrada e guardada por <strong>5 anos</strong></td>
+<td>Consulta à tabela de auditoria</td>
+<td>Must</td>
+<td>A Lei 9.613/1998 (prevenção à lavagem de dinheiro) exige guardar registros por 5 anos</td>
+<td>Bloco 5: tabela de auditoria</td>
+</tr>
+</tbody>
+</table>
+<h3 id="s32">Por que esses são Must</h3>
+<p>Treze dos 14 são Must porque cada um protege diretamente o dinheiro do cliente (RNF02, RNF05, RNF06, RNF11, RNF12), a promessa do produto (RNF08, RNF09, RNF10), a lei (RNF07, RNF14) ou a meta de operação do Bloco 1 (RNF01, RNF03, RNF04). O RNF13 é Should porque a observabilidade completa pode amadurecer depois do lançamento; o mínimo de alarmes já entra no Must do RNF03.</p></section><section class="arquivo"><h2 id="s33">2.3 Histórias de Usuário</h2>
+<p>24 histórias no formato "Como [persona], quero [ação], para [objetivo]", cada uma com critérios de aceite em Given/When/Then (Dado/Quando/Então) e estimativa em story points.</p>
+<h3 id="s34">Escala de story points</h3>
+<p>Sequência de Fibonacci (1, 2, 3, 5, 8, 13), estimada pela equipe por comparação. A história de referência é a <strong>US13 (cadastrar contato de confiança) = 3 pontos</strong>: um formulário, uma regra e uma notificação. Uma história de 13 pontos é grande demais para um sprint e precisa ser quebrada antes de entrar.</p>
+<h3 id="s35">Resumo</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Persona</th>
+<th>História</th>
+<th>RF</th>
+<th>MoSCoW</th>
+<th>SP</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>US01</td>
+<td>Antônio</td>
+<td>Abrir a conta ouvindo cada passo</td>
+<td>RF001, RF002</td>
+<td>Must</td>
+<td>8</td>
+</tr>
+<tr>
+<td>US02</td>
+<td>Antônio</td>
+<td>Entrar com a digital</td>
+<td>RF003, RF004</td>
+<td>Must</td>
+<td>5</td>
+</tr>
+<tr>
+<td>US03</td>
+<td>Dona Marlene</td>
+<td>Trocar de celular com selfie</td>
+<td>RF005</td>
+<td>Must</td>
+<td>5</td>
+</tr>
+<tr>
+<td>US04</td>
+<td>Antônio</td>
+<td>Ouvir o saldo e o extrato</td>
+<td>RF006, RF007</td>
+<td>Must</td>
+<td>5</td>
+</tr>
+<tr>
+<td>US05</td>
+<td>Antônio</td>
+<td>Receber a diária por QR Code</td>
+<td>RF010, RF011</td>
+<td>Must</td>
+<td>5</td>
+</tr>
+<tr>
+<td>US06</td>
+<td>Dona Marlene</td>
+<td>Enviar Pix ouvindo para quem vai</td>
+<td>RF008, RF009</td>
+<td>Must</td>
+<td>8</td>
+</tr>
+<tr>
+<td>US07</td>
+<td>Antônio</td>
+<td>Não mandar Pix em dobro</td>
+<td>RF008, RNF11</td>
+<td>Must</td>
+<td>3</td>
+</tr>
+<tr>
+<td>US08</td>
+<td>Dona Marlene</td>
+<td>Pagar boleto pela câmera</td>
+<td>RF013</td>
+<td>Must</td>
+<td>8</td>
+</tr>
+<tr>
+<td>US09</td>
+<td>Camila</td>
+<td>Abrir conta com aceite do pai</td>
+<td>RF014</td>
+<td>Must</td>
+<td>8</td>
+</tr>
+<tr>
+<td>US10</td>
+<td>Responsável da Camila</td>
+<td>Definir limite da conta da filha</td>
+<td>RF015</td>
+<td>Must</td>
+<td>3</td>
+</tr>
+<tr>
+<td>US11</td>
+<td>Antônio</td>
+<td>Ter limite menor com destinatário novo e à noite</td>
+<td>RF019</td>
+<td>Must</td>
+<td>3</td>
+</tr>
+<tr>
+<td>US12</td>
+<td>Dona Marlene</td>
+<td>Bloquear tudo na hora</td>
+<td>RF020, RF021</td>
+<td>Must</td>
+<td>3</td>
+</tr>
+<tr>
+<td>US14</td>
+<td>Antônio</td>
+<td>Falar com uma pessoa pelo chat do app</td>
+<td>RF024</td>
+<td>Must</td>
+<td>5</td>
+</tr>
+<tr>
+<td>US15</td>
+<td>Atendente do SAC</td>
+<td>Responder chamado vendo o histórico</td>
+<td>RF025</td>
+<td>Must</td>
+<td>5</td>
+</tr>
+<tr>
+<td>US16</td>
+<td>Analista antifraude</td>
+<td>Analisar Pix retido</td>
+<td>RF026, RF027</td>
+<td>Must</td>
+<td>8</td>
+</tr>
+<tr>
+<td>US17</td>
+<td>Antônio</td>
+<td>Encerrar a conta e baixar meus dados</td>
+<td>RF029</td>
+<td>Must</td>
+<td>5</td>
+</tr>
+<tr>
+<td>US13</td>
+<td>Dona Marlene</td>
+<td>Cadastrar o neto como contato de confiança</td>
+<td>RF018</td>
+<td>Should</td>
+<td>3</td>
+</tr>
+<tr>
+<td>US18</td>
+<td>Camila</td>
+<td>Pedir aprovação acima do limite</td>
+<td>RF016</td>
+<td>Should</td>
+<td>5</td>
+</tr>
+<tr>
+<td>US19</td>
+<td>Camila</td>
+<td>Criar a meta do notebook</td>
+<td>RF017</td>
+<td>Should</td>
+<td>5</td>
+</tr>
+<tr>
+<td>US20</td>
+<td>Camila</td>
+<td>Receber aviso de cada movimentação</td>
+<td>RF028</td>
+<td>Should</td>
+<td>3</td>
+</tr>
+<tr>
+<td>US21</td>
+<td>Dona Marlene</td>
+<td>Ouvir e compartilhar o comprovante</td>
+<td>RF012</td>
+<td>Should</td>
+<td>3</td>
+</tr>
+<tr>
+<td>US22</td>
+<td>Administrador</td>
+<td>Cadastrar funcionário com papel</td>
+<td>RF030</td>
+<td>Should</td>
+<td>3</td>
+</tr>
+<tr>
+<td>US23</td>
+<td>Dona Marlene</td>
+<td>Lembrete de conta a vencer</td>
+<td>RF022</td>
+<td>Could</td>
+<td>3</td>
+</tr>
+<tr>
+<td>US24</td>
+<td>Camila</td>
+<td>Ouvir dicas de dinheiro</td>
+<td>RF023</td>
+<td>Could</td>
+<td>2</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td><strong>Total</strong></td>
+<td></td>
+<td></td>
+<td><strong>114</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Must: 87 pontos em 16 histórias. Should: 22 pontos em 6 histórias. Could: 5 pontos em 2 histórias. O Bloco 7 soma a isso as tarefas técnicas (infraestrutura, pipeline, integração com o parceiro) e calcula os sprints.</p>
+<h3 id="s36">Histórias com critérios de aceite</h3>
+<h4 id="s37">US01 · Abrir a conta ouvindo cada passo (8 SP, Must)</h4>
+<p>Como <strong>Antônio</strong>, quero abrir minha conta ouvindo o que fazer em cada passo, para não depender de ninguém para ler as instruções.</p>
+<ul>
+<li><strong>Dado</strong> que instalei o app e toquei em "Abrir conta", <strong>quando</strong> cada tela aparece, <strong>então</strong> a instrução é falada automaticamente e pode ser repetida pelo botão "Ouvir".</li>
+<li><strong>Dado</strong> que enviei foto do documento e selfie, <strong>quando</strong> o parceiro aprova a identidade, <strong>então</strong> a conta fica ativa e o app avisa por voz e por push.</li>
+<li><strong>Dado</strong> que a foto ficou escura ou cortada, <strong>quando</strong> o envio é recusado, <strong>então</strong> o app fala o motivo em uma frase ("a foto ficou escura, tente perto da janela") e permite tentar de novo.</li>
+</ul>
+<h4 id="s37">US02 · Entrar com a digital (5 SP, Must)</h4>
+<p>Como <strong>Antônio</strong>, quero entrar no app com a minha digital, para não precisar lembrar nem digitar senha.</p>
+<ul>
+<li><strong>Dado</strong> que criei a senha de 6 números, <strong>quando</strong> aceito usar a biometria, <strong>então</strong> os próximos acessos pedem só a digital.</li>
+<li><strong>Dado</strong> que errei a senha 5 vezes, <strong>quando</strong> tento a 6ª, <strong>então</strong> o acesso fica bloqueado por 30 minutos e o app explica por voz.</li>
+<li><strong>Dado</strong> que meu celular não tem biometria, <strong>quando</strong> entro, <strong>então</strong> o app pede a senha de 6 números com teclado grande.</li>
+</ul>
+<h4 id="s37">US03 · Trocar de celular com selfie (5 SP, Must)</h4>
+<p>Como <strong>Dona Marlene</strong>, quero que só o meu celular acesse a minha conta, para que ninguém instale minha conta em outro aparelho.</p>
+<ul>
+<li><strong>Dado</strong> que minha conta já está ativa num celular, <strong>quando</strong> alguém tenta entrar em outro aparelho, <strong>então</strong> o app exige uma selfie nova e só libera se ela bater com a do cadastro.</li>
+<li><strong>Dado</strong> que a troca de aparelho foi aprovada, <strong>quando</strong> a nova sessão começa, <strong>então</strong> o aparelho antigo é desconectado e eu recebo aviso no contato cadastrado.</li>
+</ul>
+<h4 id="s37">US04 · Ouvir o saldo e o extrato (5 SP, Must)</h4>
+<p>Como <strong>Antônio</strong>, quero ouvir quanto dinheiro eu tenho e o que entrou e saiu, para saber das minhas contas sem ler.</p>
+<ul>
+<li><strong>Dado</strong> que entrei no app, <strong>quando</strong> a tela inicial abre, <strong>então</strong> o saldo aparece em número grande com o botão "Ouvir" ao lado.</li>
+<li><strong>Dado</strong> que toquei em "Ouvir" no extrato, <strong>quando</strong> o áudio toca, <strong>então</strong> cada movimentação é falada como "Recebeu 120 reais de José, ontem".</li>
+<li><strong>Dado</strong> que estou na tela inicial, <strong>quando</strong> quero ver o extrato, <strong>então</strong> chego nele com 1 toque.</li>
+</ul>
+<h4 id="s37">US05 · Receber a diária por QR Code (5 SP, Must)</h4>
+<p>Como <strong>Antônio</strong>, quero mostrar um QR Code para o mestre de obras me pagar, para receber a diária na minha conta.</p>
+<ul>
+<li><strong>Dado</strong> que toquei em "Receber", <strong>quando</strong> digito o valor (ou deixo em branco), <strong>então</strong> o app mostra um QR Code Pix em tela cheia.</li>
+<li><strong>Dado</strong> que o pagamento caiu, <strong>quando</strong> o parceiro confirma, <strong>então</strong> o celular vibra, fala "Recebeu 150 reais de Carlos" e o saldo é atualizado.</li>
+</ul>
+<h4 id="s37">US06 · Enviar Pix ouvindo para quem vai (8 SP, Must)</h4>
+<p>Como <strong>Dona Marlene</strong>, quero ouvir o nome de quem vai receber e o valor antes de confirmar, para ter certeza de que não estou errando.</p>
+<ul>
+<li><strong>Dado</strong> que informei a chave e o valor, <strong>quando</strong> chego na tela de confirmação, <strong>então</strong> o app mostra e fala o nome do recebedor, o banco e o valor.</li>
+<li><strong>Dado</strong> que confirmei com a biometria, <strong>quando</strong> o parceiro aceita o Pix, <strong>então</strong> o app mostra "Pix enviado" com ícone verde em até 10 segundos (RNF02).</li>
+<li><strong>Dado</strong> que o saldo não é suficiente, <strong>quando</strong> tento confirmar, <strong>então</strong> o app avisa antes de pedir a biometria e não envia nada.</li>
+</ul>
+<h4 id="s37">US07 · Não mandar Pix em dobro (3 SP, Must)</h4>
+<p>Como <strong>Antônio</strong>, quero que o Pix não saia duas vezes se eu apertar o botão de novo, para não perder dinheiro.</p>
+<ul>
+<li><strong>Dado</strong> que toquei em "confirmar" e a internet caiu, <strong>quando</strong> o app reenvia o pedido, <strong>então</strong> o servidor reconhece a mesma chave de idempotência e devolve o resultado do primeiro pedido.</li>
+<li><strong>Dado</strong> que toquei duas vezes seguidas, <strong>quando</strong> os dois pedidos chegam, <strong>então</strong> só um Pix é criado.</li>
+</ul>
+<h4 id="s37">US08 · Pagar boleto pela câmera (8 SP, Must)</h4>
+<p>Como <strong>Dona Marlene</strong>, quero apontar a câmera para a conta de luz e pagar, para não precisar digitar aquele número enorme.</p>
+<ul>
+<li><strong>Dado</strong> que abri "Pagar conta", <strong>quando</strong> aponto a câmera para o código de barras, <strong>então</strong> o app lê o código e mostra e fala a empresa, o valor e o vencimento.</li>
+<li><strong>Dado</strong> que o código não foi lido em 15 segundos, <strong>quando</strong> o tempo acaba, <strong>então</strong> o app oferece digitar o código com teclado grande.</li>
+<li><strong>Dado</strong> que o boleto está vencido, <strong>quando</strong> o valor é calculado, <strong>então</strong> o app mostra os juros separados e fala o total.</li>
+</ul>
+<h4 id="s37">US09 · Abrir conta com aceite do pai (8 SP, Must)</h4>
+<p>Como <strong>Camila</strong>, quero abrir minha conta com meu pai aceitando pelo celular dele, para não precisar ir a lugar nenhum.</p>
+<ul>
+<li><strong>Dado</strong> que informei que tenho 17 anos, <strong>quando</strong> termino meu cadastro, <strong>então</strong> o app pede o CPF e o celular do responsável e envia um convite para ele.</li>
+<li><strong>Dado</strong> que meu pai abriu o convite, <strong>quando</strong> ele confirma a identidade e aceita os termos, <strong>então</strong> minha conta fica ativa vinculada a ele.</li>
+<li><strong>Dado</strong> que o responsável não aceitou em 7 dias, <strong>quando</strong> o prazo vence, <strong>então</strong> o pedido é cancelado e os dados enviados são apagados.</li>
+</ul>
+<h4 id="s37">US10 · Definir limite da conta da filha (3 SP, Must)</h4>
+<p>Como <strong>responsável da Camila</strong>, quero definir quanto ela pode gastar por dia e por mês, para ela ter autonomia sem risco.</p>
+<ul>
+<li><strong>Dado</strong> que sou o responsável vinculado, <strong>quando</strong> defino o limite diário e o mensal, <strong>então</strong> os novos limites valem na hora.</li>
+<li><strong>Dado</strong> que a Camila tenta um Pix acima do limite, <strong>quando</strong> ela confirma, <strong>então</strong> o Pix não é enviado e ela vê a opção de pedir aprovação (US18).</li>
+</ul>
+<h4 id="s37">US11 · Limite menor com destinatário novo e à noite (3 SP, Must)</h4>
+<p>Como <strong>Antônio</strong>, quero que o app limite Pix para alguém novo e à noite, para que um golpista não leve tudo de uma vez.</p>
+<ul>
+<li><strong>Dado</strong> que o destinatário nunca recebeu Pix meu, <strong>quando</strong> envio nas primeiras 24 horas, <strong>então</strong> o limite é de R$ 300 por Pix.</li>
+<li><strong>Dado</strong> que são entre 20h e 6h, <strong>quando</strong> envio um Pix, <strong>então</strong> o limite é de R$ 1.000 por período, como na regra do Pix noturno.</li>
+<li><strong>Dado</strong> que bati o limite, <strong>quando</strong> a mensagem aparece, <strong>então</strong> o app explica o motivo em uma frase e diz quando libera.</li>
+</ul>
+<h4 id="s37">US12 · Bloquear tudo na hora (3 SP, Must)</h4>
+<p>Como <strong>Dona Marlene</strong>, quero um botão para travar a conta na hora, para me proteger se eu achar que caí num golpe.</p>
+<ul>
+<li><strong>Dado</strong> que toquei em "bloquear tudo agora" e confirmei, <strong>quando</strong> o bloqueio é aplicado, <strong>então</strong> nenhuma saída de dinheiro é aceita e o contato de confiança é avisado.</li>
+<li><strong>Dado</strong> que a conta está bloqueada, <strong>quando</strong> eu quiser desbloquear, <strong>então</strong> preciso de selfie e de 1 hora de espera.</li>
+<li><strong>Dado</strong> que estou em qualquer tela de dinheiro, <strong>quando</strong> ela abre, <strong>então</strong> aparece o aviso "o Rufus nunca liga para você".</li>
+</ul>
+<h4 id="s37">US13 · Cadastrar o neto como contato de confiança (3 SP, Should)</h4>
+<p>Como <strong>Dona Marlene</strong>, quero que meu neto seja avisado se sair dinheiro estranho da minha conta, para ter ajuda sem dar a ele acesso à conta.</p>
+<ul>
+<li><strong>Dado</strong> que informei o nome e o celular do meu neto, <strong>quando</strong> ele aceita o convite, <strong>então</strong> ele vira meu contato de confiança.</li>
+<li><strong>Dado</strong> que sai um Pix acima de 3 vezes a minha média, <strong>quando</strong> o Pix é confirmado, <strong>então</strong> meu neto recebe aviso com o valor, sem ver meu saldo.</li>
+</ul>
+<h4 id="s37">US14 · Falar com uma pessoa pelo chat do app (5 SP, Must)</h4>
+<p>Como <strong>Antônio</strong>, quero falar com uma pessoa de dentro do app, para ter certeza de que é o banco mesmo.</p>
+<ul>
+<li><strong>Dado</strong> que toquei em "Falar com uma pessoa", <strong>quando</strong> o chat abre, <strong>então</strong> o atendente já sabe quem eu sou e eu não preciso informar senha nem código.</li>
+<li><strong>Dado</strong> que prefiro falar, <strong>quando</strong> toco no microfone, <strong>então</strong> posso mandar mensagem de áudio no chat.</li>
+</ul>
+<h4 id="s37">US15 · Responder chamado vendo o histórico (5 SP, Must)</h4>
+<p>Como <strong>atendente do SAC</strong>, quero ver o histórico do cliente ao abrir o chamado, para resolver sem fazer o cliente repetir tudo.</p>
+<ul>
+<li><strong>Dado</strong> que abri um chamado, <strong>quando</strong> o painel carrega, <strong>então</strong> vejo os chamados anteriores e as últimas 10 movimentações do cliente.</li>
+<li><strong>Dado</strong> que respondi o chamado, <strong>quando</strong> o cliente lê, <strong>então</strong> a resposta também pode ser ouvida no app.</li>
+<li><strong>Dado</strong> que consultei os dados do cliente, <strong>quando</strong> a consulta acontece, <strong>então</strong> ela fica registrada na auditoria (RNF14).</li>
+</ul>
+<h4 id="s37">US16 · Analisar Pix retido (8 SP, Must)</h4>
+<p>Como <strong>analista antifraude</strong>, quero ver os Pix retidos com o motivo da nota de risco, para decidir rápido se libero ou bloqueio.</p>
+<ul>
+<li><strong>Dado</strong> que um Pix passou da nota de risco, <strong>quando</strong> ele é retido, <strong>então</strong> aparece na fila do painel com o motivo (destinatário novo, valor fora do padrão, horário).</li>
+<li><strong>Dado</strong> que liberei o Pix, <strong>quando</strong> a decisão é salva, <strong>então</strong> o Pix segue para o parceiro e o cliente é avisado.</li>
+<li><strong>Dado</strong> que recusei e bloqueei, <strong>quando</strong> a decisão é salva, <strong>então</strong> o valor volta ao saldo, a conta fica bloqueada e o cliente recebe aviso para falar com o SAC pelo app.</li>
+</ul>
+<h4 id="s37">US17 · Encerrar a conta e baixar meus dados (5 SP, Must)</h4>
+<p>Como <strong>Antônio</strong>, quero encerrar minha conta e receber meus dados, para exercer meus direitos.</p>
+<ul>
+<li><strong>Dado</strong> que pedi para baixar meus dados, <strong>quando</strong> o arquivo fica pronto, <strong>então</strong> recebo no app um arquivo com meus dados pessoais e movimentações.</li>
+<li><strong>Dado</strong> que pedi o encerramento com saldo zero, <strong>quando</strong> confirmo, <strong>então</strong> a conta é encerrada e os dados pessoais são anonimizados, mantidos só os registros que a lei obriga guardar.</li>
+</ul>
+<h4 id="s37">US18 · Pedir aprovação acima do limite (5 SP, Should)</h4>
+<p>Como <strong>Camila</strong>, quero pedir ao meu pai para liberar um gasto acima do limite, para não ficar travada quando preciso.</p>
+<ul>
+<li><strong>Dado</strong> que meu Pix passou do limite, <strong>quando</strong> toco em "pedir aprovação", <strong>então</strong> meu responsável recebe push com valor e destinatário.</li>
+<li><strong>Dado</strong> que ele aprovou em até 24 horas, <strong>quando</strong> a aprovação chega, <strong>então</strong> o Pix é enviado e eu sou avisada.</li>
+<li><strong>Dado</strong> que ele recusou ou não respondeu em 24 horas, <strong>quando</strong> o prazo acaba, <strong>então</strong> o pedido é cancelado.</li>
+</ul>
+<h4 id="s37">US19 · Criar a meta do notebook (5 SP, Should)</h4>
+<p>Como <strong>Camila</strong>, quero criar uma meta com a foto do notebook e ver quanto falta, para ter motivação para guardar.</p>
+<ul>
+<li><strong>Dado</strong> que criei a meta com nome, valor e data, <strong>quando</strong> guardo dinheiro nela, <strong>então</strong> o valor sai do saldo e a barra de progresso avança.</li>
+<li><strong>Dado</strong> que resgatei da meta, <strong>quando</strong> confirmo, <strong>então</strong> o valor volta para o saldo.</li>
+</ul>
+<h4 id="s37">US20 · Receber aviso de cada movimentação (3 SP, Should)</h4>
+<p>Como <strong>Camila</strong>, quero receber notificação de cada entrada e saída, para saber na hora se algo estranho aconteceu.</p>
+<ul>
+<li><strong>Dado</strong> que entrou ou saiu dinheiro, <strong>quando</strong> o lançamento é confirmado, <strong>então</strong> recebo push em até 30 segundos com valor e tipo.</li>
+</ul>
+<h4 id="s37">US21 · Ouvir e compartilhar o comprovante (3 SP, Should)</h4>
+<p>Como <strong>Dona Marlene</strong>, quero mandar o comprovante pelo WhatsApp, para provar que paguei.</p>
+<ul>
+<li><strong>Dado</strong> que o Pix ou boleto foi concluído, <strong>quando</strong> toco em "comprovante", <strong>então</strong> vejo o comprovante, posso ouvi-lo e compartilhar como imagem.</li>
+</ul>
+<h4 id="s37">US22 · Cadastrar funcionário com papel (3 SP, Should)</h4>
+<p>Como <strong>administrador</strong>, quero cadastrar funcionários com um papel, para que cada um veja só o que precisa.</p>
+<ul>
+<li><strong>Dado</strong> que cadastrei um atendente, <strong>quando</strong> ele entra no painel, <strong>então</strong> vê os chamados mas não a fila antifraude.</li>
+<li><strong>Dado</strong> que o funcionário entra pela primeira vez, <strong>quando</strong> faz login, <strong>então</strong> é obrigado a configurar o segundo fator.</li>
+</ul>
+<h4 id="s37">US23 · Lembrete de conta a vencer (3 SP, Could)</h4>
+<p>Como <strong>Dona Marlene</strong>, quero ser lembrada da conta de água, para não pagar multa.</p>
+<ul>
+<li><strong>Dado</strong> que cadastrei a conta com dia de vencimento, <strong>quando</strong> faltam 3 dias, <strong>então</strong> recebo push e o lembrete aparece na tela inicial.</li>
+</ul>
+<h4 id="s37">US24 · Ouvir dicas de dinheiro (2 SP, Could)</h4>
+<p>Como <strong>Camila</strong>, quero ouvir dicas curtas sobre dinheiro, para aprender a guardar melhor.</p>
+<ul>
+<li><strong>Dado</strong> que abri "Dicas", <strong>quando</strong> escolho uma, <strong>então</strong> ouço um áudio de até 60 segundos e posso ler o texto.</li>
+</ul></section></div><div class="bloco-wrap"><h1 id="b3" class="bloco">Bloco 3 · Arquitetura de Software</h1><section class="arquivo"><h2 id="s38">3.1 Architecture Decision Records (ADR)</h2>
+<p>Um ADR por decisão relevante. Cada um tem contexto, decisão, alternativas descartadas com o motivo e consequências. Os motivos saem dos requisitos do Bloco 2 (RF e RNF) e das premissas do Bloco 1, nunca de "é popular" ou "conhecemos".</p>
+<table>
+<thead>
+<tr>
+<th>ADR</th>
+<th>Decisão</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#adr-001--monolito-modular-e-não-microsserviços">ADR-001</a></td>
+<td>Monolito modular</td>
+<td>Aceito</td>
+</tr>
+<tr>
+<td><a href="#adr-002--parceiro-baas-atrás-de-uma-porta-com-adaptador">ADR-002</a></td>
+<td>Parceiro BaaS atrás de uma porta com adaptador</td>
+<td>Aceito</td>
+</tr>
+<tr>
+<td><a href="#adr-003--rest-com-json-e-contrato-openapi-30">ADR-003</a></td>
+<td>REST com JSON e contrato OpenAPI 3.0</td>
+<td>Aceito</td>
+</tr>
+<tr>
+<td><a href="#adr-004--backend-em-typescript-com-nestjs-sobre-nodejs-22">ADR-004</a></td>
+<td>Backend em TypeScript com NestJS sobre Node.js 22</td>
+<td>Aceito</td>
+</tr>
+<tr>
+<td><a href="#adr-005--app-em-react-native-com-expo">ADR-005</a></td>
+<td>App em React Native com Expo</td>
+<td>Aceito</td>
+</tr>
+<tr>
+<td><a href="#adr-006--postgresql-17-no-amazon-rds-multi-az">ADR-006</a></td>
+<td>PostgreSQL 17 no Amazon RDS Multi-AZ</td>
+<td>Aceito</td>
+</tr>
+<tr>
+<td><a href="#adr-007--razão-contábil-com-partidas-dobradas">ADR-007</a></td>
+<td>Razão contábil com partidas dobradas</td>
+<td>Aceito</td>
+</tr>
+<tr>
+<td><a href="#adr-008--eventos-por-outbox-transacional-no-próprio-postgresql">ADR-008</a></td>
+<td>Eventos por outbox transacional no próprio PostgreSQL</td>
+<td>Aceito</td>
+</tr>
+<tr>
+<td><a href="#adr-009--containers-no-ecs-fargate">ADR-009</a></td>
+<td>Containers no ECS Fargate</td>
+<td>Aceito</td>
+</tr>
+<tr>
+<td><a href="#adr-010--autenticação-própria-com-jwt-curto-e-celular-vinculado">ADR-010</a></td>
+<td>Autenticação própria com JWT curto e celular vinculado</td>
+<td>Aceito</td>
+</tr>
+<tr>
+<td><a href="#adr-011--voz-gerada-no-servidor-com-cache">ADR-011</a></td>
+<td>Voz gerada no servidor, com cache</td>
+<td>Aceito</td>
+</tr>
+<tr>
+<td><a href="#adr-012--painéis-internos-servidos-pela-própria-api">ADR-012</a></td>
+<td>Painéis internos servidos pela própria API</td>
+<td>Aceito</td>
+</tr>
+<tr>
+<td><a href="#adr-013--aws-na-região-de-são-paulo">ADR-013</a></td>
+<td>AWS na região de São Paulo</td>
+<td>Aceito</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="s39">ADR-001 · Monolito modular, e não microsserviços</h3>
+<p><strong>Contexto.</strong> O MVP atende 10.000 usuários ativos por mês com picos de 100 requisições por segundo (RNF04). A equipe tem 2 desenvolvedores de backend (Bloco 7). Os módulos (contas, Pix, família, antifraude, atendimento) trocam dados o tempo todo e várias operações precisam mexer em mais de um deles na mesma transação: um Pix debita a carteira, passa pelo antifraude e grava o evento de notificação (RNF11, zero Pix duplicado).</p>
+<p><strong>Decisão.</strong> Uma aplicação única (API) e um worker, os dois do mesmo código, divididos em módulos com fronteiras explícitas: cada módulo só expõe um serviço público e só ele escreve nas próprias tabelas. Um único banco PostgreSQL.</p>
+<p><strong>Alternativas descartadas.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Alternativa</th>
+<th>Por que não</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Microsserviços, um por módulo</td>
+<td>Cada serviço teria o próprio banco, e o Pix viraria uma transação distribuída entre 3 serviços (saga com compensação em cada um). Para 100 req/s não há ganho de escala que pague isso. Exigiria 6 bancos ou mais, o que muda o custo do Bloco 1. 2 devs de backend não sustentam a operação de vários serviços</td>
+</tr>
+<tr>
+<td>Monolito sem módulos</td>
+<td>Resolve hoje, mas mistura as regras de antifraude com as de conta e impede extrair um módulo depois</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Consequências.</strong> Transações locais garantem o RNF11 com uma transação do banco. Deploy único e simples. Se um módulo precisar escalar sozinho (o antifraude, por exemplo), ele já tem fronteira e pode virar serviço. Risco: alguém acessar a tabela de outro módulo. Mitigação: regra de lint de dependência entre módulos no pipeline (Bloco 6).</p>
+<hr />
+<h3 id="s40">ADR-002 · Parceiro BaaS atrás de uma porta com adaptador</h3>
+<p><strong>Contexto.</strong> Conta, Pix e boleto dependem de um parceiro autorizado pelo Banco Central (Bloco 1). O parceiro ainda não está contratado e existe o risco de não conseguir ou de precisar trocar (risco R04).</p>
+<p><strong>Decisão.</strong> Padrão Portas e Adaptadores (arquitetura hexagonal) para tudo que é externo. O domínio conversa com interfaces nossas (<code>PortaBancaria</code>, <code>PortaVoz</code>, <code>PortaNotificacao</code>, <code>PortaIdentidade</code>). Cada fornecedor ganha um adaptador que traduz o modelo dele para o nosso (camada anticorrupção). Em desenvolvimento e teste roda um adaptador falso, sem rede.</p>
+<p><strong>Alternativas descartadas.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Alternativa</th>
+<th>Por que não</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Usar o SDK do parceiro direto nos serviços</td>
+<td>Prende o domínio ao parceiro. Trocar de parceiro (R04) obrigaria a reescrever Pix, boleto e conta</td>
+</tr>
+<tr>
+<td>Contratar um agregador de vários bancos</td>
+<td>Coloca mais um intermediário cobrando por transação. Não elimina a dependência, só muda de fornecedor</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Consequências.</strong> Trocar de parceiro vira escrever um adaptador novo. O dev pode rodar tudo no localhost sem contrato assinado. Custo: uma camada a mais de tradução para manter.</p>
+<hr />
+<h3 id="s41">ADR-003 · REST com JSON e contrato OpenAPI 3.0</h3>
+<p><strong>Contexto.</strong> Os clientes da API são o app mobile e os painéis web. Os parceiros BaaS do mercado expõem REST e avisam eventos por webhook HTTP. O enunciado pede contrato OpenAPI 3.0 (Bloco 8).</p>
+<p><strong>Decisão.</strong> API REST com JSON, versionada no caminho (<code>/v1</code>), descrita em OpenAPI 3.0. Operações que movem dinheiro exigem o cabeçalho <code>Idempotency-Key</code>.</p>
+<p><strong>Alternativas descartadas.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Alternativa</th>
+<th>Por que não</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>gRPC</td>
+<td>O ganho de desempenho do protocolo binário não é necessário para 100 req/s com p95 de 300 ms (RNF01). Navegador não fala gRPC sem proxy, e os painéis web precisariam de gRPC-Web. Webhooks do parceiro são HTTP de qualquer forma</td>
+</tr>
+<tr>
+<td>GraphQL</td>
+<td>As telas são simples e fixas, por isso não há o problema de buscar dados demais. Dificulta cache e limite por rota no WAF. Idempotência por operação é mais natural em REST</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Consequências.</strong> O cliente do app é gerado a partir do OpenAPI, então o contrato não diverge do código. Ferramentas de teste e de documentação (Swagger UI) prontas.</p>
+<hr />
+<h3 id="s42">ADR-004 · Backend em TypeScript com NestJS sobre Node.js 22</h3>
+<p><strong>Contexto.</strong> A carga é de entrada e saída (banco, parceiro, voz), não de cálculo pesado. Precisamos de tipagem forte para dinheiro e de módulos com fronteira clara (ADR-001). O app mobile é em TypeScript (ADR-005). Cada tarefa no Fargate tem 1 GB de memória (custo do Bloco 1).</p>
+<p><strong>Decisão.</strong> Node.js 22 LTS, TypeScript em modo estrito e framework NestJS. Valores em dinheiro sempre em centavos inteiros (<code>bigint</code> no banco).</p>
+<p><strong>Alternativas descartadas.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Alternativa</th>
+<th>Por que não</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Java 21 com Spring Boot</td>
+<td>Muito usado em bancos e igualmente adequado. Descartado porque uma aplicação Spring com JVM costuma precisar de mais memória por tarefa que os 1 GB custeados, e porque exigiria uma segunda linguagem na equipe: os tipos do contrato não seriam compartilhados com o app</td>
+</tr>
+<tr>
+<td>Go</td>
+<td>Ótimo desempenho e baixo consumo de memória, mas sem framework modular equivalente ao NestJS: módulos, injeção de dependência e validação teriam de ser montados à mão. Mesma questão da segunda linguagem</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Consequências.</strong> Uma linguagem só no app, na API e no worker. O NestJS dá módulos, injeção de dependência (que permite trocar adaptadores do ADR-002) e validação de entrada. Cuidado: número em JavaScript perde precisão acima de 2^53, por isso dinheiro trafega como inteiro em centavos e o banco usa <code>bigint</code>.</p>
+<hr />
+<h3 id="s43">ADR-005 · App em React Native com Expo</h3>
+<p><strong>Contexto.</strong> Android e iOS (RNF10), celular de entrada com 3 GB de RAM, leitor de tela TalkBack e VoiceOver obrigatório (RNF09), câmera para boleto (RF013), biometria (RF003).</p>
+<p><strong>Decisão.</strong> React Native com Expo, em TypeScript.</p>
+<p><strong>Alternativas descartadas.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Alternativa</th>
+<th>Por que não</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Flutter</td>
+<td>Desenha a própria interface em vez de usar os componentes nativos, então a acessibilidade depende de anotar a árvore de semântica em cada widget. No React Native os componentes já são os nativos e o TalkBack e o VoiceOver os leem sem trabalho extra, que é o RNF mais importante do produto. Também usaria Dart, uma segunda linguagem</td>
+</tr>
+<tr>
+<td>Dois apps nativos (Kotlin e Swift)</td>
+<td>Melhor acesso a cada plataforma, mas dobra o trabalho mobile e exige dois perfis diferentes na equipe</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Consequências.</strong> Um código para os dois sistemas. Biometria, câmera e armazenamento seguro (Keystore e Keychain) por bibliotecas do Expo. Atualização de correção sem esperar a loja (EAS Update), útil para corrigir texto de acessibilidade.</p>
+<hr />
+<h3 id="s44">ADR-006 · PostgreSQL 17 no Amazon RDS Multi-AZ</h3>
+<p><strong>Contexto.</strong> Dinheiro exige transação ACID entre várias linhas (RNF11), chaves estrangeiras e restrições. Disponibilidade de 99,9% (RNF03) e RPO de 5 minutos (RNF12).</p>
+<p><strong>Decisão.</strong> PostgreSQL 17 gerenciado no Amazon RDS, com réplica síncrona em outra zona (Multi-AZ). A comparação completa com a alternativa descartada e o modelo estão no Bloco 5.</p>
+<p><strong>Alternativas descartadas.</strong> MongoDB (documento) e Amazon Aurora PostgreSQL. Motivos detalhados no Bloco 5, item 5.1.</p>
+<p><strong>Consequências.</strong> Failover automático para a réplica. Backup com restauração a qualquer ponto dos últimos 35 dias. Custo já no Bloco 1 (US$ 227,40 por mês em produção).</p>
+<hr />
+<h3 id="s45">ADR-007 · Razão contábil com partidas dobradas</h3>
+<p><strong>Contexto.</strong> Saldo errado é o pior erro possível para o público do Rufus. A diferença entre o nosso registro e o do parceiro precisa ser detectada em até 24 horas (RNF11).</p>
+<p><strong>Decisão.</strong> Toda movimentação gera lançamentos em partidas dobradas: cada transação tem pelo menos um débito e um crédito, e a soma é zero. O saldo de uma carteira é a soma dos lançamentos dela, nunca um número editado. Um gatilho no banco recusa transação desequilibrada.</p>
+<p><strong>Alternativas descartadas.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Alternativa</th>
+<th>Por que não</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Coluna <code>saldo</code> atualizada a cada operação</td>
+<td>Duas operações ao mesmo tempo podem sobrescrever uma à outra, e quando o saldo diverge não há trilha para explicar o porquê</td>
+</tr>
+<tr>
+<td>Guardar só o saldo informado pelo parceiro</td>
+<td>Deixa o Rufus sem registro próprio para conciliar e para mostrar o extrato quando o parceiro está fora</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Consequências.</strong> Extrato e auditoria saem do mesmo registro. A conciliação diária compara a soma por carteira com o extrato do parceiro. Custo: a consulta de saldo soma lançamentos; com índice por carteira e saldo de fechamento diário, fica dentro dos 300 ms (RNF01).</p>
+<hr />
+<h3 id="s46">ADR-008 · Eventos por outbox transacional no próprio PostgreSQL</h3>
+<p><strong>Contexto.</strong> Depois de um Pix é preciso enviar ao parceiro, notificar o cliente, avisar o contato de confiança e o responsável. Se a API gravar o Pix e cair antes de avisar, o aviso se perde. Se avisar antes de gravar, avisa algo que não aconteceu.</p>
+<p><strong>Decisão.</strong> Padrão Transactional Outbox: na mesma transação que grava o Pix, a API grava o evento na tabela <code>outbox_evento</code>. O worker lê os eventos pendentes com <code>FOR UPDATE SKIP LOCKED</code>, executa e marca como processado, com nova tentativa e espera crescente em caso de erro.</p>
+<p><strong>Alternativas descartadas.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Alternativa</th>
+<th>Por que não</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Amazon SQS</td>
+<td>Gravar no banco e publicar na fila são duas operações que podem falhar separadas, e o problema voltaria. Seria preciso o outbox de qualquer forma</td>
+</tr>
+<tr>
+<td>Kafka (Amazon MSK)</td>
+<td>Feito para milhões de eventos por segundo. Para o volume do Rufus seria um cluster caro e mais uma peça para operar</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Consequências.</strong> Garantia de "pelo menos uma vez": cada consumidor é idempotente. Nenhum serviço novo na infraestrutura do Bloco 1. Se o volume crescer muito, o worker pode passar a publicar do outbox para uma fila.</p>
+<hr />
+<h3 id="s47">ADR-009 · Containers no ECS Fargate</h3>
+<p><strong>Contexto.</strong> Duas cargas: a API, sempre ligada e com p95 de 300 ms (RNF01), e o worker, que fica lendo o outbox (ADR-008). 99,9% exige pelo menos 2 zonas (RNF03).</p>
+<p><strong>Decisão.</strong> Amazon ECS com Fargate: containers sem gerenciar servidor, 2 tarefas da API (uma por zona) e 1 do worker, com auto scaling de 2 a 6 tarefas da API.</p>
+<p><strong>Alternativas descartadas.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Alternativa</th>
+<th>Por que não</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Kubernetes (EKS)</td>
+<td>O plano de controle custa US$ 0,10 por hora por cluster em São Paulo, US$ 73 por mês, e seriam 2 clusters (produção e homologação). Exige uma pessoa que domine Kubernetes. Os recursos extras não são usados por 2 serviços</td>
+</tr>
+<tr>
+<td>AWS Lambda</td>
+<td>O worker fica em execução contínua e a API mantém conexões com o PostgreSQL. Em Lambda, a partida a frio ameaça o p95 de 300 ms e cada execução abriria conexão nova com o banco, exigindo RDS Proxy</td>
+</tr>
+<tr>
+<td>EC2 com Docker</td>
+<td>Mais barato por hora, mas a equipe teria de cuidar de sistema operacional, atualização de segurança e substituição de máquina com defeito</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Consequências.</strong> O mesmo container roda no localhost (Docker Compose) e na AWS. Custo de containers no Bloco 1: US$ 62,00 por mês em produção.</p>
+<hr />
+<h3 id="s48">ADR-010 · Autenticação própria com JWT curto e celular vinculado</h3>
+<p><strong>Contexto.</strong> Só um celular ativo por conta e troca de aparelho com selfie (RF005). Senha de 6 números e biometria (RF003, RF004). Sessão segura (RNF05). Funcionários precisam de papéis diferentes (RF030) e de segundo fator.</p>
+<p><strong>Decisão.</strong> Módulo de identidade próprio. No cadastro o app gera um par de chaves no Keystore ou Keychain do celular e envia a chave pública. O login exige senha (guardada com Argon2id) e a assinatura do aparelho. A API emite token de acesso JWT de 15 minutos e token de renovação de 30 dias, trocado a cada uso e guardado só como hash. A biometria destrava a chave no celular e nunca sai dele. Funcionários entram com senha e código TOTP e recebem papéis (RBAC). A relação entre menor e responsável é checada por atributo do vínculo (ABAC).</p>
+<p><strong>Alternativas descartadas.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Alternativa</th>
+<th>Por que não</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Amazon Cognito</td>
+<td>Resolve usuário e senha, mas não tem vínculo de um único aparelho com assinatura por chave do celular nem as regras de menor e responsável. Teríamos de escrever essas regras de qualquer forma, e com duas fontes de verdade</td>
+</tr>
+<tr>
+<td>Sessão no servidor com cookie</td>
+<td>App mobile não usa cookie de forma natural e cada requisição consultaria a sessão no banco</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Consequências.</strong> Controle total do fluxo de troca de aparelho, que é a principal barreira contra golpe (R01). Responsabilidade maior: o módulo de identidade tem a meta de cobertura de testes mais alta (Bloco 9).</p>
+<hr />
+<h3 id="s49">ADR-011 · Voz gerada no servidor, com cache</h3>
+<p><strong>Contexto.</strong> Toda tela precisa poder ser ouvida (RF007, RNF09). Os celulares de entrada nem sempre têm voz em português instalada e a qualidade varia de aparelho para aparelho.</p>
+<p><strong>Decisão.</strong> A API gera o áudio com o Amazon Polly. Frases fixas (instruções de tela) são geradas uma vez e guardadas no S3. Frases com dados (saldo, nome do recebedor) são geradas na hora e não são guardadas. Se o celular estiver sem internet, o app usa a voz do próprio aparelho.</p>
+<p><strong>Alternativas descartadas.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Alternativa</th>
+<th>Por que não</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Só a voz do celular</td>
+<td>Custo zero, mas a voz pode faltar ou soar diferente em cada aparelho. Para quem depende do áudio, a voz é a interface</td>
+</tr>
+<tr>
+<td>Gravar todas as frases com locutor</td>
+<td>Não cobre frases com dados (valores, nomes)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Consequências.</strong> Mesma voz em todos os aparelhos. Custo no Bloco 1: US$ 48 por mês para 12 milhões de caracteres. A tabela de preços de São Paulo lista só a voz padrão do Polly; a voz neural fica como melhoria.</p>
+<hr />
+<h3 id="s50">ADR-012 · Painéis internos servidos pela própria API</h3>
+<p><strong>Contexto.</strong> SAC, antifraude e administração precisam de painéis web (RF025, RF027, RF030). São poucos usuários internos.</p>
+<p><strong>Decisão.</strong> Uma aplicação React (Vite) compilada como arquivos estáticos e servida pela API em <code>/admin</code>. O acesso ao caminho <code>/admin</code> só é aceito a partir dos IPs da empresa (regra do WAF), com senha e TOTP.</p>
+<p><strong>Alternativas descartadas.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Alternativa</th>
+<th>Por que não</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hospedar no S3 com CloudFront</td>
+<td>Mais uma distribuição para configurar e proteger, para poucos usuários internos</td>
+</tr>
+<tr>
+<td>Ferramenta pronta de painel (low-code)</td>
+<td>Os dados de cliente sairiam para um terceiro, o que piora o risco R02 e a LGPD</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Consequências.</strong> Nenhum serviço novo na infraestrutura. O painel usa a mesma API, com rotas <code>/v1/admin</code> protegidas por papel.</p>
+<hr />
+<h3 id="s51">ADR-013 · AWS na região de São Paulo</h3>
+<p><strong>Contexto.</strong> Os dados são de brasileiros, incluindo menores e biometria. A latência para o usuário afeta o RNF01. Todos os serviços da arquitetura precisam estar na mesma região.</p>
+<p><strong>Decisão.</strong> AWS, região sa-east-1 (São Paulo), para todos os ambientes em nuvem.</p>
+<p><strong>Alternativas descartadas.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Alternativa</th>
+<th>Por que não</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Região dos EUA (us-east-1), mais barata</td>
+<td>Dados pessoais fora do país pedem salvaguardas de transferência internacional na LGPD (art. 33) e somam latência de ida e volta a cada requisição</td>
+</tr>
+<tr>
+<td>Outra nuvem com região em São Paulo (GCP ou Azure)</td>
+<td>Também atenderia à latência. Ficamos com a AWS porque todos os serviços escolhidos (Fargate, RDS PostgreSQL Multi-AZ, Polly, WAF, Secrets Manager) existem na região de São Paulo e têm preço publicado na tabela oficial, que o script do Bloco 1 consulta para recalcular o custo a cada mudança</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Consequências.</strong> Preço mais alto que nos EUA, já refletido no custo do Bloco 1.</p></section><section class="arquivo"><h2 id="s52">3.3 Stack tecnológica</h2>
+<p>Todas as camadas, cada uma com a escolha, a alternativa descartada e o motivo técnico, ligado ao requisito ou ao ADR de onde veio.</p>
+<table>
+<thead>
+<tr>
+<th>Camada</th>
+<th>Escolha</th>
+<th>Alternativa descartada</th>
+<th>Motivo técnico</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>App mobile</td>
+<td>React Native 0.8x com Expo SDK, TypeScript</td>
+<td>Flutter</td>
+<td>Componentes nativos lidos pelo TalkBack e VoiceOver sem anotação extra (RNF09). Mesma linguagem da API (ADR-005)</td>
+</tr>
+<tr>
+<td>Armazenamento seguro no celular</td>
+<td>Expo SecureStore (Keystore no Android, Keychain no iOS)</td>
+<td>AsyncStorage</td>
+<td>Token e chave do aparelho precisam de armazenamento cifrado pelo sistema (RNF05, ADR-010)</td>
+</tr>
+<tr>
+<td>Biometria</td>
+<td>expo-local-authentication</td>
+<td>Biometria própria</td>
+<td>A biometria nativa não tira o dado do celular. Nada biométrico chega ao servidor (risco R08)</td>
+</tr>
+<tr>
+<td>Leitura de boleto</td>
+<td>expo-camera com leitura de código de barras</td>
+<td>Biblioteca de terceiros paga</td>
+<td>Lê o padrão ITF dos boletos sem custo por leitura (RF013)</td>
+</tr>
+<tr>
+<td>Painéis internos</td>
+<td>React 19 com Vite, TypeScript</td>
+<td>Next.js</td>
+<td>Painel interno não precisa de renderização no servidor nem de SEO. Arquivos estáticos servidos pela API (ADR-012)</td>
+</tr>
+<tr>
+<td>API</td>
+<td>Node.js 22 LTS, NestJS 11, TypeScript estrito</td>
+<td>Java 21 com Spring Boot</td>
+<td>Cabe em 1 GB por tarefa, mesma linguagem do app, módulos com injeção de dependência (ADR-004)</td>
+</tr>
+<tr>
+<td>Validação de entrada</td>
+<td>class-validator com DTOs do NestJS</td>
+<td>Validação manual</td>
+<td>Toda entrada validada antes do domínio, que é o item A03 (injeção) da OWASP</td>
+</tr>
+<tr>
+<td>Acesso a dados</td>
+<td>Kysely (construtor de SQL tipado) com SQL explícito</td>
+<td>ORM completo (TypeORM ou Prisma)</td>
+<td>O razão contábil usa gatilho, <code>SELECT ... FOR UPDATE</code> e <code>SKIP LOCKED</code> (ADR-007, ADR-008). SQL explícito evita consulta escondida pelo ORM e deixa o p95 previsível (RNF01)</td>
+</tr>
+<tr>
+<td>Migrações</td>
+<td>Arquivos SQL versionados executados pelo node-pg-migrate</td>
+<td>Migração automática do ORM</td>
+<td>Migração revisada linha a linha e no padrão expandir e contrair, sem parar o sistema (Bloco 5)</td>
+</tr>
+<tr>
+<td>Banco de dados</td>
+<td>PostgreSQL 17 no Amazon RDS Multi-AZ</td>
+<td>MongoDB</td>
+<td>Transação ACID entre várias linhas, chave estrangeira e restrição (RNF11, ADR-006, Bloco 5)</td>
+</tr>
+<tr>
+<td>Fila de eventos</td>
+<td>Tabela outbox no PostgreSQL e worker</td>
+<td>Amazon SQS</td>
+<td>Gravar o dado e o evento na mesma transação (ADR-008)</td>
+</tr>
+<tr>
+<td>Voz</td>
+<td>Amazon Polly e cache no S3</td>
+<td>Só a voz do celular</td>
+<td>Mesma voz em todos os aparelhos (ADR-011)</td>
+</tr>
+<tr>
+<td>Notificação push</td>
+<td>Expo Push (sobre FCM e APNs)</td>
+<td>Amazon SNS mobile push</td>
+<td>Já integrado ao Expo, sem custo por mensagem</td>
+</tr>
+<tr>
+<td>Autenticação</td>
+<td>Módulo próprio: Argon2id, JWT de 15 min, renovação de 30 dias, chave do aparelho</td>
+<td>Amazon Cognito</td>
+<td>Vínculo de um único aparelho e regras de menor e responsável (ADR-010)</td>
+</tr>
+<tr>
+<td>Log</td>
+<td>pino com saída em JSON para o CloudWatch Logs</td>
+<td>Log em texto livre</td>
+<td>Log estruturado com identificador de correlação em 100% das requisições (RNF13)</td>
+</tr>
+<tr>
+<td>Containers</td>
+<td>Docker com build em múltiplos estágios</td>
+<td>Imagem única com ferramentas de build</td>
+<td>Imagem final menor e sem compilador, menos superfície de ataque (RNF06)</td>
+</tr>
+<tr>
+<td>Execução na nuvem</td>
+<td>Amazon ECS com Fargate</td>
+<td>Kubernetes (EKS)</td>
+<td>Sem custo de plano de controle e sem operar cluster (ADR-009)</td>
+</tr>
+<tr>
+<td>Rede e borda</td>
+<td>Application Load Balancer com AWS WAF</td>
+<td>Exposição direta das tarefas</td>
+<td>TLS na borda, distribuição entre 2 zonas (RNF03) e regras contra ataques comuns (R02)</td>
+</tr>
+<tr>
+<td>Segredos</td>
+<td>AWS Secrets Manager</td>
+<td>Variável de ambiente no código</td>
+<td>Segredo fora do repositório, com rotação (R02)</td>
+</tr>
+<tr>
+<td>Infraestrutura como código</td>
+<td>Terraform</td>
+<td>Criar recursos pelo console</td>
+<td>Ambientes reproduzíveis e revisados em pull request. Homologação e produção com o mesmo código</td>
+</tr>
+<tr>
+<td>CI/CD</td>
+<td>GitHub Actions</td>
+<td>Jenkins</td>
+<td>O código já está no GitHub e não há servidor de CI para manter</td>
+</tr>
+<tr>
+<td>Testes</td>
+<td>Jest (unidade e integração), Testcontainers (PostgreSQL real), Maestro (E2E mobile), k6 (carga)</td>
+<td>Mock do banco em todos os testes</td>
+<td>O razão e o outbox só são testados de verdade contra um PostgreSQL real (Bloco 9)</td>
+</tr>
+<tr>
+<td>Desenvolvimento local</td>
+<td>Docker Compose</td>
+<td>Ambiente compartilhado na nuvem</td>
+<td>Custo zero de desenvolvimento (Bloco 1) e cada dev com o próprio banco</td>
+</tr>
+</tbody>
+</table></section><section class="arquivo"><h2 id="s53">3.4 Padrões de design</h2>
+<p>Quais padrões o Rufus aplica, onde e por quê. No fim, os padrões que avaliamos e <strong>não</strong> aplicamos, também com o motivo.</p>
+<h3 id="s54">Aplicados</h3>
+<table>
+<thead>
+<tr>
+<th>Padrão</th>
+<th>Onde</th>
+<th>Por quê</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Monolito modular</td>
+<td>Estrutura da API: módulos <code>identidade</code>, <code>contas</code>, <code>pagamentos</code>, <code>familia</code>, <code>antifraude</code>, <code>atendimento</code>, <code>notificacao</code>, <code>backoffice</code></td>
+<td>Fronteiras claras sem o custo de microsserviços (ADR-001)</td>
+</tr>
+<tr>
+<td>Portas e Adaptadores (hexagonal)</td>
+<td><code>PortaBancaria</code>, <code>PortaVoz</code>, <code>PortaNotificacao</code>, <code>PortaIdentidade</code>, cada uma com adaptador real e falso</td>
+<td>Trocar de parceiro BaaS sem tocar no domínio (R04, ADR-002) e rodar tudo no localhost</td>
+</tr>
+<tr>
+<td>Adapter (camada anticorrupção)</td>
+<td><code>AdaptadorBaasHttp</code> traduz o modelo do parceiro para <code>Transacao</code> e <code>Conta</code></td>
+<td>O modelo do fornecedor não vaza para o domínio</td>
+</tr>
+<tr>
+<td>Repository</td>
+<td>Um repositório por agregado: <code>ContaRepository</code>, <code>TransacaoRepository</code>, <code>ChamadoRepository</code></td>
+<td>O domínio não conhece SQL. Nos testes de unidade o repositório é trocado por um em memória</td>
+</tr>
+<tr>
+<td>Unit of Work</td>
+<td><code>UnidadeDeTrabalho</code> abre a transação do banco e passa os repositórios para o caso de uso</td>
+<td>Pix, lançamentos e evento do outbox gravados juntos ou nada (RNF11)</td>
+</tr>
+<tr>
+<td>Transactional Outbox</td>
+<td>Tabela <code>outbox_evento</code> gravada na mesma transação, lida pelo worker</td>
+<td>Evento nunca perdido nem enviado sem o dado gravado (ADR-008)</td>
+</tr>
+<tr>
+<td>Saga orquestrada</td>
+<td>Envio de Pix: reservar saldo, enviar ao parceiro, confirmar ou compensar (estorno da reserva)</td>
+<td>A operação envolve um sistema externo que pode falhar no meio. A compensação devolve o dinheiro ao cliente (diagrama de sequência do erro crítico, Bloco 4)</td>
+</tr>
+<tr>
+<td>Idempotency Key</td>
+<td>Cabeçalho <code>Idempotency-Key</code> em <code>POST /v1/pix/envios</code> e <code>POST /v1/boletos/pagamentos</code>, com restrição única no banco</td>
+<td>Zero Pix duplicado (RNF11, US07)</td>
+</tr>
+<tr>
+<td>State</td>
+<td>Ciclo de vida de <code>Transacao</code>: PENDENTE, RETIDA, ENVIADA, CONCLUIDA, RECUSADA, ESTORNADA</td>
+<td>Cada estado define quais transições são válidas. Impede, por exemplo, estornar um Pix já recusado</td>
+</tr>
+<tr>
+<td>Strategy</td>
+<td>Regras do antifraude (<code>RegraDestinatarioNovo</code>, <code>RegraHorarioNoturno</code>, <code>RegraValorForaDoPadrao</code>) implementam <code>RegraRisco</code></td>
+<td>Regra nova entra sem mexer no motor. Cada regra é testada sozinha</td>
+</tr>
+<tr>
+<td>Factory</td>
+<td><code>FabricaDeConta</code> cria conta de titular ou de menor, já com limites e vínculo corretos</td>
+<td>Conta de menor tem regras diferentes (RF014, RF015) e não pode nascer sem vínculo</td>
+</tr>
+<tr>
+<td>Domain Events (Observer)</td>
+<td><code>PixConcluido</code>, <code>ContaBloqueada</code>, <code>PedidoAprovacaoCriado</code> publicados no outbox</td>
+<td>Notificação, contato de confiança e responsável reagem sem que o módulo de pagamentos conheça cada um</td>
+</tr>
+<tr>
+<td>Circuit Breaker com nova tentativa</td>
+<td>Chamadas ao parceiro BaaS e ao Polly</td>
+<td>Se o parceiro cair, a API para de insistir por 30 s, responde rápido ao cliente e não esgota as conexões (RNF02)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="s55">Avaliados e não aplicados</h3>
+<table>
+<thead>
+<tr>
+<th>Padrão</th>
+<th>Por que não agora</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CQRS com banco de leitura separado</td>
+<td>A leitura (saldo e extrato) cabe no p95 de 300 ms com índice e saldo de fechamento diário. Um segundo banco aumentaria custo e criaria atraso entre escrita e leitura, ruim para quem confere o saldo logo depois do Pix</td>
+</tr>
+<tr>
+<td>Event Sourcing completo</td>
+<td>O razão com partidas dobradas (ADR-007) já guarda o histórico do dinheiro. Reconstruir todo o estado a partir de eventos traria complexidade sem requisito que peça</td>
+</tr>
+<tr>
+<td>Saga coreografada</td>
+<td>Com um fluxo central (Pix) e poucos participantes, a saga orquestrada deixa o passo a passo visível num lugar só, mais fácil de testar e de explicar</td>
+</tr>
+</tbody>
+</table></section><section class="arquivo"><h2 id="s56">3.5 Modelo de domínio (fonte única)</h2>
+<p>Este arquivo é a <strong>fonte única</strong> das entidades, atributos, tipos e relações do Rufus. O diagrama de classes (Bloco 4), o banco de dados (Bloco 5), o contrato OpenAPI (Bloco 8) e o glossário (Bloco 9) seguem exatamente estes nomes. Mudou aqui, muda lá.</p>
+<p>Convenções: nomes de classe em PascalCase e de atributo em camelCase no código; no banco, tabelas e colunas em snake_case com os mesmos nomes. Dinheiro sempre em centavos inteiros (<code>valorCentavos: Long</code>, <code>bigint</code> no banco). Identificadores são <code>UUID</code>. Datas e horas em <code>Instant</code> (UTC, <code>timestamptz</code>).</p>
+<h3 id="s57">Módulos e entidades</h3>
+<table>
+<thead>
+<tr>
+<th>Módulo</th>
+<th>Entidades que ele é dono (só ele escreve)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>identidade</td>
+<td>Cliente, Dispositivo, Credencial, SessaoRenovacao, Consentimento</td>
+</tr>
+<tr>
+<td>contas</td>
+<td>Conta, Carteira, Lancamento</td>
+</tr>
+<tr>
+<td>pagamentos</td>
+<td>Transacao (e subtipos PixEnvio, PixRecebimento, PagamentoBoleto, MovimentoMeta), ChavePix, Meta</td>
+</tr>
+<tr>
+<td>familia</td>
+<td>VinculoResponsavel, PedidoAprovacao, ContatoConfianca</td>
+</tr>
+<tr>
+<td>antifraude</td>
+<td>AnaliseRisco</td>
+</tr>
+<tr>
+<td>atendimento</td>
+<td>Chamado, MensagemChamado</td>
+</tr>
+<tr>
+<td>backoffice</td>
+<td>Funcionario, RegistroAuditoria</td>
+</tr>
+<tr>
+<td>notificacao</td>
+<td>Notificacao, OutboxEvento, LembreteConta</td>
+</tr>
+</tbody>
+</table>
+<h3 id="s58">Entidades</h3>
+<h4 id="s59">Cliente (identidade)</h4>
+<table>
+<thead>
+<tr>
+<th>Atributo</th>
+<th>Tipo</th>
+<th>Regra</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>UUID</td>
+<td></td>
+</tr>
+<tr>
+<td>nomeCompleto</td>
+<td>String</td>
+<td></td>
+</tr>
+<tr>
+<td>cpf</td>
+<td>Cpf</td>
+<td>Único. Cifrado em repouso, com hash para busca. PII</td>
+</tr>
+<tr>
+<td>dataNascimento</td>
+<td>LocalDate</td>
+<td>Cifrado. PII</td>
+</tr>
+<tr>
+<td>celular</td>
+<td>String</td>
+<td>PII</td>
+</tr>
+<tr>
+<td>email</td>
+<td>String</td>
+<td>Opcional. PII</td>
+</tr>
+<tr>
+<td>tipo</td>
+<td>TipoCliente</td>
+<td>TITULAR ou MENOR</td>
+</tr>
+<tr>
+<td>status</td>
+<td>StatusCliente</td>
+<td>EM_ANALISE, ATIVO, BLOQUEADO, ENCERRADO</td>
+</tr>
+<tr>
+<td>criadoEm</td>
+<td>Instant</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h4 id="s59">Dispositivo (identidade)</h4>
+<table>
+<thead>
+<tr>
+<th>Atributo</th>
+<th>Tipo</th>
+<th>Regra</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>UUID</td>
+<td></td>
+</tr>
+<tr>
+<td>clienteId</td>
+<td>UUID</td>
+<td>Só 1 ativo por cliente (RF005)</td>
+</tr>
+<tr>
+<td>modelo</td>
+<td>String</td>
+<td></td>
+</tr>
+<tr>
+<td>chavePublica</td>
+<td>String</td>
+<td>Chave gerada no Keystore/Keychain (ADR-010)</td>
+</tr>
+<tr>
+<td>ativo</td>
+<td>Boolean</td>
+<td></td>
+</tr>
+<tr>
+<td>vinculadoEm</td>
+<td>Instant</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h4 id="s59">Credencial (identidade)</h4>
+<p><code>clienteId: UUID</code> (1 para 1 com Cliente), <code>hashSenha: String</code> (Argon2id), <code>tentativasErradas: Integer</code>, <code>bloqueadaAte: Instant</code> (opcional).</p>
+<h4 id="s59">SessaoRenovacao (identidade)</h4>
+<p><code>id: UUID</code>, <code>dispositivoId: UUID</code>, <code>hashToken: String</code>, <code>expiraEm: Instant</code>, <code>revogadaEm: Instant</code> (opcional).</p>
+<h4 id="s59">Consentimento (identidade)</h4>
+<p><code>id: UUID</code>, <code>clienteId: UUID</code>, <code>tipo: TipoConsentimento</code> (TERMOS_DE_USO, PRIVACIDADE, BIOMETRIA, RESPONSAVEL_LEGAL), <code>versaoTermo: String</code>, <code>aceitoEm: Instant</code>, <code>aceitoPorClienteId: UUID</code> (o próprio ou o responsável).</p>
+<h4 id="s59">Conta (contas)</h4>
+<table>
+<thead>
+<tr>
+<th>Atributo</th>
+<th>Tipo</th>
+<th>Regra</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>UUID</td>
+<td></td>
+</tr>
+<tr>
+<td>clienteId</td>
+<td>UUID</td>
+<td>1 conta por cliente</td>
+</tr>
+<tr>
+<td>agencia</td>
+<td>String</td>
+<td>Dado do parceiro</td>
+</tr>
+<tr>
+<td>numero</td>
+<td>String</td>
+<td>Único</td>
+</tr>
+<tr>
+<td>idContaParceiro</td>
+<td>String</td>
+<td>Identificador no parceiro BaaS</td>
+</tr>
+<tr>
+<td>status</td>
+<td>StatusConta</td>
+<td>ATIVA, BLOQUEADA_TOTAL, ENCERRADA</td>
+</tr>
+<tr>
+<td>bloqueadaEm</td>
+<td>Instant</td>
+<td>Opcional. Preenchido pelo "bloquear tudo agora" (RF020)</td>
+</tr>
+<tr>
+<td>criadaEm</td>
+<td>Instant</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h4 id="s59">Carteira (contas)</h4>
+<p><code>id: UUID</code>, <code>contaId: UUID</code> (vazio nas carteiras técnicas), <code>tipo: TipoCarteira</code> (PRINCIPAL, META, LIQUIDACAO_PIX, LIQUIDACAO_BOLETO). Toda conta tem 1 carteira PRINCIPAL e 1 carteira META por meta. As carteiras de liquidação são do sistema e representam o dinheiro em trânsito com o parceiro.</p>
+<h4 id="s59">Lancamento (contas)</h4>
+<p><code>id: UUID</code>, <code>transacaoId: UUID</code>, <code>carteiraId: UUID</code>, <code>valorCentavos: Long</code> (positivo = crédito, negativo = débito, nunca zero), <code>criadoEm: Instant</code>. <strong>A soma dos lançamentos de uma transação é sempre zero</strong> (ADR-007). Saldo da carteira = soma dos seus lançamentos.</p>
+<h4 id="s59">Transacao (pagamentos), classe abstrata</h4>
+<table>
+<thead>
+<tr>
+<th>Atributo</th>
+<th>Tipo</th>
+<th>Regra</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>UUID</td>
+<td></td>
+</tr>
+<tr>
+<td>contaId</td>
+<td>UUID</td>
+<td></td>
+</tr>
+<tr>
+<td>tipo</td>
+<td>TipoTransacao</td>
+<td>PIX_ENVIO, PIX_RECEBIMENTO, BOLETO, META_GUARDAR, META_RESGATAR</td>
+</tr>
+<tr>
+<td>valorCentavos</td>
+<td>Long</td>
+<td>Maior que zero</td>
+</tr>
+<tr>
+<td>status</td>
+<td>StatusTransacao</td>
+<td>PENDENTE, RETIDA, ENVIADA, CONCLUIDA, RECUSADA, ESTORNADA</td>
+</tr>
+<tr>
+<td>chaveIdempotencia</td>
+<td>String</td>
+<td>Única por conta (RNF11)</td>
+</tr>
+<tr>
+<td>idParceiro</td>
+<td>String</td>
+<td>Opcional. Identificador fim a fim no parceiro</td>
+</tr>
+<tr>
+<td>criadaEm</td>
+<td>Instant</td>
+<td></td>
+</tr>
+<tr>
+<td>concluidaEm</td>
+<td>Instant</td>
+<td>Opcional</td>
+</tr>
+</tbody>
+</table>
+<p>Subtipos (herança, porque um Pix <strong>é uma</strong> transação e compartilha o ciclo de vida e os lançamentos):
+- <strong>PixEnvio</strong>: <code>chaveDestino: String</code>, <code>nomeRecebedor: String</code>, <code>documentoRecebedorMascarado: String</code>, <code>bancoRecebedor: String</code>, <code>destinatarioNovo: Boolean</code>.
+- <strong>PixRecebimento</strong>: <code>nomePagador: String</code>, <code>bancoPagador: String</code>.
+- <strong>PagamentoBoleto</strong>: <code>linhaDigitavel: String</code>, <code>beneficiario: String</code>, <code>vencimento: LocalDate</code>, <code>jurosCentavos: Long</code>.
+- <strong>MovimentoMeta</strong>: <code>metaId: UUID</code>.</p>
+<h4 id="s59">ChavePix (pagamentos)</h4>
+<p><code>id: UUID</code>, <code>contaId: UUID</code>, <code>tipo: TipoChavePix</code> (CPF, CELULAR, ALEATORIA), <code>valor: String</code> (único), <code>status: StatusChavePix</code> (ATIVA, EXCLUIDA), <code>criadaEm: Instant</code>.</p>
+<h4 id="s59">Meta (pagamentos)</h4>
+<p><code>id: UUID</code>, <code>contaId: UUID</code>, <code>carteiraId: UUID</code> (a carteira META, criada junto, composição), <code>nome: String</code>, <code>valorAlvoCentavos: Long</code>, <code>dataAlvo: LocalDate</code>, <code>imagemUrl: String</code>, <code>status: StatusMeta</code> (ATIVA, CONCLUIDA, CANCELADA).</p>
+<h4 id="s59">VinculoResponsavel (familia)</h4>
+<p><code>id: UUID</code>, <code>menorClienteId: UUID</code> (único), <code>responsavelClienteId: UUID</code>, <code>status: StatusVinculo</code> (CONVIDADO, ATIVO, ENCERRADO), <code>limiteDiarioCentavos: Long</code>, <code>limiteMensalCentavos: Long</code>, <code>convidadoEm: Instant</code>, <code>aceitoEm: Instant</code>, <code>expiraEm: Instant</code> (convite vale 7 dias, US09).</p>
+<h4 id="s59">PedidoAprovacao (familia)</h4>
+<p><code>id: UUID</code>, <code>vinculoId: UUID</code>, <code>transacaoId: UUID</code>, <code>status: StatusPedido</code> (PENDENTE, APROVADO, RECUSADO, EXPIRADO), <code>criadoEm: Instant</code>, <code>expiraEm: Instant</code> (24 horas, US18), <code>decididoEm: Instant</code>.</p>
+<h4 id="s59">ContatoConfianca (familia)</h4>
+<p><code>id: UUID</code>, <code>clienteId: UUID</code>, <code>nome: String</code> (PII), <code>celular: String</code> (PII), <code>status: StatusContato</code> (CONVIDADO, ATIVO, REMOVIDO), <code>aceitoEm: Instant</code>.</p>
+<h4 id="s59">AnaliseRisco (antifraude)</h4>
+<p><code>id: UUID</code>, <code>transacaoId: UUID</code> (1 para 1), <code>nota: Integer</code> (0 a 100), <code>motivos: List&lt;String&gt;</code>, <code>resultado: ResultadoAnalise</code> (LIBERADA_AUTOMATICA, RETIDA, LIBERADA_ANALISTA, RECUSADA_ANALISTA), <code>analistaId: UUID</code> (opcional), <code>decididaEm: Instant</code>. Pix com nota <strong>igual ou acima de 70</strong> fica RETIDA (RF026).</p>
+<h4 id="s59">Chamado (atendimento)</h4>
+<p><code>id: UUID</code>, <code>clienteId: UUID</code>, <code>atendenteId: UUID</code> (opcional), <code>assunto: String</code>, <code>status: StatusChamado</code> (ABERTO, EM_ATENDIMENTO, RESOLVIDO), <code>abertoEm: Instant</code>, <code>fechadoEm: Instant</code>.</p>
+<h4 id="s59">MensagemChamado (atendimento)</h4>
+<p><code>id: UUID</code>, <code>chamadoId: UUID</code>, <code>autor: AutorMensagem</code> (CLIENTE, ATENDENTE), <code>texto: String</code>, <code>audioUrl: String</code> (opcional), <code>enviadaEm: Instant</code>. Composição: a mensagem não existe sem o chamado.</p>
+<h4 id="s59">Funcionario (backoffice)</h4>
+<p><code>id: UUID</code>, <code>nome: String</code>, <code>email: String</code> (único), <code>papel: Papel</code> (ATENDENTE, ANALISTA_ANTIFRAUDE, ADMINISTRADOR), <code>hashSenha: String</code>, <code>segredoTotp: String</code> (cifrado), <code>ativo: Boolean</code>.</p>
+<h4 id="s59">RegistroAuditoria (backoffice)</h4>
+<p><code>id: Long</code>, <code>funcionarioId: UUID</code>, <code>acao: String</code>, <code>entidade: String</code>, <code>entidadeId: String</code>, <code>ip: String</code>, <code>ocorridoEm: Instant</code>. Só inserção, nunca alteração. Guardado 5 anos (RNF14).</p>
+<h4 id="s59">Notificacao (notificacao)</h4>
+<p><code>id: UUID</code>, <code>clienteId: UUID</code>, <code>canal: Canal</code> (PUSH, SMS), <code>tipo: String</code>, <code>conteudo: String</code>, <code>status: StatusNotificacao</code> (PENDENTE, ENVIADA, FALHOU), <code>criadaEm: Instant</code>, <code>enviadaEm: Instant</code>.</p>
+<h4 id="s59">OutboxEvento (notificacao, usado por todos)</h4>
+<p><code>id: Long</code>, <code>tipo: String</code> (ex.: <code>PixConcluido</code>), <code>agregadoId: UUID</code>, <code>payload: Json</code>, <code>criadoEm: Instant</code>, <code>processadoEm: Instant</code> (opcional), <code>tentativas: Integer</code>, <code>proximaTentativaEm: Instant</code>.</p>
+<h4 id="s59">LembreteConta (notificacao)</h4>
+<p><code>id: UUID</code>, <code>clienteId: UUID</code>, <code>descricao: String</code>, <code>diaVencimento: Integer</code> (1 a 31), <code>ativo: Boolean</code>.</p>
+<h3 id="s59">Relações</h3>
+<table>
+<thead>
+<tr>
+<th>De</th>
+<th>Para</th>
+<th>Cardinalidade</th>
+<th>Tipo</th>
+<th>Por quê</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cliente</td>
+<td>Conta</td>
+<td>1 para 1</td>
+<td>Associação</td>
+<td>Uma conta por cliente no MVP</td>
+</tr>
+<tr>
+<td>Cliente</td>
+<td>Dispositivo</td>
+<td>1 para N (1 ativo)</td>
+<td>Composição</td>
+<td>Dispositivo não existe sem o cliente</td>
+</tr>
+<tr>
+<td>Cliente</td>
+<td>Credencial</td>
+<td>1 para 1</td>
+<td>Composição</td>
+<td></td>
+</tr>
+<tr>
+<td>Cliente</td>
+<td>Consentimento</td>
+<td>1 para N</td>
+<td>Composição</td>
+<td></td>
+</tr>
+<tr>
+<td>Conta</td>
+<td>Carteira</td>
+<td>1 para N</td>
+<td>Composição</td>
+<td>Carteira não existe sem a conta</td>
+</tr>
+<tr>
+<td>Carteira</td>
+<td>Lancamento</td>
+<td>1 para N</td>
+<td>Associação</td>
+<td></td>
+</tr>
+<tr>
+<td>Transacao</td>
+<td>Lancamento</td>
+<td>1 para N (no mínimo 2)</td>
+<td>Composição</td>
+<td>Lançamentos nascem e morrem com a transação</td>
+</tr>
+<tr>
+<td>Conta</td>
+<td>Transacao</td>
+<td>1 para N</td>
+<td>Associação</td>
+<td></td>
+</tr>
+<tr>
+<td>Transacao</td>
+<td>PixEnvio, PixRecebimento, PagamentoBoleto, MovimentoMeta</td>
+<td>Generalização</td>
+<td>Herança</td>
+<td>Mesmo ciclo de vida (State) e mesmos lançamentos</td>
+</tr>
+<tr>
+<td>Conta</td>
+<td>ChavePix</td>
+<td>1 para N</td>
+<td>Agregação</td>
+<td>A chave pode ser excluída sem afetar a conta</td>
+</tr>
+<tr>
+<td>Conta</td>
+<td>Meta</td>
+<td>1 para N</td>
+<td>Associação</td>
+<td></td>
+</tr>
+<tr>
+<td>Meta</td>
+<td>Carteira</td>
+<td>1 para 1</td>
+<td>Composição</td>
+<td>A carteira da meta nasce com a meta</td>
+</tr>
+<tr>
+<td>Cliente (menor)</td>
+<td>VinculoResponsavel</td>
+<td>1 para 1</td>
+<td>Associação</td>
+<td>Um responsável vinculado por menor no MVP</td>
+</tr>
+<tr>
+<td>Cliente (responsável)</td>
+<td>VinculoResponsavel</td>
+<td>1 para N</td>
+<td>Associação</td>
+<td>Um pai pode ter mais de um filho</td>
+</tr>
+<tr>
+<td>VinculoResponsavel</td>
+<td>PedidoAprovacao</td>
+<td>1 para N</td>
+<td>Composição</td>
+<td></td>
+</tr>
+<tr>
+<td>Cliente</td>
+<td>ContatoConfianca</td>
+<td>1 para N</td>
+<td>Composição</td>
+<td></td>
+</tr>
+<tr>
+<td>Transacao</td>
+<td>AnaliseRisco</td>
+<td>1 para 0..1</td>
+<td>Associação</td>
+<td>Só Pix enviado é analisado</td>
+</tr>
+<tr>
+<td>Funcionario</td>
+<td>AnaliseRisco</td>
+<td>1 para N</td>
+<td>Associação</td>
+<td>Quem decidiu</td>
+</tr>
+<tr>
+<td>Cliente</td>
+<td>Chamado</td>
+<td>1 para N</td>
+<td>Associação</td>
+<td></td>
+</tr>
+<tr>
+<td>Chamado</td>
+<td>MensagemChamado</td>
+<td>1 para N</td>
+<td>Composição</td>
+<td></td>
+</tr>
+<tr>
+<td>Funcionario</td>
+<td>RegistroAuditoria</td>
+<td>1 para N</td>
+<td>Associação</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="s60">Classes de serviço (para o diagrama de classes e o C4 nível 4)</h3>
+<table>
+<thead>
+<tr>
+<th>Classe</th>
+<th>Métodos principais</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ServicoEnvioPix</td>
+<td><code>+iniciar(contaId: UUID, pedido: PedidoPix, chaveIdempotencia: String): Transacao</code>, <code>+confirmarRetorno(idParceiro: String, aceito: Boolean): void</code>, <code>-reservarSaldo(t: Transacao): void</code>, <code>-compensar(t: Transacao): void</code></td>
+</tr>
+<tr>
+<td>MotorAntifraude</td>
+<td><code>+avaliar(t: PixEnvio): AnaliseRisco</code> (soma as notas das <code>RegraRisco</code>)</td>
+</tr>
+<tr>
+<td>RegraRisco (interface)</td>
+<td><code>+pontuar(t: PixEnvio, h: HistoricoCliente): Integer</code></td>
+</tr>
+<tr>
+<td>PortaBancaria (interface)</td>
+<td><code>+consultarChave(chave: String): DadosRecebedor</code>, <code>+enviarPix(t: PixEnvio): RespostaParceiro</code>, <code>+pagarBoleto(b: PagamentoBoleto): RespostaParceiro</code></td>
+</tr>
+<tr>
+<td>PortaVoz (interface)</td>
+<td><code>+falar(texto: String): UrlAudio</code></td>
+</tr>
+<tr>
+<td>UnidadeDeTrabalho</td>
+<td><code>+executar&lt;T&gt;(trabalho: Funcao&lt;T&gt;): T</code></td>
+</tr>
+</tbody>
+</table></section><section class="arquivo"><h2 id="s61">3.6 Rotas da API (fonte única)</h2>
+<p>Lista canônica das rotas. O contrato completo, com corpos de requisição e resposta, está em OpenAPI 3.0 no Bloco 8 (<code>bloco-8-dev/openapi.yaml</code>), que segue esta lista. Os diagramas de sequência (Bloco 4) usam estes mesmos caminhos.</p>
+<p>Base: <code>https://api.rufusbank.com.br/v1</code> em produção, <code>http://localhost:3000/v1</code> no desenvolvimento. Todas as rotas, exceto as marcadas como públicas, exigem <code>Authorization: Bearer &lt;token de acesso&gt;</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Método</th>
+<th>Rota</th>
+<th>Módulo</th>
+<th>RF</th>
+<th>Observação</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>POST</td>
+<td>/onboarding/cadastros</td>
+<td>identidade</td>
+<td>RF001</td>
+<td>Pública. Inicia o cadastro</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/onboarding/cadastros/{id}/documentos</td>
+<td>identidade</td>
+<td>RF001</td>
+<td>Pública com token do cadastro. Foto do documento</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/onboarding/cadastros/{id}/selfie</td>
+<td>identidade</td>
+<td>RF001, RF002</td>
+<td>Envia a selfie e dispara a validação no parceiro</td>
+</tr>
+<tr>
+<td>GET</td>
+<td>/onboarding/cadastros/{id}</td>
+<td>identidade</td>
+<td>RF002</td>
+<td>Situação do cadastro</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/auth/login</td>
+<td>identidade</td>
+<td>RF003, RF004</td>
+<td>Pública. CPF, senha e assinatura do aparelho</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/auth/renovacao</td>
+<td>identidade</td>
+<td>RNF05</td>
+<td>Pública com token de renovação. Troca o token</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/auth/logout</td>
+<td>identidade</td>
+<td></td>
+<td>Revoga a sessão</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/dispositivos/troca</td>
+<td>identidade</td>
+<td>RF005</td>
+<td>Selfie nova para trocar de aparelho</td>
+</tr>
+<tr>
+<td>GET</td>
+<td>/contas/me</td>
+<td>contas</td>
+<td>RF006</td>
+<td>Dados da conta</td>
+</tr>
+<tr>
+<td>GET</td>
+<td>/contas/me/saldo</td>
+<td>contas</td>
+<td>RF006</td>
+<td>Saldo da carteira principal</td>
+</tr>
+<tr>
+<td>GET</td>
+<td>/contas/me/extrato</td>
+<td>contas</td>
+<td>RF006</td>
+<td>Paginado por cursor</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/contas/me/bloqueio-total</td>
+<td>contas</td>
+<td>RF020</td>
+<td>"Bloquear tudo agora"</td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td>/contas/me/bloqueio-total</td>
+<td>contas</td>
+<td>RF020</td>
+<td>Desbloqueio com selfie e 1 hora de espera</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/pix/consultas-chave</td>
+<td>pagamentos</td>
+<td>RF009</td>
+<td>Devolve nome do recebedor e banco</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/pix/envios</td>
+<td>pagamentos</td>
+<td>RF008, RF019</td>
+<td>Exige <code>Idempotency-Key</code></td>
+</tr>
+<tr>
+<td>GET</td>
+<td>/pix/envios/{id}</td>
+<td>pagamentos</td>
+<td>RF008</td>
+<td>Situação do Pix</td>
+</tr>
+<tr>
+<td>GET</td>
+<td>/pix/envios/{id}/comprovante</td>
+<td>pagamentos</td>
+<td>RF012</td>
+<td></td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/pix/cobrancas</td>
+<td>pagamentos</td>
+<td>RF010</td>
+<td>Gera QR Code para receber</td>
+</tr>
+<tr>
+<td>GET</td>
+<td>/pix/chaves</td>
+<td>pagamentos</td>
+<td>RF011</td>
+<td></td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/pix/chaves</td>
+<td>pagamentos</td>
+<td>RF011</td>
+<td></td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td>/pix/chaves/{id}</td>
+<td>pagamentos</td>
+<td>RF011</td>
+<td></td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/boletos/consultas</td>
+<td>pagamentos</td>
+<td>RF013</td>
+<td>Lê a linha digitável e devolve beneficiário, valor e vencimento</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/boletos/pagamentos</td>
+<td>pagamentos</td>
+<td>RF013</td>
+<td>Exige <code>Idempotency-Key</code></td>
+</tr>
+<tr>
+<td>GET</td>
+<td>/metas</td>
+<td>pagamentos</td>
+<td>RF017</td>
+<td></td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/metas</td>
+<td>pagamentos</td>
+<td>RF017</td>
+<td></td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/metas/{id}/depositos</td>
+<td>pagamentos</td>
+<td>RF017</td>
+<td>Exige <code>Idempotency-Key</code></td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/metas/{id}/resgates</td>
+<td>pagamentos</td>
+<td>RF017</td>
+<td>Exige <code>Idempotency-Key</code></td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/familia/convites-responsavel</td>
+<td>familia</td>
+<td>RF014</td>
+<td>O menor convida o responsável</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/familia/vinculos/{id}/aceite</td>
+<td>familia</td>
+<td>RF014</td>
+<td>O responsável aceita</td>
+</tr>
+<tr>
+<td>PUT</td>
+<td>/familia/vinculos/{id}/limites</td>
+<td>familia</td>
+<td>RF015</td>
+<td>Só o responsável</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/familia/pedidos-aprovacao</td>
+<td>familia</td>
+<td>RF016</td>
+<td>O menor pede</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/familia/pedidos-aprovacao/{id}/decisao</td>
+<td>familia</td>
+<td>RF016</td>
+<td>O responsável decide</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/contatos-confianca</td>
+<td>familia</td>
+<td>RF018</td>
+<td></td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td>/contatos-confianca/{id}</td>
+<td>familia</td>
+<td>RF018</td>
+<td></td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/falas</td>
+<td>notificacao</td>
+<td>RF007</td>
+<td>Texto para áudio. Devolve URL do áudio</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/lembretes</td>
+<td>notificacao</td>
+<td>RF022</td>
+<td></td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/chamados</td>
+<td>atendimento</td>
+<td>RF024</td>
+<td></td>
+</tr>
+<tr>
+<td>GET</td>
+<td>/chamados/{id}/mensagens</td>
+<td>atendimento</td>
+<td>RF024</td>
+<td></td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/chamados/{id}/mensagens</td>
+<td>atendimento</td>
+<td>RF024</td>
+<td></td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/titular/exportacoes</td>
+<td>identidade</td>
+<td>RF029</td>
+<td>Gera arquivo com os dados do titular</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/titular/encerramento</td>
+<td>identidade</td>
+<td>RF029</td>
+<td></td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/webhooks/baas</td>
+<td>pagamentos</td>
+<td>RF010, RF008</td>
+<td>Pública, com assinatura HMAC do parceiro</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/admin/auth/login</td>
+<td>backoffice</td>
+<td>RF030</td>
+<td>Pública. Senha e TOTP</td>
+</tr>
+<tr>
+<td>GET</td>
+<td>/admin/analises</td>
+<td>antifraude</td>
+<td>RF027</td>
+<td>Papel ANALISTA_ANTIFRAUDE</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/admin/analises/{id}/decisao</td>
+<td>antifraude</td>
+<td>RF027</td>
+<td>Papel ANALISTA_ANTIFRAUDE</td>
+</tr>
+<tr>
+<td>GET</td>
+<td>/admin/chamados</td>
+<td>atendimento</td>
+<td>RF025</td>
+<td>Papel ATENDENTE</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/admin/chamados/{id}/mensagens</td>
+<td>atendimento</td>
+<td>RF025</td>
+<td>Papel ATENDENTE</td>
+</tr>
+<tr>
+<td>GET</td>
+<td>/admin/clientes/{id}/historico</td>
+<td>atendimento</td>
+<td>RF025</td>
+<td>Papel ATENDENTE. Gera registro de auditoria</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/admin/funcionarios</td>
+<td>backoffice</td>
+<td>RF030</td>
+<td>Papel ADMINISTRADOR</td>
+</tr>
+<tr>
+<td>GET</td>
+<td>/health</td>
+<td></td>
+<td>RNF03</td>
+<td>Pública. Usada pelo balanceador e pela verificação externa</td>
+</tr>
+</tbody>
+</table>
+<p>Portas: a API escuta na <strong>3000</strong> dentro do container. O balanceador recebe na <strong>443</strong> (HTTPS) e redireciona a 80 para 443. O PostgreSQL usa a <strong>5432</strong>, acessível só de dentro da VPC.</p></section></div>
+</body></html>

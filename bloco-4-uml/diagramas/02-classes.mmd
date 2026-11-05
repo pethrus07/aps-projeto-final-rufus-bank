@@ -1,0 +1,216 @@
+%% titulo: Diagrama de Classes · domínio do Rufus Bank
+classDiagram
+    direction TB
+    class Cliente {
+        -id: UUID
+        -nomeCompleto: String
+        -cpf: Cpf
+        -dataNascimento: LocalDate
+        -celular: String
+        -email: String
+        -tipo: TipoCliente
+        -status: StatusCliente
+        -criadoEm: Instant
+        +ativar() void
+        +bloquear(motivo: String) void
+        +ehMenor() Boolean
+    }
+    class Dispositivo {
+        -id: UUID
+        -modelo: String
+        -chavePublica: String
+        -ativo: Boolean
+        -vinculadoEm: Instant
+        +verificarAssinatura(desafio: String, assinatura: String) Boolean
+        +desativar() void
+    }
+    class Credencial {
+        -hashSenha: String
+        -tentativasErradas: Integer
+        -bloqueadaAte: Instant
+        +conferirSenha(senha: String) Boolean
+        +registrarErro() void
+    }
+    class Consentimento {
+        -id: UUID
+        -tipo: TipoConsentimento
+        -versaoTermo: String
+        -aceitoEm: Instant
+        -aceitoPorClienteId: UUID
+    }
+    class Conta {
+        -id: UUID
+        -agencia: String
+        -numero: String
+        -idContaParceiro: String
+        -status: StatusConta
+        -bloqueadaEm: Instant
+        +bloquearTudo() void
+        +desbloquear() void
+        +podeMovimentar() Boolean
+    }
+    class Carteira {
+        -id: UUID
+        -tipo: TipoCarteira
+        +saldoCentavos() Long
+    }
+    class Lancamento {
+        -id: UUID
+        -valorCentavos: Long
+        -criadoEm: Instant
+    }
+    class Transacao {
+        <<abstract>>
+        #id: UUID
+        #tipo: TipoTransacao
+        #valorCentavos: Long
+        #status: StatusTransacao
+        #chaveIdempotencia: String
+        #idParceiro: String
+        #criadaEm: Instant
+        #concluidaEm: Instant
+        +transicionarPara(novo: StatusTransacao) void
+        +estaConcluida() Boolean
+    }
+    class PixEnvio {
+        -chaveDestino: String
+        -nomeRecebedor: String
+        -documentoRecebedorMascarado: String
+        -bancoRecebedor: String
+        -destinatarioNovo: Boolean
+    }
+    class PixRecebimento {
+        -nomePagador: String
+        -bancoPagador: String
+    }
+    class PagamentoBoleto {
+        -linhaDigitavel: String
+        -beneficiario: String
+        -vencimento: LocalDate
+        -jurosCentavos: Long
+    }
+    class MovimentoMeta {
+        -metaId: UUID
+    }
+    class ChavePix {
+        -id: UUID
+        -tipo: TipoChavePix
+        -valor: String
+        -status: StatusChavePix
+        +excluir() void
+    }
+    class Meta {
+        -id: UUID
+        -nome: String
+        -valorAlvoCentavos: Long
+        -dataAlvo: LocalDate
+        -imagemUrl: String
+        -status: StatusMeta
+        +percentualAtingido() Integer
+    }
+    class VinculoResponsavel {
+        -id: UUID
+        -status: StatusVinculo
+        -limiteDiarioCentavos: Long
+        -limiteMensalCentavos: Long
+        -convidadoEm: Instant
+        -aceitoEm: Instant
+        -expiraEm: Instant
+        +aceitar() void
+        +definirLimites(diario: Long, mensal: Long) void
+        +permite(valorCentavos: Long) Boolean
+    }
+    class PedidoAprovacao {
+        -id: UUID
+        -status: StatusPedido
+        -criadoEm: Instant
+        -expiraEm: Instant
+        -decididoEm: Instant
+        +decidir(aprovado: Boolean) void
+    }
+    class ContatoConfianca {
+        -id: UUID
+        -nome: String
+        -celular: String
+        -status: StatusContato
+        -aceitoEm: Instant
+    }
+    class AnaliseRisco {
+        -id: UUID
+        -nota: Integer
+        -motivos: List~String~
+        -resultado: ResultadoAnalise
+        -decididaEm: Instant
+        +reter() Boolean
+    }
+    class Chamado {
+        -id: UUID
+        -assunto: String
+        -status: StatusChamado
+        -abertoEm: Instant
+        -fechadoEm: Instant
+        +responder(texto: String) MensagemChamado
+        +resolver() void
+    }
+    class MensagemChamado {
+        -id: UUID
+        -autor: AutorMensagem
+        -texto: String
+        -audioUrl: String
+        -enviadaEm: Instant
+    }
+    class Funcionario {
+        -id: UUID
+        -nome: String
+        -email: String
+        -papel: Papel
+        -hashSenha: String
+        -segredoTotp: String
+        -ativo: Boolean
+        +temPapel(p: Papel) Boolean
+    }
+    class RegistroAuditoria {
+        -id: Long
+        -acao: String
+        -entidade: String
+        -entidadeId: String
+        -ip: String
+        -ocorridoEm: Instant
+    }
+    class StatusTransacao {
+        <<enumeration>>
+        PENDENTE
+        RETIDA
+        ENVIADA
+        CONCLUIDA
+        RECUSADA
+        ESTORNADA
+    }
+
+    Cliente "1" *-- "1..*" Dispositivo : possui
+    Cliente "1" *-- "1" Credencial
+    Cliente "1" *-- "1..*" Consentimento
+    Cliente "1" -- "1" Conta : titular
+    Cliente "1" *-- "0..*" ContatoConfianca
+    Cliente "1" -- "0..*" Chamado : abre
+    Cliente "1" -- "0..1" VinculoResponsavel : menor
+    Cliente "1" -- "0..*" VinculoResponsavel : responsável
+    Conta "1" *-- "1..*" Carteira
+    Conta "1" o-- "0..*" ChavePix
+    Conta "1" -- "0..*" Transacao
+    Conta "1" -- "0..*" Meta
+    Meta "1" *-- "1" Carteira : guarda em
+    Carteira "1" -- "0..*" Lancamento
+    Transacao "1" *-- "2..*" Lancamento : gera
+    Transacao <|-- PixEnvio
+    Transacao <|-- PixRecebimento
+    Transacao <|-- PagamentoBoleto
+    Transacao <|-- MovimentoMeta
+    Transacao --> StatusTransacao
+    MovimentoMeta "0..*" --> "1" Meta
+    Transacao "1" -- "0..1" AnaliseRisco
+    Funcionario "0..1" -- "0..*" AnaliseRisco : decide
+    VinculoResponsavel "1" *-- "0..*" PedidoAprovacao
+    Chamado "1" *-- "1..*" MensagemChamado
+    Funcionario "0..1" -- "0..*" Chamado : atende
+    Funcionario "1" -- "0..*" RegistroAuditoria : gera

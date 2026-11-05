@@ -1,0 +1,39 @@
+%% titulo: Diagrama de Sequência 3 · Erro crítico: falha no parceiro, nova tentativa idempotente e estorno
+sequenceDiagram
+    autonumber
+    actor C as Antônio
+    participant App as App mobile
+    participant API as API (pagamentos)
+    participant DB as PostgreSQL
+    participant W as Worker
+    participant BaaS as Parceiro BaaS
+    C->>App: Confirma Pix de 150 reais
+    App->>API: POST /v1/pix/envios + Idempotency-Key K1
+    API->>DB: Transação: Pix PENDENTE, reserva do saldo, outbox PixSolicitado
+    API--xApp: Resposta perdida (internet do celular caiu)
+    App->>API: Reenvia POST /v1/pix/envios com a MESMA Idempotency-Key K1
+    API->>DB: Busca por (contaId, K1)
+    DB-->>API: Transação já existe
+    API-->>App: 200 a mesma transação, sem novo débito (RNF11)
+    W->>DB: Lê PixSolicitado (FOR UPDATE SKIP LOCKED)
+    W->>BaaS: enviarPix(t)
+    BaaS--xW: Sem resposta em 5 s (timeout)
+    W->>DB: tentativas = 1, próxima tentativa em 2 s (espera crescente)
+    Note over W,BaaS: Circuit breaker conta a falha.<br/>Com 5 falhas seguidas abre por 30 s e para de insistir
+    W->>BaaS: enviarPix(t) com o mesmo id da transação
+    BaaS-->>W: Recusado: conta de destino encerrada
+    rect rgb(255, 238, 238)
+        Note over W,DB: Compensação da saga (ServicoEnvioPix.compensar)<br/>numa única transação do banco
+        W->>DB: status RECUSADA, depois ESTORNADA
+        W->>DB: INSERT lançamentos de estorno: -15000 LIQUIDACAO_PIX, +15000 PRINCIPAL
+        W->>DB: INSERT outbox PixEstornado
+    end
+    W-->>C: Push "O Pix não foi. Os 150 reais voltaram para sua conta"
+    App->>API: GET /v1/pix/envios/{id}
+    API-->>App: 200 {status: ESTORNADA, motivo}
+    App-->>C: Fala o motivo em uma frase e mostra o saldo de volta
+    opt Parceiro segue sem responder depois de 5 tentativas
+        W->>BaaS: Consulta a situação pelo id da transação
+        BaaS-->>W: Pix não encontrado
+        W->>DB: Mesma compensação: ESTORNADA e estorno dos lançamentos
+    end
