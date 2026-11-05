@@ -412,6 +412,17 @@ def main():
         "- Equipamentos, licenças de software e espaço de trabalho.",
         "",
         f"Depois do lançamento, a operação custa por mês a infraestrutura do Bloco 1 (R$ {brl(infra_total)}) mais a equipe que ficar para evoluir o produto.",
+        "",
+        "## Conferência com a referência da disciplina (Aula 01)",
+        "",
+        "A Aula 01 traz faixas de custo por tipo de software e três regras práticas. O Rufus conferido contra elas:",
+        "",
+        "| Referência da Aula 01 | No Rufus |",
+        "| --- | --- |",
+        f"| Sistema complexo (app mobile, alta segurança): R$ 150 mil a R$ 500 mil | R$ {brl(total)}, um pouco acima do teto. Faz sentido: é app em Android e iOS (a aula diz que multiplataforma dobra ou triplica o esforço), tem painéis internos na web (SAC, antifraude e administração) e integração com parceiro BaaS (a aula diz que integrações de API somam de 20% a 30%) |",
+        f"| Manutenção pós-lançamento: 15% a 20% do custo inicial por ano | De R$ {brl(total * 0.15)} a R$ {brl(total * 0.20)} por ano, além da infraestrutura mensal |",
+        "| Cerca de 60% do custo em desenvolvimento e 40% em teste | O teste não fica só com o QA: entra na Definition of Done de cada item (Bloco 9), com cobertura mínima no pipeline. A referência é o motivo de o QA ser dedicado desde o sprint 0, e não cortado para baratear |",
+        "| Corrigir depois de ir ao ar custa muito mais do que testar antes | Teste de uso a cada sprint (RNF08), teste de invasão antes do lançamento e o sprint 8 inteiro reservado para o beta |",
     ]
     (B7 / "03-equipe-e-custo.md").write_text("\n".join(E) + "\n", encoding="utf-8")
 

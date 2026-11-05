@@ -55,10 +55,22 @@ def svg_mermaid(fonte: pathlib.Path) -> str:
         saida = pathlib.Path(tmp) / "d.svg"
         cmd = ["npx", "-y", "@mermaid-js/mermaid-cli", "-i", str(fonte), "-o", str(saida),
                "-b", "white", "-c", str(CONFIG_MERMAID)]
-        r = subprocess.run(cmd, capture_output=True, text=True, shell=(sys.platform == "win32"))
+        r = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="replace",
+                           shell=(sys.platform == "win32"))
         if r.returncode != 0 or not saida.exists():
             sys.exit(f"ABORTADO: mermaid falhou em {fonte}\n{r.stdout}\n{r.stderr}")
-        return saida.read_text(encoding="utf-8")
+        return corrigir_fundo_rotulo(saida.read_text(encoding="utf-8"))
+
+
+def corrigir_fundo_rotulo(svg: str) -> str:
+    """O tema do Mermaid deixa o fundo do rótulo da seta com 50% de opacidade, e a linha
+    aparece através das palavras. Deixa o fundo branco e opaco (e 1,5 px mais alto),
+    para a seta ser interrompida exatamente onde o rótulo está."""
+    def sobe(m):
+        inicio = m.group(1).replace('style=""', 'style="fill:#FFFFFF;opacity:1"')
+        return f'{inicio}{float(m.group(2)) - 1.5:.2f}"'
+    return re.sub(r'(<g class="label" data-id="L_[^"]*"[^>]*><g><rect class="background" style="" '
+                  r'x="[-\d.]+" y=")([-\d.]+)"', sobe, svg)
 
 
 def svg_python(fonte: pathlib.Path) -> str:

@@ -1,0 +1,30 @@
+%% titulo: Diagrama de Sequência 1, parte A · Autenticação: login com celular vinculado e JWT
+%%{init: {"sequence": {"wrap": true, "width": 150, "actorMargin": 95, "messageMargin": 22, "boxMargin": 8, "noteMargin": 10, "mirrorActors": false, "messageFontSize": 14, "noteFontSize": 14, "actorFontSize": 15}}}%%
+sequenceDiagram
+    autonumber
+    actor C as Cliente
+    participant App as App mobile
+    participant API as API (módulo identidade)
+    participant DB as PostgreSQL
+    C->>App: Abre o app e encosta o dedo
+    Note right of App: Biometria destrava<br/>a chave privada no<br/>Keystore/Keychain
+    Note right of App: Assina cpf +<br/>data/hora + nonce<br/>com a chave<br/>do aparelho
+    App->>API: POST /v1/auth/login {cpf, senha, dispositivoId, assinatura}
+    API->>DB: Busca Cliente, Credencial e Dispositivo ativo
+    DB-->>API: Dados do cliente
+    alt Conta bloqueada por senha (bloqueadaAte no futuro)
+        API-->>App: 423 Bloqueado até HH:MM
+        App-->>C: Fala "Muitas tentativas. Tente de novo às HH:MM"
+    else Senha errada (Argon2id não confere)
+        API->>DB: tentativasErradas + 1 (na 5ª, bloqueadaAte = agora + 30 min)
+        API-->>App: 401 Senha incorreta
+        App-->>C: Fala quantas tentativas restam
+    else Aparelho não é o ativo ou assinatura inválida
+        API-->>App: 403 Troca de aparelho exige selfie
+        App-->>C: Abre o fluxo POST /v1/dispositivos/troca
+    else Tudo confere
+        API->>DB: Zera tentativas e cria SessaoRenovacao (só o hash do token)
+        API-->>App: 200 {tokenAcesso JWT 15 min, tokenRenovacao 30 dias}
+        Note right of App: Guarda os tokens<br/>no SecureStore
+        App-->>C: Mostra a tela inicial com o saldo
+    end

@@ -1,0 +1,24 @@
+%% titulo: Diagrama de Sequência 2, parte C · Pix com sucesso: liquidação no parceiro e aviso
+%%{init: {"sequence": {"wrap": true, "width": 120, "actorMargin": 75, "messageMargin": 22, "boxMargin": 8, "noteMargin": 10, "mirrorActors": false, "messageFontSize": 14, "noteFontSize": 14, "actorFontSize": 15}}}%%
+sequenceDiagram
+    autonumber 18
+    actor C as Dona Marlene
+    participant App as App mobile
+    participant API as API (pagamentos)
+    participant DB as PostgreSQL
+    participant W as Worker
+    participant BaaS as Parceiro BaaS
+    W->>DB: SELECT outbox ... FOR UPDATE SKIP LOCKED
+    W->>BaaS: PortaBancaria.enviarPix(t) com o id da transação
+    BaaS-->>W: Aceito {idParceiro}
+    W->>DB: status ENVIADA, evento processado
+    BaaS->>API: POST /v1/webhooks/baas (HMAC) Pix liquidado
+    Note left of API: Confere a<br/>assinatura HMAC
+    API->>DB: status CONCLUIDA, outbox PixConcluido
+    API-->>BaaS: 200
+    App->>API: GET /v1/pix/envios/{id}
+    API-->>App: 200 {status: CONCLUIDA}
+    App-->>C: "Pix enviado", ícone verde e áudio
+    W->>DB: Lê PixConcluido
+    W-->>C: Push "Saiu 50 reais para Maria Souza"
+    Note over C,BaaS: Do toque em confirmar até a tela verde: até 10 s no p95 (RNF02)

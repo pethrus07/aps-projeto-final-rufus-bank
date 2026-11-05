@@ -40,11 +40,11 @@ Valores de [ferramentas/custo-infra/custo-gerado.md](../ferramentas/custo-infra/
 
 | Ambiente | USD por mês | R$ por mês |
 | --- | --- | --- |
-| Produção | 689,91 | 3.779,18 |
+| Produção | 691,91 | 3.790,14 |
 | Homologação | 207,50 | 1.136,64 |
 | Serviços fora da AWS (Expo EAS, GitHub, domínio, lojas) | 94,86 | 519,62 |
 | Desenvolvimento | 0,00 | 0,00 |
-| **Total** | **992,27** | **5.435,43** |
+| **Total** | **994,27** | **5.446,39** |
 
 Onde está o dinheiro de produção: banco Multi-AZ com disco, backup e snapshots (US$ 284,40), os 2 NAT Gateways (US$ 137,64) e os containers (US$ 62,00). O NAT duplicado e o Multi-AZ são o preço da disponibilidade: com 1 NAT só, uma falha na zona A cortaria a comunicação com o parceiro BaaS também na zona B.
 

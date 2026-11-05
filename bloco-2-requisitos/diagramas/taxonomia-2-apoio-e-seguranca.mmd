@@ -1,0 +1,22 @@
+%% titulo: Taxonomia do app Rufus, parte 2 de 2: família, ajuda, segurança e dados
+flowchart LR
+  APP(["App Rufus"]):::raiz
+
+  APP --> FAM["Família e metas"]:::n1
+  APP --> AJU["Ajuda"]:::n1
+  APP --> SEG["Segurança"]:::n1
+  APP --> PER["Meus dados"]:::n1
+  FAM --> FAM1["Metas de economia"]:::n2
+  FAM --> FAM2["Limites e pedidos<br/>menor e responsável"]:::n2
+  FAM --> FAM3["Contato de confiança"]:::n2
+  AJU --> AJU1["Falar com uma pessoa"]:::n2
+  AJU --> AJU2["Dicas em áudio"]:::n2
+  SEG --> SEG1["Bloquear tudo agora"]:::n2
+  SEG --> SEG2["Trocar de celular<br/>com selfie"]:::n2
+  PER --> PER1["Baixar meus dados"]:::n2
+  PER --> PER2["Encerrar a conta"]:::n2
+
+  classDef raiz fill:#C1121F,stroke:#C1121F,color:#FFFFFF,font-weight:bold
+  classDef n1 fill:#FDECEC,stroke:#C1121F,color:#1E1A1B,font-weight:bold
+  classDef n2 fill:#FFFFFF,stroke:#1E1A1B,color:#1E1A1B
+  classDef n3 fill:#F7F4F4,stroke:#5C5457,color:#1E1A1B

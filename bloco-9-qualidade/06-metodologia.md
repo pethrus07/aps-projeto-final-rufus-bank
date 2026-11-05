@@ -2,6 +2,28 @@
 
 **Decisão: Scrum com sprints de 2 semanas**, com um quadro Kanban dentro de cada sprint para acompanhar o fluxo das tarefas.
 
+## Primeiro: o modelo de ciclo de vida
+
+A Aula 03 lembra que o modelo de ciclo de vida é a **primeira escolha** do processo de software. Pela NBR ISO/IEC 12207, ciclo de vida é a estrutura de processos, atividades e tarefas do desenvolvimento, da operação e da manutenção, da definição dos requisitos até o fim do uso. O critério de escolha (Wazlawick) é o quanto os requisitos são conhecidos e estáveis, quando o cliente precisa ver a primeira versão e o tamanho e o risco do sistema.
+
+**Decisão: modelo Incremental e iterativo, executado com Scrum, com duas práticas emprestadas de outros modelos:** a análise de risco a cada ciclo (do Espiral) e o teste planejado junto com cada requisito (do modelo V).
+
+| Modelo | Serve quando | No Rufus | Escolha |
+| --- | --- | --- | --- |
+| Cascata | Requisitos bem conhecidos e congelados, sistema simples | A usabilidade só se confirma com usuário real (RNF08), e a 1ª versão só sairia no fim. O público nunca foi ouvido por um banco | Descartado |
+| Modelo V | Mesmo caso do cascata, com foco em planejar testes | Qualquer mudança no meio obriga a refazer documentos de teste, análise e requisitos. Ficamos só com a ideia de planejar o teste junto do requisito (critérios Given/When/Then e DoR) | Descartado, com uma prática aproveitada |
+| Incremental | Requisitos tratados em módulos, valor entregue cedo | Os 7 épicos (E1 a E7) viram incrementos. O beta com usuários reais chega no sprint 8, sem esperar o fim de tudo | **Escolhido** |
+| Evolutivo | Requisitos pouco conhecidos, que surgem do uso | O núcleo é conhecido e regulado (Pix, LGPD, regras do Bloco 2). E o evolutivo dificulta limitar escopo e prazo, o que o parceiro BaaS e os investidores exigem | Descartado |
+| Espiral (Boehm, 1988) | Sistema grande e de alto risco, guiado por análise de risco | O risco é alto (golpe, dinheiro, regulação), mas o espiral completo é caro e não tem número de voltas definido. Ficamos com a análise de risco a cada ciclo: a matriz do Bloco 7 é revista a cada 2 sprints | Descartado, com uma prática aproveitada |
+
+As 3 etapas macro do ciclo de vida no projeto:
+
+| Etapa | No Rufus |
+| --- | --- |
+| 1. Definição | Este trabalho: problema, requisitos, arquitetura, banco e plano (Blocos 1 a 9) |
+| 2. Desenvolvimento | Sprints 0 a 8, de 16/11/2026 a 19/03/2027 (Bloco 7) |
+| 3. Operação | Depois do lançamento: sustentação em Kanban, correções e novos requisitos. Pela referência da Aula 01, a manutenção custa de 15% a 20% do custo inicial por ano (Bloco 7, item 7.3) |
+
 ## Por que Scrum e não Kanban puro
 
 | Critério | Scrum | Kanban puro | Por que pesa para o Rufus |

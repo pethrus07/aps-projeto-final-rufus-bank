@@ -1,14 +1,20 @@
 # 5.3 Modelo lógico
 
-27 tabelas no esquema `rufus`, com atributos, tipos, chaves primárias (PK), chaves estrangeiras (FK), chaves únicas (UK) e índices. Para caber legível, o modelo está em três diagramas por área. Os três são **gerados do catálogo do banco real** pelo mesmo script do dicionário de dados, então o desenho não diverge do SQL.
+27 tabelas no esquema `rufus`, com atributos, tipos, chaves primárias (PK), chaves estrangeiras (FK), chaves únicas (UK) e índices. Para caber legível, o modelo está em seis diagramas por área. Os seis são **gerados do catálogo do banco real** pelo mesmo script do dicionário de dados, então o desenho não diverge do SQL.
 
 ## Diagramas
 
-![Modelo lógico 1: identidade, família e backoffice](diagramas/img/logico-1-identidade-familia-backoffice.svg)
+![Modelo lógico 1: identidade](diagramas/img/logico-1-identidade.svg)
 
-![Modelo lógico 2: contas, razão contábil e pagamentos](diagramas/img/logico-2-contas-pagamentos.svg)
+![Modelo lógico 2: família e backoffice](diagramas/img/logico-2-familia-backoffice.svg)
 
-![Modelo lógico 3: antifraude, atendimento e notificação](diagramas/img/logico-3-antifraude-atendimento-notificacao.svg)
+![Modelo lógico 3: contas e razão contábil](diagramas/img/logico-3-contas-razao.svg)
+
+![Modelo lógico 4: transações e subtipos](diagramas/img/logico-4-transacoes.svg)
+
+![Modelo lógico 5: chaves Pix e metas](diagramas/img/logico-5-chaves-metas.svg)
+
+![Modelo lógico 6: antifraude, atendimento e notificação](diagramas/img/logico-6-antifraude-atendimento-notificacao.svg)
 
 Tabelas de outra área aparecem só com a chave (`id`), para mostrar a ligação. O tipo `char64` no desenho é `char(64)` no banco (o Mermaid não aceita parênteses).
 

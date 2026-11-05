@@ -1,0 +1,31 @@
+%% titulo: Modelo lógico 5 de 6: chaves Pix e metas
+%%{init: {"er": {"entityPadding": 10, "minEntityWidth": 90, "diagramPadding": 10, "fontSize": 14}}}%%
+erDiagram
+    direction TB
+    chave_pix {
+        uuid id PK
+        uuid conta_id FK
+        text tipo
+        text valor
+        text status
+        timestamptz criada_em
+    }
+    meta {
+        uuid id PK
+        uuid conta_id FK
+        uuid carteira_id FK,UK
+        text nome
+        bigint valor_alvo_centavos
+        date data_alvo
+        text imagem_url
+        text status
+    }
+    carteira {
+        uuid id PK
+    }
+    conta {
+        uuid id PK
+    }
+    conta ||--o{ chave_pix : "conta_id"
+    conta ||--o{ meta : "conta_id"
+    carteira ||--o| meta : "carteira_id"

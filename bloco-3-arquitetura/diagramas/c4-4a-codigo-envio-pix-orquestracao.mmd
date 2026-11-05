@@ -1,0 +1,47 @@
+%% titulo: C4 nível 4, parte 1 de 3 · ServicoEnvioPix: orquestração e persistência
+%%{init: {"class": {"nodeSpacing": 26, "rankSpacing": 36, "padding": 6}}}%%
+classDiagram
+    direction LR
+    class ServicoEnvioPix {
+        -uow: UnidadeDeTrabalho
+        -antifraude: MotorAntifraude
+        -banco: PortaBancaria
+        +iniciar(contaId: UUID, pedido: PedidoPix, chaveIdempotencia: String) Transacao
+        +confirmarRetorno(idParceiro: String, aceito: Boolean) void
+        -reservarSaldo(t: Transacao) void
+        -compensar(t: Transacao) void
+    }
+    class UnidadeDeTrabalho {
+        +executar~T~(trabalho: Funcao~T~) T
+    }
+    class TransacaoRepository {
+        <<interface>>
+        +buscarPorIdempotencia(contaId: UUID, chave: String) Transacao
+        +salvar(t: Transacao) void
+    }
+    class LancamentoRepository {
+        <<interface>>
+        +lancar(transacaoId: UUID, partidas: List~Partida~) void
+        +saldo(carteiraId: UUID) Long
+    }
+    class OutboxRepository {
+        <<interface>>
+        +publicar(tipo: String, agregadoId: UUID, payload: Json) void
+    }
+    class MotorAntifraude {
+        <<parte 2>>
+    }
+    class PixEnvio {
+        <<parte 3>>
+    }
+    class PortaBancaria {
+        <<parte 2>>
+    }
+
+    ServicoEnvioPix --> MotorAntifraude
+    ServicoEnvioPix --> PortaBancaria
+    ServicoEnvioPix --> UnidadeDeTrabalho
+    ServicoEnvioPix ..> LancamentoRepository : usa via uow
+    ServicoEnvioPix ..> OutboxRepository : usa via uow
+    ServicoEnvioPix ..> PixEnvio : cria
+    ServicoEnvioPix ..> TransacaoRepository : usa via uow

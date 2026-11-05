@@ -1,0 +1,60 @@
+%% titulo: Diagrama de Classes, parte C de D · contas, carteiras e metas
+%%{init: {"class": {"nodeSpacing": 28, "rankSpacing": 38, "padding": 6}}}%%
+classDiagram
+    direction LR
+    class Conta {
+        -id: UUID
+        -agencia: String
+        -numero: String
+        -idContaParceiro: String
+        -status: StatusConta
+        -bloqueadaEm: Instant
+        +bloquearTudo() void
+        +desbloquear() void
+        +podeMovimentar() Boolean
+    }
+    class Carteira {
+        -id: UUID
+        -tipo: TipoCarteira
+        +saldoCentavos() Long
+    }
+    class Lancamento {
+        -id: UUID
+        -valorCentavos: Long
+        -criadoEm: Instant
+    }
+    class ChavePix {
+        -id: UUID
+        -tipo: TipoChavePix
+        -valor: String
+        -status: StatusChavePix
+        +excluir() void
+    }
+    class Meta {
+        -id: UUID
+        -nome: String
+        -valorAlvoCentavos: Long
+        -dataAlvo: LocalDate
+        -imagemUrl: String
+        -status: StatusMeta
+        +percentualAtingido() Integer
+    }
+    class Cliente {
+        <<parte A>>
+    }
+    class MovimentoMeta {
+        <<parte D>>
+    }
+    class Transacao {
+        <<parte D>>
+    }
+
+    Cliente "1" -- "1" Conta : titular
+    Conta "1" *-- "1..*" Carteira
+    Conta "1" o-- "0..*" ChavePix
+    Conta "1" -- "0..*" Transacao
+    Conta "1" -- "0..*" Meta
+    Meta "1" *-- "1" Carteira : guarda em
+    Carteira "1" -- "0..*" Lancamento
+    Transacao "1" *-- "2..*" Lancamento : gera
+    MovimentoMeta "0..*" --> "1" Meta

@@ -1,0 +1,12 @@
+%% titulo: Diagrama de Sequência 1, parte B · Autenticação: renovação do token de acesso
+%%{init: {"sequence": {"wrap": true, "width": 150, "actorMargin": 95, "messageMargin": 22, "boxMargin": 8, "noteMargin": 10, "mirrorActors": false, "messageFontSize": 14, "noteFontSize": 14, "actorFontSize": 15}}}%%
+sequenceDiagram
+    autonumber 15
+    participant App as App mobile
+    participant API as API (módulo identidade)
+    participant DB as PostgreSQL
+    Note over App,API: 15 minutos depois<br/>o token de acesso expira
+    App->>API: POST /v1/auth/renovacao {tokenRenovacao}
+    API->>DB: Confere o hash, revoga a sessão antiga e cria uma nova
+    API-->>App: 200 {novo tokenAcesso, novo tokenRenovacao}
+    Note over API,DB: Token de renovação reusado<br/>= sinal de roubo. Todas as<br/>sessões do aparelho<br/>são revogadas

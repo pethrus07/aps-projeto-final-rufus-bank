@@ -2,7 +2,7 @@
 
 > Arquivo gerado por `ferramentas/planejamento.py`. Não editar à mão.
 
-A equipe tem **8 pessoas** e custa **R$ 132.664,11 por mês** com encargos. O projeto dura 4,05 meses (16/11/2026 a 19/03/2027) e custa **R$ 572.913,36** no total, somando equipe, infraestrutura do Bloco 1, serviços fora da AWS e custos únicos (conta do Google Play e teste de invasão).
+A equipe tem **8 pessoas** e custa **R$ 132.664,11 por mês** com encargos. O projeto dura 4,05 meses (16/11/2026 a 19/03/2027) e custa **R$ 572.922,39** no total, somando equipe, infraestrutura do Bloco 1, serviços fora da AWS e custos únicos (conta do Google Play e teste de invasão).
 
 ## Pesquisa salarial: de onde vêm os números
 
@@ -77,10 +77,10 @@ Os encargos também incidem sobre o 13º e as férias, então o fator é:
 | --- | --- | --- |
 | Equipe | R$ 132.664,11 x 4,05 meses | 537.945,66 |
 | Infra de homologação (Bloco 1) | R$ 1.136,64 x 4,05 meses | 4.609,01 |
-| Infra de produção (Bloco 1), a partir do sprint 7 | R$ 3.779,18 x 0,82 meses | 3.114,71 |
+| Infra de produção (Bloco 1), a partir do sprint 7 | R$ 3.790,14 x 0,82 meses | 3.123,74 |
 | Serviços fora da AWS (Bloco 1, item 4.4: Expo, GitHub, domínio, conta Apple) | R$ 519,62 x 4,05 meses | 2.107,03 |
 | Custos únicos (Bloco 1, item 4.4: conta do Google Play e teste de invasão) | valor único | 25.136,94 |
-| **Total** | | **572.913,36** |
+| **Total** | | **572.922,39** |
 
 Meses = semanas do projeto x 12 / 52. Câmbio: a mesma PTAX do Bloco 1.
 
@@ -91,4 +91,15 @@ Meses = semanas do projeto x 12 / 52. Câmbio: a mesma PTAX do Bloco 1.
 - Tarifa do parceiro BaaS por conta e por transação: depende de contrato (Bloco 1).
 - Equipamentos, licenças de software e espaço de trabalho.
 
-Depois do lançamento, a operação custa por mês a infraestrutura do Bloco 1 (R$ 5.435,43) mais a equipe que ficar para evoluir o produto.
+Depois do lançamento, a operação custa por mês a infraestrutura do Bloco 1 (R$ 5.446,39) mais a equipe que ficar para evoluir o produto.
+
+## Conferência com a referência da disciplina (Aula 01)
+
+A Aula 01 traz faixas de custo por tipo de software e três regras práticas. O Rufus conferido contra elas:
+
+| Referência da Aula 01 | No Rufus |
+| --- | --- |
+| Sistema complexo (app mobile, alta segurança): R$ 150 mil a R$ 500 mil | R$ 572.922,39, um pouco acima do teto. Faz sentido: é app em Android e iOS (a aula diz que multiplataforma dobra ou triplica o esforço), tem painéis internos na web (SAC, antifraude e administração) e integração com parceiro BaaS (a aula diz que integrações de API somam de 20% a 30%) |
+| Manutenção pós-lançamento: 15% a 20% do custo inicial por ano | De R$ 85.938,36 a R$ 114.584,48 por ano, além da infraestrutura mensal |
+| Cerca de 60% do custo em desenvolvimento e 40% em teste | O teste não fica só com o QA: entra na Definition of Done de cada item (Bloco 9), com cobertura mínima no pipeline. A referência é o motivo de o QA ser dedicado desde o sprint 0, e não cortado para baratear |
+| Corrigir depois de ir ao ar custa muito mais do que testar antes | Teste de uso a cada sprint (RNF08), teste de invasão antes do lançamento e o sprint 8 inteiro reservado para o beta |

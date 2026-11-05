@@ -1,0 +1,16 @@
+%% titulo: Diagrama de Sequência 3, parte A · Erro crítico: resposta perdida e reenvio idempotente
+%%{init: {"sequence": {"wrap": true, "width": 150, "actorMargin": 95, "messageMargin": 22, "boxMargin": 8, "noteMargin": 10, "mirrorActors": false, "messageFontSize": 14, "noteFontSize": 14, "actorFontSize": 15}}}%%
+sequenceDiagram
+    autonumber 1
+    actor C as Antônio
+    participant App as App mobile
+    participant API as API (pagamentos)
+    participant DB as PostgreSQL
+    C->>App: Confirma Pix de 150 reais
+    App->>API: POST /v1/pix/envios + Idempotency-Key K1
+    API->>DB: Transação: Pix PENDENTE, reserva do saldo, outbox PixSolicitado
+    API--xApp: Resposta perdida (internet do celular caiu)
+    App->>API: Reenvia POST /v1/pix/envios com a MESMA Idempotency-Key K1
+    API->>DB: Busca por (contaId, K1)
+    DB-->>API: Transação já existe
+    API-->>App: 200 a mesma transação, sem novo débito (RNF11)

@@ -1,0 +1,21 @@
+%% titulo: Modelo conceitual 2 de 2: conta, razão contábil e pagamentos
+%%{init: {"er": {"entityPadding": 10, "minEntityWidth": 90, "diagramPadding": 10, "fontSize": 14}}}%%
+erDiagram
+    direction LR
+    CLIENTE ||--o| CONTA : "possui"
+    CONTA ||--|{ CARTEIRA : "divide em"
+    CARTEIRA ||--o{ LANCAMENTO : "recebe"
+    CARTEIRA ||--o{ SALDO_FECHAMENTO_DIARIO : "fecha"
+    CONTA ||--o{ TRANSACAO : "movimenta"
+    TRANSACAO ||--|{ LANCAMENTO : "gera 2 ou mais"
+    TRANSACAO ||--o| PIX_ENVIO : "é Pix enviado"
+    TRANSACAO ||--o| PIX_RECEBIMENTO : "é Pix recebido"
+    TRANSACAO ||--o| PAGAMENTO_BOLETO : "é boleto"
+    TRANSACAO ||--o| MOVIMENTO_META : "é movimento de meta"
+    CONTA ||--o{ CHAVE_PIX : "registra"
+    CONTA ||--o{ META : "planeja"
+    META ||--|| CARTEIRA : "guarda em"
+    META ||--o{ MOVIMENTO_META : "recebe"
+    TRANSACAO ||--o| PEDIDO_APROVACAO : "aguarda (parte 1)"
+    TRANSACAO ||--o| ANALISE_RISCO : "avaliada por"
+    FUNCIONARIO |o--o{ ANALISE_RISCO : "decide"

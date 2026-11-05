@@ -2,9 +2,13 @@
 
 Todas as entidades do domínio e como se relacionam, sem atributos. Os nomes vêm do [modelo de domínio](../bloco-3-arquitetura/05-modelo-de-dominio.md).
 
-![Modelo conceitual do Rufus Bank](diagramas/img/conceitual.svg)
+![Modelo conceitual 1: pessoas, acesso, família e atendimento](diagramas/img/conceitual-1-pessoas-e-atendimento.svg)
 
-Fonte: [diagramas/conceitual.mmd](diagramas/conceitual.mmd). Notação pé de galinha: `||` exatamente um, `o|` zero ou um, `|{` um ou muitos, `o{` zero ou muitos.
+![Modelo conceitual 2: conta, razão contábil e pagamentos](diagramas/img/conceitual-2-dinheiro.svg)
+
+Para caber legível, o modelo está em duas partes. Cliente, Conta, Transação, Funcionário e Pedido de aprovação aparecem nas duas, para mostrar a ligação.
+
+Fontes: [diagramas/conceitual-1-pessoas-e-atendimento.mmd](diagramas/conceitual-1-pessoas-e-atendimento.mmd) e [diagramas/conceitual-2-dinheiro.mmd](diagramas/conceitual-2-dinheiro.mmd). Notação pé de galinha: `||` exatamente um, `o|` zero ou um, `|{` um ou muitos, `o{` zero ou muitos.
 
 ## Como ler o diagrama
 

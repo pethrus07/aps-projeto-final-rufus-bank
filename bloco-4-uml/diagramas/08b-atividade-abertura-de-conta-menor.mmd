@@ -1,0 +1,23 @@
+%% titulo: Diagrama de Atividades 1, parte B · Abertura de conta: ramo do menor com o responsável
+%%{init: {"themeVariables": {"edgeLabelBackground": "#FFFFFF"}, "flowchart": {"wrappingWidth": 230, "nodeSpacing": 28, "rankSpacing": 30, "padding": 4, "diagramPadding": 8}}}%%
+flowchart TD
+    classDef inicio fill:#111827,stroke:#111827,color:#111827
+    classDef fim fill:#111827,stroke:#111827,stroke-width:4px,color:#111827
+    classDef barra fill:#111827,stroke:#111827,color:#111827,font-size:2px
+    classDef acao fill:#FFFFFF,stroke:#374151,color:#111827
+    classDef conector fill:#FFFFFF,stroke:#111827,stroke-width:2px,color:#111827
+    classDef nota fill:#FFFFFF,stroke:#FFFFFF,color:#4B5563
+
+    N3["vem da parte A: cliente de 16 ou 17 anos"]:::nota -.- M2
+    M2(("M")):::conector --> B1[" "]:::barra
+    B1 --> A9(["(Parceiro BaaS) Valida a identidade do menor"]):::acao
+    B1 --> A10(["(Rufus) Pede CPF e celular do responsável e envia o convite"]):::acao
+    A10 --> A11(["(Responsável) Abre o convite, valida a identidade e aceita os termos"]):::acao
+    A11 --> D4{"Aceitou em até 7 dias?"}
+    D4 -- "não" --> A12(["(Rufus) Cancela o pedido e apaga os dados enviados"]):::acao
+    A12 --> F2((( ))):::fim
+    D4 -- "sim" --> B2[" "]:::barra
+    A9 --> B2
+    B2 --> A13(["(Rufus) Cria o vínculo com os limites definidos pelo responsável"]):::acao
+    A13 --> V2(("V")):::conector
+    V2 -.- N4["segue na parte C: o parceiro abre a conta"]:::nota

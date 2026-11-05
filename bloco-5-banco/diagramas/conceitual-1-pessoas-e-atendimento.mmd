@@ -1,0 +1,21 @@
+%% titulo: Modelo conceitual 1 de 2: pessoas, acesso, família e atendimento
+%%{init: {"er": {"entityPadding": 10, "minEntityWidth": 90, "diagramPadding": 10, "fontSize": 14}}}%%
+erDiagram
+    direction LR
+    CLIENTE ||--o{ DISPOSITIVO : "usa"
+    CLIENTE ||--|| CREDENCIAL : "tem"
+    DISPOSITIVO ||--o{ SESSAO_RENOVACAO : "abre"
+    CLIENTE ||--o{ CONSENTIMENTO : "concede"
+    CLIENTE ||--o| CONTA : "possui (parte 2)"
+    CLIENTE ||--o| VINCULO_RESPONSAVEL : "é o menor"
+    CLIENTE ||--o{ VINCULO_RESPONSAVEL : "é o responsável"
+    VINCULO_RESPONSAVEL ||--o{ PEDIDO_APROVACAO : "decide"
+    CLIENTE ||--o{ CONTATO_CONFIANCA : "indica"
+    CLIENTE ||--o{ CHAMADO : "abre"
+    FUNCIONARIO |o--o{ CHAMADO : "atende"
+    CHAMADO ||--|{ MENSAGEM_CHAMADO : "contém"
+    FUNCIONARIO ||--o{ REGISTRO_AUDITORIA : "deixa"
+    CLIENTE ||--o{ NOTIFICACAO : "é avisado por"
+    CLIENTE ||--o{ LEMBRETE_CONTA : "cadastra"
+    OUTBOX_EVENTO {
+    }

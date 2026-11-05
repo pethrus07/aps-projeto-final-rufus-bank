@@ -111,7 +111,7 @@ class Desenho:
         else:
             self.texto(x + 12, y + h - 12, rot, tam=12.5, peso="700", cor=cor, ancora="start")
 
-    def ator(self, cx, y, nome_linhas):
+    def ator(self, cx, y, nome_linhas, tam=12.5):
         """Ator UML: boneco palito com nome embaixo."""
         s = LINHA
         self.partes.append(
@@ -120,21 +120,21 @@ class Desenho:
             f'<line x1="{cx - 15}" y1="{y + 26}" x2="{cx + 15}" y2="{y + 26}" stroke="{s}" stroke-width="1.5"/>'
             f'<line x1="{cx}" y1="{y + 42}" x2="{cx - 12}" y2="{y + 60}" stroke="{s}" stroke-width="1.5"/>'
             f'<line x1="{cx}" y1="{y + 42}" x2="{cx + 12}" y2="{y + 60}" stroke="{s}" stroke-width="1.5"/>')
-        self.texto(cx, y + 78, nome_linhas, tam=12.5, peso="700")
+        self.texto(cx, y + 78, nome_linhas, tam=tam, peso="700", altura_linha=round(tam * 1.3))
 
-    def ator_sistema(self, x, y, w, h, nome_linhas):
+    def ator_sistema(self, x, y, w, h, nome_linhas, tam=12.5):
         """Ator que é sistema externo: retângulo com estereótipo «sistema»."""
         self.partes.append(f'<rect x="{x}" y="{y}" width="{w}" height="{h}" fill="#F3F4F6" stroke="{LINHA}" stroke-width="1.4"/>')
-        self.texto(x + w / 2, y + 18, "«sistema externo»", tam=11, cor="#4B5563", italico=True)
-        self.texto(x + w / 2, y + 36, nome_linhas, tam=12.5, peso="700")
+        self.texto(x + w / 2, y + 18, "«sistema externo»", tam=tam - 1.5, cor="#4B5563", italico=True)
+        self.texto(x + w / 2, y + 38, nome_linhas, tam=tam, peso="700")
 
-    def caso(self, cx, cy, rx, ry, linhas):
+    def caso(self, cx, cy, rx, ry, linhas, tam=12):
         self.partes.append(f'<ellipse cx="{cx}" cy="{cy}" rx="{rx}" ry="{ry}" fill="#FFFFFF" stroke="{LINHA}" stroke-width="1.4"/>')
         if isinstance(linhas, str):
             linhas = [linhas]
-        al = 15
-        y0 = cy + 4 - (len(linhas) - 1) * al / 2
-        self.texto(cx, y0, linhas, tam=12, altura_linha=al)
+        al = round(tam * 1.25)
+        y0 = cy + tam / 3 - (len(linhas) - 1) * al / 2
+        self.texto(cx, y0, linhas, tam=tam, altura_linha=al)
 
     def componente(self, x, y, w, h, nome_linhas, estereotipo="«component»", cores=UML):
         """Componente UML 2: retângulo com o ícone de componente no canto."""

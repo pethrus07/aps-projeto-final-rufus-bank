@@ -1,0 +1,20 @@
+%% titulo: Diagrama de Sequência 3, parte B · Erro crítico: falha no parceiro, nova tentativa e compensação
+%%{init: {"sequence": {"wrap": true, "width": 150, "actorMargin": 95, "messageMargin": 22, "boxMargin": 8, "noteMargin": 10, "mirrorActors": false, "messageFontSize": 14, "noteFontSize": 14, "actorFontSize": 15}}}%%
+sequenceDiagram
+    autonumber 9
+    participant DB as PostgreSQL
+    participant W as Worker
+    participant BaaS as Parceiro BaaS
+    W->>DB: Lê PixSolicitado (FOR UPDATE SKIP LOCKED)
+    W->>BaaS: enviarPix(t)
+    BaaS--xW: Sem resposta em 5 s (timeout)
+    W->>DB: tentativas = 1, próxima tentativa em 2 s (espera crescente)
+    Note over W,BaaS: Circuit breaker conta a falha.<br/>Com 5 falhas seguidas abre<br/>por 30 s e para de insistir
+    W->>BaaS: enviarPix(t) com o mesmo id da transação
+    BaaS-->>W: Recusado: conta de destino encerrada
+    rect rgb(255, 238, 238)
+        Note over DB,W: Compensação da saga<br/>(ServicoEnvioPix.compensar)<br/>numa única transação do banco
+        W->>DB: status RECUSADA, depois ESTORNADA
+        W->>DB: INSERT lançamentos de estorno: -15000 LIQUIDACAO_PIX, +15000 PRINCIPAL
+        W->>DB: INSERT outbox PixEstornado
+    end

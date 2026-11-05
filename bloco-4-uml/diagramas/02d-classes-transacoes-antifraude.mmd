@@ -1,0 +1,77 @@
+%% titulo: Diagrama de Classes, parte D de D · transações (herança) e antifraude
+%%{init: {"class": {"nodeSpacing": 28, "rankSpacing": 38, "padding": 6}}}%%
+classDiagram
+    direction TB
+    class Transacao {
+        <<abstract>>
+        #id: UUID
+        #tipo: TipoTransacao
+        #valorCentavos: Long
+        #status: StatusTransacao
+        #chaveIdempotencia: String
+        #idParceiro: String
+        #criadaEm: Instant
+        #concluidaEm: Instant
+        +transicionarPara(novo: StatusTransacao) void
+        +estaConcluida() Boolean
+    }
+    class PixEnvio {
+        -chaveDestino: String
+        -nomeRecebedor: String
+        -documentoRecebedorMascarado: String
+        -bancoRecebedor: String
+        -destinatarioNovo: Boolean
+    }
+    class PixRecebimento {
+        -nomePagador: String
+        -bancoPagador: String
+    }
+    class PagamentoBoleto {
+        -linhaDigitavel: String
+        -beneficiario: String
+        -vencimento: LocalDate
+        -jurosCentavos: Long
+    }
+    class MovimentoMeta {
+        -metaId: UUID
+    }
+    class StatusTransacao {
+        <<enumeration>>
+        PENDENTE
+        RETIDA
+        ENVIADA
+        CONCLUIDA
+        RECUSADA
+        ESTORNADA
+    }
+    class AnaliseRisco {
+        -id: UUID
+        -nota: Integer
+        -motivos: List~String~
+        -resultado: ResultadoAnalise
+        -decididaEm: Instant
+        +reter() Boolean
+    }
+    class Conta {
+        <<parte C>>
+    }
+    class Funcionario {
+        <<parte B>>
+    }
+    class Lancamento {
+        <<parte C>>
+    }
+    class Meta {
+        <<parte C>>
+    }
+
+    Conta "1" -- "0..*" Transacao
+    Transacao "1" *-- "2..*" Lancamento : gera
+    Transacao <|-- PixEnvio
+    Transacao <|-- PixRecebimento
+    Transacao <|-- PagamentoBoleto
+    Transacao <|-- MovimentoMeta
+    Transacao --> StatusTransacao
+    MovimentoMeta "0..*" --> "1" Meta
+    Transacao "1" -- "0..1" AnaliseRisco
+    Funcionario "0..1" -- "0..*" AnaliseRisco : decide

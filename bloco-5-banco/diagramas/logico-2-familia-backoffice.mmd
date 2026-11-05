@@ -1,0 +1,62 @@
+%% titulo: Modelo lógico 2 de 6: família e backoffice
+%%{init: {"er": {"entityPadding": 10, "minEntityWidth": 90, "diagramPadding": 10, "fontSize": 14}}}%%
+erDiagram
+    direction TB
+    vinculo_responsavel {
+        uuid id PK
+        uuid menor_cliente_id FK,UK
+        uuid responsavel_cliente_id FK
+        text status
+        bigint limite_diario_centavos
+        bigint limite_mensal_centavos
+        timestamptz convidado_em
+        timestamptz aceito_em
+        timestamptz expira_em
+    }
+    pedido_aprovacao {
+        uuid id PK
+        uuid vinculo_id FK
+        uuid transacao_id FK,UK
+        text status
+        timestamptz criado_em
+        timestamptz expira_em
+        timestamptz decidido_em
+    }
+    contato_confianca {
+        uuid id PK
+        uuid cliente_id FK
+        text nome
+        text celular
+        text status
+        timestamptz aceito_em
+    }
+    funcionario {
+        uuid id PK
+        text nome
+        text email
+        text papel
+        text hash_senha
+        bytea segredo_totp_cifrado
+        boolean ativo
+    }
+    registro_auditoria {
+        bigint id PK
+        uuid funcionario_id FK
+        text acao
+        text entidade
+        text entidade_id
+        inet ip
+        timestamptz ocorrido_em
+    }
+    cliente {
+        uuid id PK
+    }
+    transacao {
+        uuid id PK
+    }
+    cliente ||--o| vinculo_responsavel : "menor_cliente_id"
+    cliente ||--o{ vinculo_responsavel : "responsavel_cliente_id"
+    vinculo_responsavel ||--o{ pedido_aprovacao : "vinculo_id"
+    transacao ||--o| pedido_aprovacao : "transacao_id"
+    cliente ||--o{ contato_confianca : "cliente_id"
+    funcionario ||--o{ registro_auditoria : "funcionario_id"

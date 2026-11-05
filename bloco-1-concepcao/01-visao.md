@@ -34,10 +34,21 @@ Um banco digital com interface simples, linguagem clara e foco em quem os bancos
 Na prática, isso vira cinco princípios que valem para todas as telas e que os próximos blocos precisam cumprir:
 
 1. **Ícone e áudio em toda tela.** Tudo que está escrito pode ser ouvido. Quem não lê bem não fica de fora.
-2. **Poucos passos.** As ações principais (ver saldo, mandar Pix, pagar conta) terminam em no máximo 3 toques depois do login.
+2. **Poucos passos.** As ações principais (ver saldo, mandar Pix, pagar conta) terminam em no máximo 3 toques de navegação depois do login. A confirmação com a digital, que protege contra golpe, vem por último e não é cortada para economizar toque.
 3. **Linguagem do dia a dia.** Frases curtas, sem jargão. "Dinheiro que você tem" no lugar de "saldo disponível".
 4. **Proteção contra golpe por padrão.** O Rufus nunca liga para o cliente. Antes de mandar dinheiro, o app fala em voz alta para quem vai e quanto.
 5. **Autonomia com rede de apoio.** O cliente usa sozinho, mas pode ter um contato de confiança e, no caso de menor de idade, um responsável vinculado.
+
+## Análise SWOT (FOFA)
+
+Ferramenta de planejamento estratégico vista na Aula 05 para avaliar o cenário interno (forças e fraquezas) e externo (oportunidades e ameaças).
+
+| | Ajuda | Atrapalha |
+| --- | --- | --- |
+| **Interno** | **Forças.** Interface com áudio e ícones em toda tela, coisa que os bancos atuais não fazem. Proteção contra golpe pensada para o público vulnerável. Conta de menor com responsável. Custo de infraestrutura baixo por usuário (R$ 0,38 por mês na AWS em produção) | **Fraquezas.** Marca nova, sem histórico de confiança. Depende de um parceiro BaaS para existir. Equipe pequena, de 8 pessoas |
+| **Externo** | **Oportunidades.** 21,1 milhões de adultos fora do uso do sistema financeiro. Pix já popular, inclusive entre quem tem pouca leitura. Idosos usando mais a internet (59% em 2024, contra 43% em 2022) | **Ameaças.** Golpes crescendo (falsa central, +195,7% no 1º semestre de 2025). Grandes bancos podem copiar a ideia. Mudança nas regras do Pix ou da LGPD |
+
+Cada ameaça e cada fraqueza virou risco com plano de mitigação no item 5 (R01, R04, R06) e na matriz do Bloco 7.
 
 ## Público-alvo
 
@@ -45,7 +56,7 @@ Adultos com baixa escolaridade ou pouca familiaridade digital, idosos e adolesce
 
 ## Atores do sistema
 
-O enunciado pede no mínimo 4 atores. O Rufus tem 6 humanos e 3 sistemas externos:
+O enunciado pede no mínimo 4 atores. O Rufus tem 7 humanos e 3 sistemas externos:
 
 | Ator | Tipo | O que faz |
 | --- | --- | --- |
@@ -55,9 +66,10 @@ O enunciado pede no mínimo 4 atores. O Rufus tem 6 humanos e 3 sistemas externo
 | Contato de confiança | Humano | Recebe aviso de movimentação fora do padrão (familiar ou cuidador) |
 | Atendente do SAC | Humano | Atende chamados abertos dentro do app |
 | Analista antifraude | Humano | Analisa transações suspeitas e bloqueia contas |
+| Administrador | Humano | Cadastra funcionários e define o papel de cada um nos painéis internos |
 | Parceiro BaaS | Sistema externo | Instituição autorizada pelo Banco Central que mantém a conta e liquida o Pix |
 | Serviço de voz | Sistema externo | Transforma texto em fala (Amazon Polly) |
-| Serviço de notificação | Sistema externo | Envia push e SMS |
+| Serviço de notificação | Sistema externo | Envia push (Expo Push) e SMS (AWS) |
 
 ## Funcionalidades macro
 

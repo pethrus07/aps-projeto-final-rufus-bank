@@ -1,0 +1,19 @@
+%% titulo: Diagrama de Sequência 2, parte A · Pix com sucesso: consulta da chave e fala do recebedor
+%%{init: {"sequence": {"wrap": true, "width": 150, "actorMargin": 95, "messageMargin": 22, "boxMargin": 8, "noteMargin": 10, "mirrorActors": false, "messageFontSize": 14, "noteFontSize": 14, "actorFontSize": 15}}}%%
+sequenceDiagram
+    autonumber 1
+    actor C as Dona Marlene
+    participant App as App mobile
+    participant API as API (pagamentos)
+    participant BaaS as Parceiro BaaS
+    participant Voz as Amazon Polly
+    C->>App: Informa a chave e o valor
+    App->>API: POST /v1/pix/consultas-chave {chave}
+    API->>BaaS: PortaBancaria.consultarChave(chave)
+    BaaS-->>API: Nome do recebedor, banco, documento mascarado
+    API-->>App: 200 {nomeRecebedor, bancoRecebedor}
+    App->>API: POST /v1/falas {"Você vai mandar 50 reais para Maria Souza"}
+    API->>Voz: Gera o áudio
+    Voz-->>API: Áudio
+    API-->>App: 200 {urlAudio}
+    App-->>C: Mostra e fala o nome, o banco e o valor

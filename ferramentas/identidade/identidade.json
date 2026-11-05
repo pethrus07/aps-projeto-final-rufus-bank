@@ -1,34 +1,45 @@
 {
   "nome": "Rufus Bank",
-  "ideia": "Luz e clareza: o Rufus ilumina a vida financeira. Azul-noite para contraste e confiança, amarelo-luz como acento. Contraste sempre WCAG AA ou melhor, porque o público lê com dificuldade.",
+  "ideia": "Rufus vem do latim: vermelho, ruivo. O vermelho é a marca: logo, botões principais e superfícies de destaque. Texto e valores em dinheiro ficam em grafite, nunca em vermelho, porque valor vermelho num banco se lê como dinheiro saindo ou saldo negativo. O perigo usa um vermelho mais escuro e vem sempre com ícone e texto. Todo par de cor de texto passa de 4,5:1 (WCAG AA).",
   "cores": {
-    "noite": "14213D",
-    "noite_2": "24365E",
-    "luz": "FFC531",
-    "luz_suave": "FFF4D6",
+    "vermelho": "C1121F",
+    "vermelho_escuro": "8A0B14",
+    "vermelho_suave": "FDECEC",
+    "grafite": "1E1A1B",
+    "texto": "1E1A1B",
+    "texto_2": "5C5457",
     "fundo": "FFFFFF",
-    "superficie": "F4F6FA",
-    "borda": "DDE3EC",
-    "texto": "14213D",
-    "texto_2": "4A5872",
+    "superficie": "F7F4F4",
+    "borda": "E9E1E2",
     "sucesso": "0B7A53",
     "alerta": "B45309",
-    "perigo": "C0392B"
+    "perigo": "8A0B14"
+  },
+  "papeis": {
+    "vermelho": "marca: logo, botão principal, botão Ouvir, ícones de destaque",
+    "vermelho_escuro": "fundo da capa e dos slides escuros; ação de perigo (bloquear tudo), sempre com ícone de cadeado",
+    "vermelho_suave": "faixas de informação e círculos atrás de ícones",
+    "grafite": "texto, valores em dinheiro, cartão de saldo, botão secundário",
+    "sucesso": "confirmação (Pix enviado)",
+    "alerta": "aviso de limite"
   },
   "contraste_conferido": {
-    "texto sobre fundo": "16,0:1",
-    "noite sobre luz": "10,1:1",
-    "texto_2 sobre fundo": "7,2:1",
-    "texto_2 sobre superficie": "6,6:1",
-    "branco sobre noite": "16,0:1",
+    "branco sobre vermelho": "6,2:1",
+    "branco sobre vermelho_escuro": "9,8:1",
+    "vermelho sobre fundo": "6,2:1",
+    "vermelho sobre vermelho_suave": "5,4:1",
+    "grafite sobre vermelho_suave": "15,1:1",
+    "grafite sobre fundo": "17,2:1",
+    "texto_2 sobre fundo": "7,3:1",
+    "texto_2 sobre superficie": "6,7:1",
+    "branco sobre grafite": "17,2:1",
     "branco sobre sucesso": "5,4:1",
-    "branco sobre alerta": "5,0:1",
-    "branco sobre perigo": "5,4:1"
+    "branco sobre alerta": "5,0:1"
   },
   "fontes": {
     "documento_e_slides": "Arial",
-    "app": "Roboto (Material Design no Android)"
+    "app": "Roboto (Material Design no Android); Arial nos protótipos, porque a máquina não tem Roboto"
   },
-  "motivo_visual": "Círculo amarelo-luz atrás do ícone (a 'luz' do Rufus). Cantos arredondados de 12 px nos cartões.",
-  "mascote": "Rufus, um cão-guia: o 'melhor amigo' que conduz com segurança. Só como ícone simples, nunca como ilustração pesada."
+  "motivo_visual": "Círculo vermelho com o R branco (o logo). Cantos arredondados de 12 px nos cartões.",
+  "mascote": "Rufus, um cão ruivo: o 'melhor amigo' que conduz com segurança. Só como ícone simples."
 }

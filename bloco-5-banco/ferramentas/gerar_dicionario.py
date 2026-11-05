@@ -199,16 +199,27 @@ def main():
 
 # Diagramas do modelo lógico, gerados do mesmo catálogo (tabela e desenho não divergem).
 GRUPOS = {
-    "logico-1-identidade-familia-backoffice": (
-        "Modelo lógico 1 de 3: identidade, família e backoffice",
-        MODULOS["identidade"] + MODULOS["familia"] + MODULOS["backoffice"]),
-    "logico-2-contas-pagamentos": (
-        "Modelo lógico 2 de 3: contas, razão contábil e pagamentos",
-        MODULOS["contas"] + MODULOS["pagamentos"]),
-    "logico-3-antifraude-atendimento-notificacao": (
-        "Modelo lógico 3 de 3: antifraude, atendimento e notificação",
+    "logico-1-identidade": (
+        "Modelo lógico 1 de 6: identidade",
+        MODULOS["identidade"]),
+    "logico-2-familia-backoffice": (
+        "Modelo lógico 2 de 6: família e backoffice",
+        MODULOS["familia"] + MODULOS["backoffice"]),
+    "logico-3-contas-razao": (
+        "Modelo lógico 3 de 6: contas e razão contábil",
+        MODULOS["contas"]),
+    "logico-4-transacoes": (
+        "Modelo lógico 4 de 6: transações e subtipos",
+        ["transacao", "pix_envio", "pix_recebimento", "pagamento_boleto", "movimento_meta"]),
+    "logico-5-chaves-metas": (
+        "Modelo lógico 5 de 6: chaves Pix e metas",
+        ["chave_pix", "meta"]),
+    "logico-6-antifraude-atendimento-notificacao": (
+        "Modelo lógico 6 de 6: antifraude, atendimento e notificação",
         MODULOS["antifraude"] + MODULOS["atendimento"] + MODULOS["notificacao"]),
 }
+# todas as tabelas do schema estão em exatamente um grupo
+assert sorted(t for _, ts in GRUPOS.values() for t in ts) == sorted(t for ts in MODULOS.values() for t in ts)
 
 
 def tipo_curto(t):
@@ -233,7 +244,9 @@ def diagramas_logicos(por_nome):
                 nula = next(c["nulo"] for c in t["colunas"] if c["campo"] == col)
                 fks.append((pai, nome, col, (col,) in unicas, nula))
         externos = sorted({pai for pai, *_ in fks if pai not in nomes})
-        linhas = [f"%% titulo: {titulo}", "erDiagram"]
+        linhas = [f"%% titulo: {titulo}",
+                  '%%{init: {"er": {"entityPadding": 10, "minEntityWidth": 90, "diagramPadding": 10, "fontSize": 14}}}%%',
+                  "erDiagram", "    direction TB"]
         for nome in nomes:
             t = por_nome[nome]
             pk = {c for k in t["restricoes"] or [] if k["tipo"] == "p" for c in k["colunas"]}

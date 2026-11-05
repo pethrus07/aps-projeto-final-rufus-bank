@@ -1,0 +1,20 @@
+%% titulo: Diagrama de Sequência 2, parte B · Pix com sucesso: confirmação, antifraude e gravação
+%%{init: {"sequence": {"wrap": true, "width": 150, "actorMargin": 95, "messageMargin": 22, "boxMargin": 8, "noteMargin": 10, "mirrorActors": false, "messageFontSize": 14, "noteFontSize": 14, "actorFontSize": 15}}}%%
+sequenceDiagram
+    autonumber 11
+    actor C as Dona Marlene
+    participant App as App mobile
+    participant API as API (pagamentos e antifraude)
+    participant DB as PostgreSQL
+    C->>App: Confirma com a digital
+    App->>API: POST /v1/pix/envios {chave, valorCentavos} + Idempotency-Key
+    Note right of API: Checa limites:<br/>destinatário novo,<br/>horário noturno,<br/>limite do menor
+    API->>API: MotorAntifraude<br/>.avaliar(pixEnvio)
+    Note right of API: AnaliseRisco nota 20,<br/>LIBERADA_AUTOMATICA
+    rect rgb(235, 244, 255)
+        Note over API,DB: Uma única transação do banco<br/>(UnidadeDeTrabalho)
+        API->>DB: INSERT transacao PENDENTE
+        API->>DB: INSERT lançamentos: -5000 PRINCIPAL, +5000 LIQUIDACAO_PIX
+        API->>DB: INSERT outbox_evento PixSolicitado
+    end
+    API-->>App: 202 {id, status: PENDENTE}

@@ -1,0 +1,73 @@
+%% titulo: Diagrama de Classes, parte B de D · família, atendimento e backoffice
+%%{init: {"class": {"nodeSpacing": 28, "rankSpacing": 38, "padding": 6}}}%%
+classDiagram
+    direction TB
+    class VinculoResponsavel {
+        -id: UUID
+        -status: StatusVinculo
+        -limiteDiarioCentavos: Long
+        -limiteMensalCentavos: Long
+        -convidadoEm: Instant
+        -aceitoEm: Instant
+        -expiraEm: Instant
+        +aceitar() void
+        +definirLimites(diario: Long, mensal: Long) void
+        +permite(valorCentavos: Long) Boolean
+    }
+    class PedidoAprovacao {
+        -id: UUID
+        -status: StatusPedido
+        -criadoEm: Instant
+        -expiraEm: Instant
+        -decididoEm: Instant
+        +decidir(aprovado: Boolean) void
+    }
+    class Chamado {
+        -id: UUID
+        -assunto: String
+        -status: StatusChamado
+        -abertoEm: Instant
+        -fechadoEm: Instant
+        +responder(texto: String) MensagemChamado
+        +resolver() void
+    }
+    class MensagemChamado {
+        -id: UUID
+        -autor: AutorMensagem
+        -texto: String
+        -audioUrl: String
+        -enviadaEm: Instant
+    }
+    class Funcionario {
+        -id: UUID
+        -nome: String
+        -email: String
+        -papel: Papel
+        -hashSenha: String
+        -segredoTotp: String
+        -ativo: Boolean
+        +temPapel(p: Papel) Boolean
+    }
+    class RegistroAuditoria {
+        -id: Long
+        -acao: String
+        -entidade: String
+        -entidadeId: String
+        -ip: String
+        -ocorridoEm: Instant
+    }
+    class AnaliseRisco {
+        <<parte D>>
+    }
+    class Cliente {
+        <<parte A>>
+    }
+
+    Cliente "1" -- "0..*" Chamado : abre
+    Cliente "1" -- "0..1" VinculoResponsavel : menor
+    Cliente "1" -- "0..*" VinculoResponsavel : responsável
+    Funcionario "0..1" -- "0..*" AnaliseRisco : decide
+    VinculoResponsavel "1" *-- "0..*" PedidoAprovacao
+    Chamado "1" *-- "1..*" MensagemChamado
+    Funcionario "0..1" -- "0..*" Chamado : atende
+    Funcionario "1" -- "0..*" RegistroAuditoria : gera

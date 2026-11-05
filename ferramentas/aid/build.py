@@ -36,6 +36,7 @@ CHROME = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
 
 # (título do bloco no sumário, [arquivos na ordem])
 MANIFESTO = [
+    ("A disciplina no projeto", ["00-a-disciplina-no-projeto.md"]),
     ("Bloco 1 · Concepção e Escopo", [
         "bloco-1-concepcao/01-visao.md",
         "bloco-1-concepcao/02-personas.md",
@@ -45,9 +46,12 @@ MANIFESTO = [
         "bloco-1-concepcao/05-riscos.md",
     ]),
     ("Bloco 2 · Requisitos", [
+        "bloco-2-requisitos/00-processo-de-engenharia-de-requisitos.md",
         "bloco-2-requisitos/01-requisitos-funcionais.md",
         "bloco-2-requisitos/02-requisitos-nao-funcionais.md",
         "bloco-2-requisitos/03-historias-de-usuario.md",
+        "bloco-2-requisitos/04-regras-de-negocio.md",
+        "bloco-2-requisitos/05-design-de-interface.md",
     ]),
     ("Bloco 3 · Arquitetura de Software", [
         "bloco-3-arquitetura/01-adrs.md",
@@ -69,6 +73,7 @@ MANIFESTO = [
 PROIBIDOS = ["—", "a definir", "TODO", "TBD", "Lorem"]  # "FIMDOSUMARIO" é marcador branco de 1 pt
 
 
+BLOCO_ATUAL = ""
 PARCIAL = "--parcial" in sys.argv  # só para testar enquanto há blocos em andamento
 
 
@@ -84,6 +89,35 @@ def arquivos(spec):
     return [RAIZ / a for a in spec if (RAIZ / a).exists()]
 
 
+def tamanho_imagem(uri: str):
+    """Largura e altura em px de um SVG (atributos) ou PNG (cabeçalho)."""
+    from urllib.parse import unquote, urlparse
+    caminho = pathlib.Path(unquote(urlparse(uri).path).lstrip("/"))
+    if caminho.suffix == ".svg":
+        cab = caminho.read_text(encoding="utf-8")[:600]
+        w = re.search(r'width="([\d.]+)"', cab); h = re.search(r'height="([\d.]+)"', cab)
+        return (float(w.group(1)), float(h.group(1))) if w and h else (0, 0)
+    if caminho.suffix == ".png":
+        import struct
+        dados = caminho.read_bytes()[16:24]
+        return struct.unpack(">II", dados)
+    return (0, 0)
+
+
+def figura(tag_img: str, uri: str):
+    w, h = tamanho_imagem(uri)
+    if uri.endswith(".png"):
+        w, h = w / 2, h / 2  # PNG gerado em escala 2x
+    # Escala impressa em mm por px de diagrama. Retrato: coluna de 178 x 235 mm.
+    # Paisagem: página própria de 273 x 176 mm. Usa a que deixar o texto maior,
+    # quando o ganho passa de 10% e o diagrama não cabe legível no retrato.
+    retrato = min(178 / max(w, 1), 235 / max(h, 1))
+    paisagem = min(273 / max(w, 1), 176 / max(h, 1))
+    if retrato < 0.165 and paisagem > retrato * 1.10:
+        return f'<div class="paisagem">{tag_img}</div>'
+    return f'<p>{tag_img}</p>'
+
+
 def md_para_html(caminho: pathlib.Path, bloco_n: int, ids: list):
     texto = caminho.read_text(encoding="utf-8")
     # imagens: caminho relativo vira URI absoluta; svg de diagrama ganha classe
@@ -97,11 +131,15 @@ def md_para_html(caminho: pathlib.Path, bloco_n: int, ids: list):
     # links para outros .md ou arquivos do repo viram texto (não navegam no PDF)
     texto = re.sub(r"(?<!!)\[([^\]]+)\]\((?!https?:)(?!#)([^)]+)\)", r"\1", texto)
     corpo = markdown.markdown(texto, extensions=["tables", "fenced_code", "sane_lists", "attr_list"])
+    corpo = re.sub(r'<p>(<img [^>]*src="(file:[^"]+)"[^>]*>)</p>', lambda m: figura(m.group(1), m.group(2)), corpo)
     # headings h1 do arquivo viram h2 do bloco; numeração de âncoras para o sumário
     def h(m):
         nivel = int(m.group(1))
         conteudo = m.group(2)
         novo = min(nivel + 1, 6)
+        # bloco de um arquivo só: o título do arquivo repete o do bloco; fica só o do bloco
+        if novo == 2 and html.unescape(re.sub("<[^>]+>", "", conteudo)).strip() == BLOCO_ATUAL:
+            return ""
         ident = f"s{len(ids)}"
         if novo <= 3:
             ids.append((novo, re.sub("<[^>]+>", "", conteudo), ident))
@@ -122,8 +160,11 @@ def montar_html(numeros: dict | None):
         ident = f"b{n}"
         ids.append((1, titulo, ident))
         partes = [f'<h1 id="{ident}" class="bloco">{html.escape(titulo)}</h1>']
+        global BLOCO_ATUAL
+        BLOCO_ATUAL = titulo
         for arq in arquivos(spec):
-            partes.append(md_para_html(arq, n, ids))
+            html_arq = md_para_html(arq, n, ids)
+            partes.append(html_arq)
         blocos_html.append(f'<div class="bloco-wrap">{"".join(partes)}</div>')
 
     linhas = []
@@ -139,6 +180,7 @@ def montar_html(numeros: dict | None):
     return f"""<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
 <title>AID · {html.escape(p['nome'])}</title><style>{css}</style></head><body>
 <section class="capa">
+  <div class="sol"><div class="miolo">R</div></div>
   <div class="sup">{html.escape(p['instituicao'])}<br>{html.escape(p['disciplina'])} · {html.escape(p['periodo'])}</div>
   <div class="meio"><div class="nome">{html.escape(p['nome'])}</div>
   <div class="slogan">"{html.escape(p['slogan'])}"</div>
@@ -198,6 +240,26 @@ def carimbar_rodape():
     tmp.replace(PDF)
 
 
+def conferir_custos():
+    """Os totais escritos à mão nos blocos têm de bater com os gerados pelo script de custo."""
+    gerado = (RAIZ / "ferramentas/custo-infra/custo-gerado.md").read_text(encoding="utf-8")
+    def linha(rotulo):
+        m = re.search(rf"\| {re.escape(rotulo)} \| ([\d.,]+) \| ([\d.,]+) \|", gerado)
+        if not m:
+            sys.exit(f"ABORTADO: linha '{rotulo}' não encontrada em custo-gerado.md")
+        return m.groups()
+    total = re.search(r"\| \*\*Total\*\* \| \*\*([\d.,]+)\*\* \| \*\*([\d.,]+)\*\* \|", gerado).groups()
+    unicos = re.search(r"Custos únicos \(antes do lançamento\): \*\*R\$ ([\d.,]+)\*\*", gerado).group(1)
+    esperados = [*linha("Produção"), *linha("Homologação"), *linha("Serviços fora da AWS"), *total]
+    for arq, valores in [("bloco-1-concepcao/04-viabilidade.md", esperados + [unicos]),
+                         ("bloco-6-infra/01-diagrama-de-infra.md", esperados)]:
+        txt = (RAIZ / arq).read_text(encoding="utf-8")
+        faltam = [v for v in valores if v not in txt]
+        if faltam:
+            sys.exit(f"ABORTADO: {arq} não mostra os valores gerados {faltam}; atualize pelo custo-gerado.md")
+    print(f"custos conferidos: produção R$ {esperados[1]}, total mensal R$ {total[1]}, únicos R$ {unicos}")
+
+
 def auditar(ids):
     fontes = [p for _, spec in MANIFESTO for p in arquivos(spec)]
     if PDF.stat().st_mtime < max(f.stat().st_mtime for f in fontes):
@@ -214,6 +276,7 @@ def auditar(ids):
 
 def main():
     SAIDA_DIR.mkdir(exist_ok=True)
+    conferir_custos()
     pagina, ids = montar_html(None)
     HTML.write_text(pagina, encoding="utf-8")
     imprimir()

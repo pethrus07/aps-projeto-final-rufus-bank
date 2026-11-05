@@ -55,6 +55,6 @@ Base: `https://api.rufusbank.com.br/v1` em produção, `http://localhost:3000/v1
 | POST | /admin/chamados/{id}/mensagens | atendimento | RF025 | Papel ATENDENTE |
 | GET | /admin/clientes/{id}/historico | atendimento | RF025 | Papel ATENDENTE. Gera registro de auditoria |
 | POST | /admin/funcionarios | backoffice | RF030 | Papel ADMINISTRADOR |
-| GET | /health | | RNF03 | Pública. Usada pelo balanceador e pela verificação externa |
+| GET | /health (fora do prefixo /v1) | | RNF03 | Pública. Usada pelo balanceador e pela verificação externa do Route 53. Também responde em /v1/health |
 
 Portas: a API escuta na **3000** dentro do container. O balanceador recebe na **443** (HTTPS) e redireciona a 80 para 443. O PostgreSQL usa a **5432**, acessível só de dentro da VPC.

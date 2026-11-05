@@ -1,0 +1,19 @@
+%% titulo: Diagrama de Atividades 2, parte B · Análise antifraude: recusa e bloqueio
+%%{init: {"themeVariables": {"edgeLabelBackground": "#FFFFFF"}, "flowchart": {"wrappingWidth": 230, "nodeSpacing": 28, "rankSpacing": 30, "padding": 4, "diagramPadding": 8}}}%%
+flowchart TD
+    classDef inicio fill:#111827,stroke:#111827,color:#111827
+    classDef fim fill:#111827,stroke:#111827,stroke-width:4px,color:#111827
+    classDef barra fill:#111827,stroke:#111827,color:#111827,font-size:2px
+    classDef acao fill:#FFFFFF,stroke:#374151,color:#111827
+    classDef conector fill:#FFFFFF,stroke:#111827,stroke-width:2px,color:#111827
+    classDef nota fill:#FFFFFF,stroke:#FFFFFF,color:#4B5563
+
+    N2["vem da parte A: o analista recusou"]:::nota -.- R2(("R")):::conector
+    R2 --> A10(["(Rufus) Grava RECUSADA_ANALISTA e o registro de auditoria"]):::acao
+    A10 --> A11(["(Rufus) Estorna o valor para a carteira principal"]):::acao
+    A11 --> D2{"Indício de golpe ou conta tomada?"}
+    D2 -- "sim" --> A12(["(Rufus) Bloqueia a conta"]):::acao
+    A12 --> A13(["(Rufus) Avisa o contato de confiança"]):::acao
+    A13 --> A14(["(Rufus) Avisa o cliente para falar com o SAC pelo app"]):::acao
+    D2 -- "não" --> A14
+    A14 --> F2((( ))):::fim

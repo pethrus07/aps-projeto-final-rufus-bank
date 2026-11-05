@@ -1,0 +1,18 @@
+%% titulo: Diagrama de Atividades 1, parte C · Abertura de conta: abertura da conta, fim comum a adulto e menor
+%%{init: {"themeVariables": {"edgeLabelBackground": "#FFFFFF"}, "flowchart": {"wrappingWidth": 230, "nodeSpacing": 28, "rankSpacing": 30, "padding": 4, "diagramPadding": 8}}}%%
+flowchart TD
+    classDef inicio fill:#111827,stroke:#111827,color:#111827
+    classDef fim fill:#111827,stroke:#111827,stroke-width:4px,color:#111827
+    classDef barra fill:#111827,stroke:#111827,color:#111827,font-size:2px
+    classDef acao fill:#FFFFFF,stroke:#374151,color:#111827
+    classDef conector fill:#FFFFFF,stroke:#111827,stroke-width:2px,color:#111827
+    classDef nota fill:#FFFFFF,stroke:#FFFFFF,color:#4B5563
+
+    N6["da parte A: adulto aprovado"]:::nota -.- P2(("P")):::conector
+    N7["da parte B: menor aprovado"]:::nota -.- V3(("V")):::conector
+    P2 --> A8(["(Parceiro BaaS) Abre a conta"]):::acao
+    V3 --> A8
+    A8 --> A14(["(Rufus) Cria a conta e a carteira principal no razão"]):::acao
+    A14 --> A15(["(Cliente) Cria a senha de 6 números e ativa a biometria"]):::acao
+    A15 --> A16(["(Rufus) Vincula o celular e avisa por voz e push: conta ativa"]):::acao
+    A16 --> F3((( ))):::fim

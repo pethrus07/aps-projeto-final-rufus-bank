@@ -1,4 +1,4 @@
-Rufus Bank · teste do modelo físico · 04/11/2026 21:06
+Rufus Bank · teste do modelo físico · 04/11/2026 22:04
 Servidor: PostgreSQL 17.11 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
 
 == Aplicando 001_schema.sql

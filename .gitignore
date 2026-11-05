@@ -1,3 +1,6 @@
 ferramentas/custo-infra/cache/
 __pycache__/
 *.pyc
+entrega/aid.html
+*.tmp.html
+*.tmp.pdf

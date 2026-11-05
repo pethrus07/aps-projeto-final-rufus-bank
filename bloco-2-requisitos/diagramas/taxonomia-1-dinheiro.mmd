@@ -1,0 +1,28 @@
+%% titulo: Taxonomia do app Rufus, parte 1 de 2: dinheiro do dia a dia
+flowchart LR
+  APP(["App Rufus"]):::raiz
+
+  APP --> INI["Início<br/>saldo + Ouvir"]:::n1
+  APP --> PIX["Mandar Pix"]:::n1
+  APP --> REC["Receber"]:::n1
+  APP --> PAG["Pagar conta"]:::n1
+  APP --> EXT["Ver extrato"]:::n1
+  INI --> INI1["Último movimento"]:::n2
+  INI --> INI2["Aviso: o Rufus<br/>nunca liga"]:::n2
+  PIX --> PIX1["Para quem<br/>contato, chave ou QR"]:::n2
+  PIX1 --> PIX2["Quanto"]:::n3
+  PIX2 --> PIX3["Confira antes de mandar<br/>leitura em voz alta"]:::n3
+  PIX3 --> PIX4["Pix enviado<br/>e comprovante"]:::n3
+  REC --> REC1["Mostrar QR Code"]:::n2
+  REC --> REC2["Minhas chaves Pix"]:::n2
+  PAG --> PAG1["Câmera no código<br/>de barras"]:::n2
+  PAG --> PAG2["Digitar o código"]:::n2
+  PAG1 --> PAG3["Confirmar e pagar"]:::n3
+  PAG --> PAG4["Lembretes de contas"]:::n2
+  EXT --> EXT1["Movimentações<br/>com ícone e áudio"]:::n2
+  EXT --> EXT2["Comprovantes"]:::n2
+
+  classDef raiz fill:#C1121F,stroke:#C1121F,color:#FFFFFF,font-weight:bold
+  classDef n1 fill:#FDECEC,stroke:#C1121F,color:#1E1A1B,font-weight:bold
+  classDef n2 fill:#FFFFFF,stroke:#1E1A1B,color:#1E1A1B
+  classDef n3 fill:#F7F4F4,stroke:#5C5457,color:#1E1A1B

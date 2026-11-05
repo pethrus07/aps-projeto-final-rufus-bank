@@ -6,6 +6,23 @@
 
 Sequência de Fibonacci (1, 2, 3, 5, 8, 13), estimada pela equipe por comparação. A história de referência é a **US13 (cadastrar contato de confiança) = 3 pontos**: um formulário, uma regra e uma notificação. Uma história de 13 pontos é grande demais para um sprint e precisa ser quebrada antes de entrar.
 
+## Do épico à tarefa
+
+O backlog segue a hierarquia da Aula 04: **épico → história de usuário → tarefa**. O épico é grande demais e incerto demais para virar incremento, por isso é fatiado em histórias; a história vira incremento num sprint; as tarefas técnicas são o trabalho para entregar a história (Bloco 7). Os 7 épicos são os mesmos pacotes de produto do WBS (Bloco 7, item 1.2).
+
+| Épico | Histórias | SP |
+| --- | --- | --- |
+| E1 Conta e acesso | US01, US02, US03, US17 | 23 |
+| E2 Dinheiro do dia a dia | US04, US05, US06, US07, US08, US21 | 32 |
+| E3 Proteção contra golpe | US11, US12, US13, US16 | 17 |
+| E4 Família | US09, US10, US18 | 16 |
+| E5 Metas e educação | US19, US23, US24 | 10 |
+| E6 Atendimento e avisos | US14, US15, US20 | 13 |
+| E7 Backoffice | US22 | 3 |
+| **Total** | **24 histórias** | **114** |
+
+Exemplo de fatiamento, do épico à tarefa: o épico **E3 Proteção contra golpe** ("Como Dona Marlene, quero estar protegida de golpes sem perder a autonomia") vira a história **US12 Bloquear tudo na hora**, que vira as tarefas: rota `POST /v1/contas/me/bloqueio-total`, atualização de `conta.status` com teste da regra RN07, botão na tela inicial com confirmação falada, aviso ao contato de confiança pelo outbox.
+
 ## Resumo
 
 | ID | Persona | História | RF | MoSCoW | SP |

@@ -1,0 +1,73 @@
+%% titulo: Modelo lógico 6 de 6: antifraude, atendimento e notificação
+%%{init: {"er": {"entityPadding": 10, "minEntityWidth": 90, "diagramPadding": 10, "fontSize": 14}}}%%
+erDiagram
+    direction TB
+    analise_risco {
+        uuid id PK
+        uuid transacao_id FK,UK
+        integer nota
+        text_array motivos
+        text resultado
+        uuid analista_id FK
+        timestamptz decidida_em
+    }
+    chamado {
+        uuid id PK
+        uuid cliente_id FK
+        uuid atendente_id FK
+        text assunto
+        text status
+        timestamptz aberto_em
+        timestamptz fechado_em
+    }
+    mensagem_chamado {
+        uuid id PK
+        uuid chamado_id FK
+        text autor
+        text texto
+        text audio_url
+        timestamptz enviada_em
+    }
+    notificacao {
+        uuid id PK
+        uuid cliente_id FK
+        text canal
+        text tipo
+        text conteudo
+        text status
+        timestamptz criada_em
+        timestamptz enviada_em
+    }
+    outbox_evento {
+        bigint id PK
+        text tipo
+        uuid agregado_id
+        jsonb payload
+        timestamptz criado_em
+        timestamptz processado_em
+        integer tentativas
+        timestamptz proxima_tentativa_em
+    }
+    lembrete_conta {
+        uuid id PK
+        uuid cliente_id FK
+        text descricao
+        integer dia_vencimento
+        boolean ativo
+    }
+    cliente {
+        uuid id PK
+    }
+    funcionario {
+        uuid id PK
+    }
+    transacao {
+        uuid id PK
+    }
+    transacao ||--o| analise_risco : "transacao_id"
+    funcionario |o--o{ analise_risco : "analista_id"
+    cliente ||--o{ chamado : "cliente_id"
+    funcionario |o--o{ chamado : "atendente_id"
+    chamado ||--o{ mensagem_chamado : "chamado_id"
+    cliente ||--o{ notificacao : "cliente_id"
+    cliente ||--o{ lembrete_conta : "cliente_id"

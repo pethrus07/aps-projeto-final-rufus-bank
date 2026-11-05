@@ -4,10 +4,10 @@ O que vamos construir e por quê. Os cinco itens pedidos no enunciado (slide 6):
 
 | Item | Arquivo | Resumo |
 | --- | --- | --- |
-| 1. Documento de Visão | [01-visao.md](01-visao.md) | Nome, slogan, problema com dados reais do Banco Central, Inaf e Febraban, proposta de valor, 9 atores, 16 funcionalidades, fora do escopo |
+| 1. Documento de Visão | [01-visao.md](01-visao.md) | Nome, slogan, problema com dados reais do Banco Central, Inaf e Febraban, proposta de valor, 10 atores, 16 funcionalidades, fora do escopo |
 | 2. Personas | [02-personas.md](02-personas.md) | Antônio (47, baixa leitura), Camila (17, jovem aprendiz), Dona Marlene (68, aposentada) |
 | 3. Mapa de Stakeholders | [03-stakeholders.md](03-stakeholders.md) | 10 stakeholders com interesse, influência e estratégia, matriz poder x interesse |
-| 4. Estudo de Viabilidade | [04-viabilidade.md](04-viabilidade.md) | Técnica, operacional e custo mensal real: R$ 3.779,18 em produção, R$ 1.136,64 em homologação e R$ 519,62 de serviços fora da AWS, todos com fonte |
+| 4. Estudo de Viabilidade | [04-viabilidade.md](04-viabilidade.md) | Técnica, operacional e custo mensal real: R$ 3.790,14 em produção, R$ 1.136,64 em homologação e R$ 519,62 de serviços fora da AWS, todos com fonte |
 | 5. Riscos iniciais | [05-riscos.md](05-riscos.md) | 8 riscos com probabilidade, impacto, severidade, mitigação e sinal de alerta |
 
 ## O que este bloco obriga nos próximos

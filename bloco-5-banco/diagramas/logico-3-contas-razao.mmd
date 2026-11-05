@@ -1,0 +1,42 @@
+%% titulo: Modelo lógico 3 de 6: contas e razão contábil
+%%{init: {"er": {"entityPadding": 10, "minEntityWidth": 90, "diagramPadding": 10, "fontSize": 14}}}%%
+erDiagram
+    direction TB
+    conta {
+        uuid id PK
+        uuid cliente_id FK,UK
+        text agencia
+        text numero UK
+        text id_conta_parceiro UK
+        text status
+        timestamptz bloqueada_em
+        timestamptz criada_em
+    }
+    carteira {
+        uuid id PK
+        uuid conta_id FK
+        text tipo
+    }
+    lancamento {
+        uuid id PK
+        uuid transacao_id FK
+        uuid carteira_id FK
+        bigint valor_centavos
+        timestamptz criado_em
+    }
+    saldo_fechamento_diario {
+        uuid carteira_id PK,FK
+        date data PK
+        bigint saldo_centavos
+    }
+    cliente {
+        uuid id PK
+    }
+    transacao {
+        uuid id PK
+    }
+    cliente ||--o| conta : "cliente_id"
+    conta |o--o{ carteira : "conta_id"
+    transacao ||--o{ lancamento : "transacao_id"
+    carteira ||--o{ lancamento : "carteira_id"
+    carteira ||--o{ saldo_fechamento_diario : "carteira_id"

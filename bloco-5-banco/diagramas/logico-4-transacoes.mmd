@@ -1,0 +1,55 @@
+%% titulo: Modelo lógico 4 de 6: transações e subtipos
+%%{init: {"er": {"entityPadding": 10, "minEntityWidth": 90, "diagramPadding": 10, "fontSize": 14}}}%%
+erDiagram
+    direction TB
+    transacao {
+        uuid id PK
+        uuid conta_id FK
+        text tipo
+        bigint valor_centavos
+        text status
+        text chave_idempotencia
+        text id_parceiro UK
+        timestamptz criada_em
+        timestamptz concluida_em
+    }
+    pix_envio {
+        uuid transacao_id PK,FK
+        text tipo
+        text chave_destino
+        text nome_recebedor
+        text documento_recebedor_mascarado
+        text banco_recebedor
+        boolean destinatario_novo
+    }
+    pix_recebimento {
+        uuid transacao_id PK,FK
+        text tipo
+        text nome_pagador
+        text banco_pagador
+    }
+    pagamento_boleto {
+        uuid transacao_id PK,FK
+        text tipo
+        text linha_digitavel
+        text beneficiario
+        date vencimento
+        bigint juros_centavos
+    }
+    movimento_meta {
+        uuid transacao_id PK,FK
+        text tipo
+        uuid meta_id FK
+    }
+    conta {
+        uuid id PK
+    }
+    meta {
+        uuid id PK
+    }
+    conta ||--o{ transacao : "conta_id"
+    transacao ||--o| pix_envio : "transacao_id"
+    transacao ||--o| pix_recebimento : "transacao_id"
+    transacao ||--o| pagamento_boleto : "transacao_id"
+    meta ||--o{ movimento_meta : "meta_id"
+    transacao ||--o| movimento_meta : "transacao_id"

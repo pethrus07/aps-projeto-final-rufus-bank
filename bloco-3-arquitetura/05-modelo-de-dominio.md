@@ -165,6 +165,10 @@ O diagrama de classes mostra o domínio; o banco (Bloco 5) guarda alguns campos 
 | Saldo da carteira (soma dos lançamentos) | Tabela extra `saldo_fechamento_diario` | Desnormalização de propósito: a consulta de saldo soma só os lançamentos do dia sobre o fechamento anterior e cabe no p95 de 300 ms (ADR-007, RNF01) |
 | Subtipos de `Transacao` (herança) | Uma tabela por subtipo, com chave estrangeira composta (`transacao_id`, `tipo`) | Impede, por exemplo, um registro de Pix apontando para uma transação de boleto |
 
+## Objeto de entrada do Pix
+
+**PedidoPix** (objeto de valor, sem tabela): `chaveDestino: String`, `valorCentavos: Long`, `descricao: String` (opcional, até 140 caracteres), `assinaturaDispositivo: String` (o pedido assinado com a chave do aparelho, destravada pela biometria, ADR-010). É o corpo de `POST /v1/pix/envios`; vira `PixEnvio` depois de validado.
+
 ## Classes de serviço (para o diagrama de classes e o C4 nível 4)
 
 | Classe | Métodos principais |

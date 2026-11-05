@@ -38,10 +38,12 @@ Anexo do Estudo de Viabilidade. Tabela gerada pelo script `ferramentas/custo-inf
 | Polly: leitura em voz alta (12 mi caracteres) | 12.000.000 caracteres | 0,000004 | 48,00 |
 | Route 53: 1 zona de DNS (rufusbank.com.br) | 1 zona | 0,5 | 0,50 |
 | Route 53: consultas de DNS | 5.000.000 consultas | 0,0000004 | 2,00 |
+| Route 53: verificação externa de saúde do /health (RNF03), grátis até 50 | 1 verificação | 0 | 0,00 |
+| Route 53: opções HTTPS e conferência do texto da resposta | 2 opções | 1 | 2,00 |
 | SMS para o Brasil: convites e avisos a quem não tem o app | 1.000 SMS | 0,03 | 30,00 |
-| **Total** | | | **689,91** |
+| **Total** | | | **691,91** |
 
-Em reais: **R$ 3.779,18 por mês**.
+Em reais: **R$ 3.790,14 por mês**.
 
 ### Homologação (staging)
 
@@ -90,11 +92,11 @@ Sem preço público, fora do total:
 
 | Ambiente | USD por mês | R$ por mês |
 | --- | --- | --- |
-| Produção | 689,91 | 3.779,18 |
+| Produção | 691,91 | 3.790,14 |
 | Homologação | 207,50 | 1.136,64 |
 | Serviços fora da AWS | 94,86 | 519,62 |
 | Desenvolvimento | 0,00 | 0,00 (Docker Compose na máquina do dev) |
-| **Total** | **992,27** | **5.435,43** |
+| **Total** | **994,27** | **5.446,39** |
 
 Custos únicos (antes do lançamento): **R$ 25.136,94**.
 

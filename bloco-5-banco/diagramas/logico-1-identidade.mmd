@@ -1,0 +1,50 @@
+%% titulo: Modelo lógico 1 de 6: identidade
+%%{init: {"er": {"entityPadding": 10, "minEntityWidth": 90, "diagramPadding": 10, "fontSize": 14}}}%%
+erDiagram
+    direction TB
+    cliente {
+        uuid id PK
+        text nome_completo
+        bytea cpf_cifrado
+        char64 cpf_hash UK
+        bytea data_nascimento_cifrada
+        text celular
+        text email
+        text tipo
+        text status
+        timestamptz criado_em
+    }
+    dispositivo {
+        uuid id PK
+        uuid cliente_id FK
+        text modelo
+        text chave_publica UK
+        boolean ativo
+        timestamptz vinculado_em
+    }
+    credencial {
+        uuid cliente_id PK,FK
+        text hash_senha
+        integer tentativas_erradas
+        timestamptz bloqueada_ate
+    }
+    sessao_renovacao {
+        uuid id PK
+        uuid dispositivo_id FK
+        char64 hash_token UK
+        timestamptz expira_em
+        timestamptz revogada_em
+    }
+    consentimento {
+        uuid id PK
+        uuid cliente_id FK
+        text tipo
+        text versao_termo
+        timestamptz aceito_em
+        uuid aceito_por_cliente_id FK
+    }
+    cliente ||--o{ dispositivo : "cliente_id"
+    cliente ||--o| credencial : "cliente_id"
+    dispositivo ||--o{ sessao_renovacao : "dispositivo_id"
+    cliente ||--o{ consentimento : "cliente_id"
+    cliente ||--o{ consentimento : "aceito_por_cliente_id"

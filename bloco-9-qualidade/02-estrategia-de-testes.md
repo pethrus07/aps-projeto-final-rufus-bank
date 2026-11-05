@@ -43,3 +43,18 @@ O Rufus mexe com dinheiro de quem tem medo de errar, então a estratégia testa 
 - Nunca usar dado real de cliente fora da produção.
 - Dados de teste gerados por script com CPFs válidos de teste, recriados a cada execução.
 - Contas de teste em produção marcadas e excluídas da conciliação e das métricas de negócio.
+
+## A lição do Ariane 5: redundância não protege contra defeito de software
+
+O caso da Aula 02: em 1996 o foguete Ariane 5 explodiu 40 segundos depois da decolagem porque uma conversão de número com ponto flutuante para inteiro de 16 bits recebeu um valor fora da faixa. O computador reserva rodava **o mesmo software** e falhou junto. E o código com defeito nem era mais necessário.
+
+O Rufus tem a mesma armadilha: a disponibilidade de 99,9% vem de redundância (2 zonas, banco Multi-AZ, 2 NAT, Bloco 6), mas as duas zonas rodam **a mesma imagem**. Um defeito de software derruba as duas ao mesmo tempo. Por isso a proteção contra defeito de software é outra:
+
+| Proteção | Onde |
+| --- | --- |
+| Testes em camadas, com o razão e o outbox testados contra PostgreSQL real | Pirâmide e tipos de teste, acima |
+| Regras críticas garantidas pelo banco, não só pelo código (partidas dobradas, idempotência, um aparelho ativo) | Bloco 5, regras RN02, RN12, RN13 |
+| Dinheiro sempre em centavos inteiros (`bigint`), nunca em ponto flutuante: o mesmo tipo de erro de conversão do Ariane | ADR-004, Bloco 5 |
+| Homologação e smoke test antes de produção | Bloco 6, etapas 6 e 7 do pipeline |
+| Deploy gradual com circuit breaker do ECS, que desfaz a versão nova sozinho se ela não passar no `/health` | Bloco 6, etapa 8 |
+| Menos código que não precisa existir: o lint barra variável e import sem uso (`no-unused-vars` do typescript-eslint) e import entre módulos, e a revisão de código pede a remoção do que sobrou | `codigo/backend/eslint.config.mjs`, guia de padrões (Bloco 8) |

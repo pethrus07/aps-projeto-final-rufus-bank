@@ -1,14 +1,17 @@
 @page { size: A4; margin: 18mm 16mm 20mm 16mm; }
+@page paisagem { size: A4 landscape; margin: 12mm 12mm 16mm 12mm; }
+.paisagem { page: paisagem; page-break-before: always; page-break-after: always; display: flex; align-items: center; justify-content: center; height: 178mm; }
+.paisagem img { max-width: 100%; max-height: 176mm; margin: 0; }
 * { box-sizing: border-box; }
 html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 body { font-family: Arial, Helvetica, sans-serif; font-size: 10pt; line-height: 1.45; color: #111827; margin: 0; }
 
 /* capa: uma folha inteira */
-.capa { height: 255mm; display: flex; flex-direction: column; justify-content: space-between; page-break-after: always; }
+.capa { position: relative; height: 255mm; display: flex; flex-direction: column; justify-content: space-between; page-break-after: always; }
 .capa .sup { font-size: 10pt; color: #4B5563; letter-spacing: .02em; }
 .capa .meio { margin-top: 40mm; }
-.capa .nome { font-size: 40pt; font-weight: 700; color: #111827; }
-.capa .slogan { font-size: 15pt; color: #6D28D9; margin-top: 4mm; }
+.capa .nome { font-size: 44pt; font-weight: 700; color: #1E1A1B; }
+.capa .slogan { font-size: 15pt; color: #C1121F; margin-top: 4mm; }
 .capa .tipo { font-size: 12pt; color: #374151; margin-top: 10mm; }
 .capa .equipe { width: 60%; border-collapse: collapse; margin-top: 20mm; }
 .capa .equipe th, .capa .equipe td { text-align: left; padding: 2.2mm 3mm; border-bottom: 1px solid #E5E7EB; font-size: 10.5pt; }
@@ -26,7 +29,8 @@ h1.sum { font-size: 20pt; margin: 0 0 6mm; }
 
 /* blocos */
 .bloco-wrap { page-break-before: always; }
-h1.bloco { font-size: 22pt; color: #FFFFFF; background: #111827; padding: 6mm 6mm; margin: 0 0 6mm; border-left: 6mm solid #6D28D9; }
+h1.bloco { font-size: 22pt; color: #FFFFFF; background: #8A0B14; padding: 7mm 7mm 7mm 20mm; margin: 0 0 6mm; border-radius: 3mm; position: relative; }
+h1.bloco::before { content: ''; position: absolute; left: 7mm; top: 50%; width: 8mm; height: 8mm; margin-top: -4mm; border-radius: 50%; background: #FFFFFF; }
 h2 { font-size: 15pt; margin: 8mm 0 3mm; padding-bottom: 1.5mm; border-bottom: 2px solid #E5E7EB; page-break-after: avoid; }
 h3 { font-size: 12pt; margin: 6mm 0 2mm; page-break-after: avoid; }
 h4, h5, h6 { font-size: 10.5pt; margin: 4mm 0 1.5mm; page-break-after: avoid; }
@@ -34,11 +38,11 @@ section.arquivo + section.arquivo h2:first-child { page-break-before: always; ma
 p { margin: 1.5mm 0 2.5mm; }
 ul, ol { margin: 1mm 0 3mm; padding-left: 6mm; }
 li { margin: .6mm 0; }
-blockquote { margin: 3mm 0; padding: 2mm 4mm; border-left: 3px solid #6D28D9; background: #F5F3FF; color: #374151; }
+blockquote { margin: 3mm 0; padding: 2mm 4mm; border-left: 3px solid #C1121F; background: #FDECEC; color: #1E1A1B; }
 
 table { width: 100%; border-collapse: collapse; margin: 2mm 0 4mm; font-size: 8.4pt; line-height: 1.3; }
-th { background: #F3F4F6; text-align: left; font-weight: 700; }
-th, td { border: 1px solid #E5E7EB; padding: 1.4mm 1.8mm; vertical-align: top; overflow-wrap: anywhere; }
+th { background: #F7F4F4; color: #1E1A1B; text-align: left; font-weight: 700; }
+th, td { border: 1px solid #E5E7EB; padding: 1.4mm 1.8mm; vertical-align: top; overflow-wrap: break-word; hyphens: auto; }
 tr { page-break-inside: avoid; }
 thead { display: table-header-group; }
 
@@ -47,4 +51,8 @@ pre { background: #F9FAFB; border: 1px solid #E5E7EB; padding: 3mm; font-size: 7
 pre code { background: none; padding: 0; font-size: inherit; }
 
 img { max-width: 100%; max-height: 235mm; display: block; margin: 3mm auto 4mm; page-break-inside: avoid; border: 1px solid #E5E7EB; }
-a { color: #4C1D95; text-decoration: none; }
+a { color: #8A0B14; text-decoration: none; }
+
+.capa .sol { position: absolute; right: 0; top: 30mm; width: 62mm; height: 62mm; border-radius: 50%; background: #C1121F; display: flex; align-items: center; justify-content: center; }
+.capa .sol .miolo { width: 36mm; height: 36mm; border-radius: 50%; background: #FFFFFF; color: #C1121F; font-size: 54pt; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.capa .equipe th { background: #1E1A1B; color: #FFFFFF; }

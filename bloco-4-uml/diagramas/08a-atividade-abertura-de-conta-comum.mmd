@@ -1,0 +1,26 @@
+%% titulo: Diagrama de Atividades 1, parte A · Abertura de conta: cadastro e validação do adulto
+%%{init: {"themeVariables": {"edgeLabelBackground": "#FFFFFF"}, "flowchart": {"wrappingWidth": 230, "nodeSpacing": 28, "rankSpacing": 30, "padding": 4, "diagramPadding": 8}}}%%
+flowchart TD
+    classDef inicio fill:#111827,stroke:#111827,color:#111827
+    classDef fim fill:#111827,stroke:#111827,stroke-width:4px,color:#111827
+    classDef barra fill:#111827,stroke:#111827,color:#111827,font-size:2px
+    classDef acao fill:#FFFFFF,stroke:#374151,color:#111827
+    classDef conector fill:#FFFFFF,stroke:#111827,stroke-width:2px,color:#111827
+    classDef nota fill:#FFFFFF,stroke:#FFFFFF,color:#4B5563
+
+    I(( )):::inicio --> A1(["(Cliente) Informa nome, CPF, celular e data de nascimento"]):::acao
+    A1 --> D1{"Idade?"}
+    D1 -- "menos de 16 anos" --> A2(["(Rufus) Mostra e fala: conta só a partir de 16 anos"]):::acao
+    A2 --> F1((( ))):::fim
+    D1 -- "16 anos ou mais" --> A3(["(Cliente) Envia foto do documento, ouvindo cada passo"]):::acao
+    A3 --> A4(["(Cliente) Envia selfie"]):::acao
+    A4 --> A5(["(Rufus) Registra os consentimentos com a versão do termo"]):::acao
+    A5 --> D2{"Menor?"}
+    D2 -- "não: 18 anos ou mais" --> A6(["(Parceiro BaaS) Valida a identidade"]):::acao
+    A6 --> D3{"Aprovada?"}
+    D3 -- "recusada" --> A7(["(Rufus) Fala o motivo em uma frase"]):::acao
+    A7 --> A3
+    D3 -- "identidade aprovada" --> P1(("P")):::conector
+    P1 -.- N5["segue na parte C"]:::nota
+    D2 -- "sim: 16 ou 17 anos" --> M1(("M")):::conector
+    M1 -.- N1["continua na parte B: ramo do menor"]:::nota

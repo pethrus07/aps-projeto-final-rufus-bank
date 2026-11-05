@@ -1,6 +1,19 @@
 # 4. Estudo de Viabilidade
 
-**Veredito: o projeto é viável.** Tecnicamente, tudo que o Rufus precisa já existe em serviços maduros. Operacionalmente, a condição é ter um parceiro autorizado pelo Banco Central. A infraestrutura custa **R$ 5.435,43 por mês** (produção, homologação e serviços fora da AWS), mais **R$ 25.136,94 de custos únicos** antes do lançamento. Só a produção na AWS dá R$ 0,38 por usuário ativo.
+**Veredito: o projeto é viável.** Tecnicamente, tudo que o Rufus precisa já existe em serviços maduros. Operacionalmente, a condição é ter um parceiro autorizado pelo Banco Central. A infraestrutura custa **R$ 5.446,39 por mês** (produção, homologação e serviços fora da AWS), mais **R$ 25.136,94 de custos únicos** antes do lançamento. Só a produção na AWS dá R$ 0,38 por usuário ativo.
+
+## As 4 perguntas do estudo de viabilidade
+
+A Aula 04 define o estudo de viabilidade por 4 perguntas, e lembra que ele pode terminar em cancelar o projeto. As respostas do Rufus:
+
+| Pergunta | Resposta | Onde está a prova |
+| --- | --- | --- |
+| O sistema contribui para os objetivos da organização? | Sim. O objetivo do Rufus é atender quem os bancos atendem mal. 21,1 milhões de adultos não usam nenhum produto financeiro e 29% da população de 15 a 64 anos é analfabeta funcional | Documento de Visão, item 1 |
+| Pode ser feito com a tecnologia atual, dentro de custo e prazo? | Sim. Toda necessidade tem tecnologia madura (4.1). O custo mensal de infraestrutura é de R$ 5.446,39 e o MVP cabe em 9 sprints com 8 pessoas | Itens 4.1 e 4.3, Bloco 7 |
+| Pode ser integrado aos sistemas que já existem? | Sim, por API do parceiro BaaS para conta, Pix e boleto, e por webhook para os eventos. A integração fica isolada numa porta com adaptador, para trocar de parceiro se precisar | ADR-002 |
+| Comprar pronto ou fazer aqui? | **Comprar o core bancário e fazer a experiência.** Construir conta, liquidação de Pix e autorização do Banco Central levaria anos e exigiria capital regulatório. Comprar isso de um parceiro BaaS e construir o que é o diferencial do Rufus (interface com áudio, proteção contra golpe, conta de menor) é o melhor custo-benefício | Item 4.2, fora do escopo do Bloco 1 |
+
+O relatório de viabilidade é este item. Conclusão: seguir com o projeto. A condição para não seguir seria não conseguir nenhum parceiro BaaS (risco R04).
 
 ## 4.1 Viabilidade técnica
 
@@ -39,11 +52,11 @@ Preços da AWS tirados da tabela oficial (Price List API pública, a mesma base 
 
 | Ambiente | Para que serve | USD por mês | R$ por mês |
 | --- | --- | --- | --- |
-| Produção (AWS) | Clientes reais, alta disponibilidade em 2 zonas | 689,91 | 3.779,18 |
+| Produção (AWS) | Clientes reais, alta disponibilidade em 2 zonas | 691,91 | 3.790,14 |
 | Homologação (AWS) | Testes antes de publicar, 1 zona, banco menor | 207,50 | 1.136,64 |
 | Serviços fora da AWS | Build do app, push, GitHub, domínio e conta da Apple | 94,86 | 519,62 |
 | Desenvolvimento | Cada dev roda tudo na própria máquina com Docker Compose | 0,00 | 0,00 |
-| **Total mensal** | | **992,27** | **5.435,43** |
+| **Total mensal** | | **994,27** | **5.446,39** |
 
 Custos únicos antes do lançamento: conta do Google Play (US$ 25) e teste de invasão externo (R$ 25.000, teto da faixa de mercado), total de **R$ 25.136,94**.
 
@@ -58,7 +71,7 @@ A tabela item a item (quantidade, preço unitário, total e fonte de cada servi�
 | Containers (Fargate) | 62,00 | 2 tarefas da API, uma em cada zona, e 1 worker |
 | Leitura em voz alta (Polly) | 48,00 | Fala gerada na hora para saldo, valores e nomes |
 | SMS para o Brasil | 30,00 | 1.000 SMS por mês a US$ 0,03, só para quem ainda não tem o app (convites e avisos) |
-| Restante (balanceador, WAF, logs, saída de dados, IPs, DNS, segredos, S3, ECR) | 127,87 | Rede, segurança e observabilidade |
+| Restante (balanceador, WAF, logs, saída de dados, IPs, DNS e verificação externa, segredos, S3, ECR) | 129,87 | Rede, segurança e observabilidade |
 
 ### Premissas de uso
 

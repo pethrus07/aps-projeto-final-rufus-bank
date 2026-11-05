@@ -1,6 +1,6 @@
 # Bloco 4 · Diagramas UML
 
-São 9 diagramas, que cobrem os 6 tipos pedidos no enunciado. Cada um tem título, autores e data no cabeçalho e segue o modelo de domínio ([05-modelo-de-dominio.md](../bloco-3-arquitetura/05-modelo-de-dominio.md)) e as rotas ([06-rotas-da-api.md](../bloco-3-arquitetura/06-rotas-da-api.md)) do Bloco 3, com os mesmos nomes.
+São 9 diagramas UML, que cobrem os 6 tipos pedidos no enunciado, mais 2 processos de negócio em BPMN como complemento. Os diagramas grandes estão divididos em partes, para o texto continuar legível no PDF impresso (cerca de 7 pt ou mais). Cada imagem tem título, autores e data no cabeçalho e segue o modelo de domínio ([05-modelo-de-dominio.md](../bloco-3-arquitetura/05-modelo-de-dominio.md)) e as rotas ([06-rotas-da-api.md](../bloco-3-arquitetura/06-rotas-da-api.md)) do Bloco 3, com os mesmos nomes.
 
 | # | Diagrama | Tipo exigido | Requisitos cobertos |
 | --- | --- | --- | --- |
@@ -13,14 +13,19 @@ São 9 diagramas, que cobrem os 6 tipos pedidos no enunciado. Cada um tem títul
 | 7 | [Deployment](#7-deployment) | Deployment | RNF03, ADR-009, ADR-013 |
 | 8 | [Atividade: abertura de conta](#8-atividade-1-abertura-de-conta) | Atividades 1 de 2 (negócio) | RF001, RF002, RF014, US09 |
 | 9 | [Atividade: análise antifraude](#9-atividade-2-análise-antifraude-de-pix-retido) | Atividades 2 de 2 (administrativo) | RF026, RF027, US16 |
+| 10 | [Processos de negócio em BPMN](#10-processos-de-negócio-em-bpmn) | Complemento (Aula 02) | RF008, RF014, RF026, RF027, US09 |
 
-Gerar de novo: `python ferramentas/diagramas/gerar.py bloco-4`. As fontes ficam em [diagramas/](diagramas/): `.mmd` para Mermaid (classes, sequência e atividades) e `.svg.py` para casos de uso, componentes e deployment, que o Mermaid não desenha em notação UML. As imagens ficam em `diagramas/img/`, em SVG (para o PDF) e PNG (para os slides).
+Gerar de novo: `python ferramentas/diagramas/gerar.py bloco-4`. As fontes ficam em [diagramas/](diagramas/): `.mmd` para Mermaid (classes, sequência e atividades) e `.svg.py` para casos de uso, componentes, deployment e BPMN, que o Mermaid não desenha na notação padrão. As imagens ficam em `diagramas/img/`, em SVG (para o PDF) e PNG (para os slides).
 
 ---
 
 ## 1. Casos de uso
 
-![Diagrama de casos de uso](diagramas/img/01-casos-de-uso.svg)
+O diagrama está em 2 partes, para o texto continuar legível impresso: a parte 1 traz o cliente, os sistemas externos e todos os «include» e «extend»; a parte 2 traz os atores de gestão.
+
+![Casos de uso, parte 1: cliente e sistemas externos](diagramas/img/01a-casos-de-uso-cliente.svg)
+
+![Casos de uso, parte 2: responsável, SAC, antifraude e administração](diagramas/img/01b-casos-de-uso-gestao.svg)
 
 **O que mostra.** Tudo que cada ator faz no Rufus. A fronteira é o sistema Rufus Bank: dentro dela ficam os casos de uso, fora ficam os atores.
 
@@ -35,9 +40,15 @@ Gerar de novo: `python ferramentas/diagramas/gerar.py bloco-4`. As fontes ficam 
 
 ## 2. Classes
 
-![Diagrama de classes do domínio](diagramas/img/02-classes.svg)
+![Classes, parte A: identidade](diagramas/img/02a-classes-identidade.svg)
 
-**O que mostra.** As 23 classes do domínio com atributos tipados, métodos e visibilidade, e todas as relações da tabela de relações do modelo de domínio. O diagrama é grande: no PDF ele ocupa uma página inteira, e o SVG pode ser ampliado sem perder nitidez.
+![Classes, parte B: família, atendimento e backoffice](diagramas/img/02b-classes-familia-atendimento.svg)
+
+![Classes, parte C: contas, carteiras e metas](diagramas/img/02c-classes-contas-metas.svg)
+
+![Classes, parte D: transações e antifraude](diagramas/img/02d-classes-transacoes-antifraude.svg)
+
+**O que mostra.** As 23 classes do domínio com atributos tipados, métodos e visibilidade, e todas as relações da tabela de relações do modelo de domínio. Para o texto continuar legível impresso, o diagrama está em 4 partes, uma por grupo de módulos (A identidade, B família, atendimento e backoffice, C contas e metas, D transações e antifraude). Uma classe que pertence a outra parte aparece só com o nome e o estereótipo «parte X», para a relação continuar visível. As 27 relações do modelo de domínio estão todas desenhadas; as duas que cruzam grupos aparecem nas duas partes.
 
 **Visibilidade.** Atributos privados (`-`): o estado só muda pelos métodos públicos (`+`), por exemplo `Conta.bloquearTudo()` e `VinculoResponsavel.definirLimites(diario: Long, mensal: Long)`. Em `Transacao` os atributos são protegidos (`#`) porque as subclasses usam esses campos.
 
@@ -60,7 +71,9 @@ Gerar de novo: `python ferramentas/diagramas/gerar.py bloco-4`. As fontes ficam 
 
 ## 3. Sequência 1 · Autenticação
 
-![Sequência de autenticação](diagramas/img/03-sequencia-autenticacao.svg)
+![Sequência 1, parte A: login](diagramas/img/03a-sequencia-autenticacao-login.svg)
+
+![Sequência 1, parte B: renovação do token](diagramas/img/03b-sequencia-autenticacao-renovacao.svg)
 
 **O que mostra.** O login com celular vinculado (ADR-010) e a renovação do token.
 
@@ -71,25 +84,37 @@ Gerar de novo: `python ferramentas/diagramas/gerar.py bloco-4`. As fontes ficam 
   - senha errada (401), com o bloqueio de 30 minutos na 5ª tentativa (RF004);
   - aparelho diferente do vinculado (403), que leva à troca de aparelho com selfie (RF005);
   - sucesso (200), com JWT de 15 minutos e token de renovação de 30 dias (RNF05).
-- Depois do `alt`, a renovação troca o token a cada uso. Se um token de renovação já usado aparece de novo, é sinal de roubo e todas as sessões do aparelho são revogadas.
+- Na parte B (passos 15 a 17), a renovação troca o token a cada uso. Se um token de renovação já usado aparece de novo, é sinal de roubo e todas as sessões do aparelho são revogadas.
 
 ## 4. Sequência 2 · Envio de Pix, caminho feliz
 
-![Sequência do Pix com sucesso](diagramas/img/04-sequencia-pix-sucesso.svg)
+A sequência está em 3 partes (A, B e C), com a numeração dos passos continuando de uma para a outra. O MotorAntifraude aparece como chamada interna da API (passo 13), porque é um componente dela (ADR-001).
+
+![Sequência 2, parte A: consulta da chave e fala do recebedor](diagramas/img/04a-sequencia-pix-sucesso-consulta.svg)
+
+![Sequência 2, parte B: confirmação, antifraude e gravação](diagramas/img/04b-sequencia-pix-sucesso-gravacao.svg)
+
+![Sequência 2, parte C: liquidação no parceiro e aviso](diagramas/img/04c-sequencia-pix-sucesso-liquidacao.svg)
 
 **O que mostra.** O fluxo principal do produto, com a Dona Marlene enviando 50 reais.
 
 **Como ler, em quatro partes.**
-1. **Antes de confirmar** (1 a 10): a API consulta o recebedor no parceiro e gera o áudio. O app mostra e fala o nome, o banco e o valor (RF009). É a barreira contra golpe e contra erro de digitação.
-2. **Confirmação** (11 a 18): com a digital, o app envia o Pix com `Idempotency-Key`. A API confere os limites (RF019, limite do menor), pede a nota ao antifraude (RF026) e, numa única transação do banco (área azul), grava a transação, reserva o saldo com dois lançamentos e publica o evento no outbox. A resposta é 202: o Pix foi aceito para processamento.
-3. **Envio ao parceiro** (19 a 25): o worker lê o outbox e envia. O parceiro confirma a liquidação por webhook assinado.
-4. **Retorno ao cliente** (26 a 30): o app consulta a situação e mostra a tela verde com áudio, e o worker manda o push.
+1. **Antes de confirmar** (1 a 10, parte A): a API consulta o recebedor no parceiro e gera o áudio. O app mostra e fala o nome, o banco e o valor (RF009). É a barreira contra golpe e contra erro de digitação.
+2. **Confirmação** (11 a 17, parte B): com a digital, o app envia o Pix com `Idempotency-Key`. A API confere os limites (RF019, limite do menor), pede a nota ao antifraude (RF026) e, numa única transação do banco (área azul), grava a transação, reserva o saldo com dois lançamentos e publica o evento no outbox. A resposta é 202: o Pix foi aceito para processamento.
+3. **Envio ao parceiro** (18 a 24, parte C): o worker lê o outbox e envia. O parceiro confirma a liquidação por webhook assinado.
+4. **Retorno ao cliente** (25 a 29, parte C): o app consulta a situação e mostra a tela verde com áudio, e o worker manda o push.
 
 **Por que o 202 e o worker.** Se a API esperasse o parceiro dentro da requisição, uma lentidão do parceiro prenderia conexões e o clique repetido viraria risco de duplicidade. O cliente vê o resultado em até 10 s no p95 (RNF02).
 
 ## 5. Sequência 3 · Erro crítico: falha no parceiro e estorno
 
-![Sequência do erro crítico](diagramas/img/05-sequencia-pix-erro.svg)
+A sequência está em 3 partes, com a numeração continuando: A (passos 1 a 8), B (9 a 17) e C (18 a 24).
+
+![Sequência 3, parte A: resposta perdida e reenvio idempotente](diagramas/img/05a-sequencia-pix-erro-reenvio.svg)
+
+![Sequência 3, parte B: falha no parceiro, nova tentativa e compensação](diagramas/img/05b-sequencia-pix-erro-compensacao.svg)
+
+![Sequência 3, parte C: aviso ao cliente e consulta ao parceiro](diagramas/img/05c-sequencia-pix-erro-aviso.svg)
 
 **O que mostra.** O cenário de erro mais grave: dinheiro reservado e o parceiro falhando no meio. São dois problemas encadeados.
 
@@ -125,7 +150,11 @@ Gerar de novo: `python ferramentas/diagramas/gerar.py bloco-4`. As fontes ficam 
 
 ## 7. Deployment
 
-![Diagrama de deployment](diagramas/img/07-deployment.svg)
+O diagrama está em 2 partes: a produção na AWS (parte 1) e o desenvolvimento local com a homologação (parte 2).
+
+![Deployment, parte 1: produção na AWS](diagramas/img/07a-deployment-producao.svg)
+
+![Deployment, parte 2: desenvolvimento local e homologação](diagramas/img/07b-deployment-dev-e-homologacao.svg)
 
 **O que mostra.** Onde cada peça roda nos três ambientes, com protocolos e portas.
 
@@ -144,7 +173,13 @@ Gerar de novo: `python ferramentas/diagramas/gerar.py bloco-4`. As fontes ficam 
 
 ## 8. Atividade 1 · Abertura de conta
 
-![Atividade de abertura de conta](diagramas/img/08-atividade-abertura-de-conta.svg)
+O diagrama está em 3 partes ligadas por **conectores** (círculo com letra, a notação UML para continuar o fluxo em outro lugar): A (cadastro e validação do adulto), B (ramo do menor, conector **M**) e C (abertura da conta, fim comum, que recebe o adulto pelo conector **P** e o menor pelo conector **V**).
+
+![Atividade 1, parte A: cadastro e validação do adulto](diagramas/img/08a-atividade-abertura-de-conta-comum.svg)
+
+![Atividade 1, parte B: ramo do menor](diagramas/img/08b-atividade-abertura-de-conta-menor.svg)
+
+![Atividade 1, parte C: abertura da conta](diagramas/img/08c-atividade-abertura-de-conta-fim.svg)
 
 **O que mostra.** O processo de negócio principal: como uma pessoa vira cliente, incluindo o caso do menor.
 
@@ -161,7 +196,11 @@ Gerar de novo: `python ferramentas/diagramas/gerar.py bloco-4`. As fontes ficam 
 
 ## 9. Atividade 2 · Análise antifraude de Pix retido
 
-![Atividade de análise antifraude](diagramas/img/09-atividade-analise-antifraude.svg)
+O diagrama está em 2 partes ligadas pelo conector **R**: A (retenção, análise e liberação) e B (recusa e bloqueio).
+
+![Atividade 2, parte A: retenção, análise e liberação](diagramas/img/09a-atividade-antifraude-analise.svg)
+
+![Atividade 2, parte B: recusa e bloqueio](diagramas/img/09b-atividade-antifraude-recusa.svg)
 
 **O que mostra.** O processo administrativo mais importante: o que acontece com um Pix suspeito até a decisão humana (RF026, RF027, US16).
 
@@ -170,3 +209,41 @@ Gerar de novo: `python ferramentas/diagramas/gerar.py bloco-4`. As fontes ficam 
 - O analista vê os motivos da nota, o histórico e o destinatário. Se precisar de mais informação, fala com o cliente pelo chat do app e volta à análise (o laço à direita).
 - **Liberar**: a decisão fica gravada com auditoria (RNF14), o worker envia o Pix pelo outbox e o cliente é avisado.
 - **Recusar**: a decisão fica gravada com auditoria e o valor volta à carteira principal. Se houver indício de golpe ou de conta tomada, a conta é bloqueada e o contato de confiança é avisado. Nos dois casos o cliente é orientado a falar com o SAC pelo app, nunca por telefone (RF021).
+
+## 10. Processos de negócio em BPMN
+
+Complemento aos 6 diagramas UML obrigatórios, com o conteúdo da Aula 02 da disciplina. Os diagramas de atividades (seções 8 e 9) mostram o fluxo **dentro** do sistema; o BPMN mostra o processo de negócio **entre os participantes**: cliente, Rufus, analista, responsável e parceiro BaaS, cada um no seu pool.
+
+| | BPM | BPMN |
+| --- | --- | --- |
+| O que é | Disciplina de gestão: planejar, modelar, simular, executar, monitorar e otimizar processos | Notação gráfica padronizada (OMG) para desenhar o processo |
+| Analogia da aula | A engenharia civil | A planta baixa |
+| Onde aparece no Rufus | O ciclo vivo da operação: os sinais de alerta dos riscos (Bloco 7) e as métricas de negócio (Bloco 6) alimentam a otimização | Os 2 processos abaixo, na fase de **Modelagem** do ciclo do BPM |
+
+**Notação usada.** Pool (o participante) e raia (quem executa dentro dele); evento de início (círculo fino), intermediário (círculo duplo: mensagem ou tempo) e de fim (círculo grosso; com envelope cheio quando envia mensagem; com círculo preto quando encerra o processo todo); tarefa (retângulo arredondado, com ícone de pessoa ou de engrenagem para tarefa de usuário ou de sistema); gateway exclusivo (X), paralelo (+) e baseado em evento (pentágono); fluxo de sequência contínuo e fluxo de mensagem tracejado entre pools. Os 5 elementos mínimos da aula (início, tarefas, gateway, fim e fluxo de sequência) estão em todos. Cada processo está em 2 partes, ligadas por **eventos de link** (seta dentro do círculo: cheia onde o fluxo sai, vazada onde ele continua), o recurso do próprio BPMN para continuar o desenho em outra página.
+
+### Processo 1 · Envio de Pix com antifraude e estorno
+
+![BPMN do envio de Pix, parte 1](diagramas/img/10-bpmn-pix-1-pedido-e-risco.svg)
+
+![BPMN do envio de Pix, parte 2](diagramas/img/11-bpmn-pix-2-liquidacao-e-estorno.svg)
+
+**Como ler.**
+- **Parte 1.** O cliente informa a chave e o valor. O app consulta a chave e fala nome, banco e valor (RF009); o cliente confirma com a digital. A API reserva o saldo, grava o Pix como PENDENTE e calcula a nota de risco. O gateway "Nota ≥ 70?" decide o caminho: **não** segue pelo link **A** (envio ao parceiro); **sim** segue pelo link **B** (análise humana, RF026).
+- **Parte 2, raia do analista** (link B). O analista analisa o Pix retido e decide. **Liberar** leva ao envio. **Recusar** bloqueia a conta e estorna a reserva; o fim com envelope avisa o cliente (RF027).
+- **Parte 2, envio** (link A). A API envia ao parceiro com nova tentativa idempotente. O **gateway baseado em evento** espera o que vier primeiro: a **resposta do parceiro** (mensagem) ou **5 tentativas sem resposta** (tempo). Aceito confirma os lançamentos (CONCLUIDA). Recusado ou sem resposta leva à **compensação da saga**: o estorno da reserva. É o mesmo comportamento da sequência de erro crítico (seção 5) e do ADR-008.
+- O resultado volta ao app, que mostra e fala o desfecho ao cliente.
+
+### Processo 2 · Abertura de conta de menor com aceite do responsável
+
+![BPMN da conta de menor, parte 1](diagramas/img/12-bpmn-menor-1-cadastro-e-aceite.svg)
+
+![BPMN da conta de menor, parte 2](diagramas/img/13-bpmn-menor-2-abertura-da-conta.svg)
+
+**Como ler.**
+- **Parte 1.** A Camila informa os dados, envia documento e selfie ouvindo cada passo e informa o CPF e o celular do responsável. A API registra o cadastro e os consentimentos e abre um **gateway paralelo** (+) com dois caminhos ao mesmo tempo:
+  - **convite ao responsável:** o convite vai por SMS ao responsável, que valida a própria identidade, aceita os termos e define os limites. O gateway baseado em evento espera o **aceite** ou o **prazo de 7 dias** (evento de tempo, US09). Se o prazo vence, o pedido é cancelado e os dados enviados são apagados (LGPD), com um fim que **encerra o processo inteiro**;
+  - **validação do menor:** o parceiro valida a identidade. Se for recusada, também encerra o processo.
+- O **gateway paralelo de junção** só segue quando os dois caminhos terminaram bem. Os fins que encerram o processo evitam que a junção fique esperando para sempre um caminho que já falhou, um erro comum de modelagem.
+- **Parte 2** (link C). A API cria o vínculo com os limites e pede a abertura da conta ao parceiro. Com a conta aberta, cria a conta e a carteira principal no razão, avisa por voz e push, e a Camila cria a senha e ativa a digital.
+

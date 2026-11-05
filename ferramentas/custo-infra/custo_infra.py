@@ -58,6 +58,8 @@ PRECOS = {
     "polly_char": ("AmazonPolly", "SAE1-SynthesizeSpeech-Characters", None),
     "r53_zona": ("AmazonRoute53@global", "HostedZone", "first 25 Hosted Zones"),
     "r53_consulta": ("AmazonRoute53@global", "DNS-Queries", "first 1 Billion"),
+    "r53_hc": ("AmazonRoute53@global", "Health-Check-AWS", "First 50"),
+    "r53_hc_opcao": ("AmazonRoute53@global", "Health-Check-Option-AWS", None),
 }
 
 # Premissas de uso. Toda quantidade aqui e citada no 04-viabilidade.md.
@@ -90,6 +92,8 @@ PROD = [
     ("Polly: leitura em voz alta (12 mi caracteres)", "polly_char", 12_000_000, "caracteres"),
     ("Route 53: 1 zona de DNS (rufusbank.com.br)", "r53_zona", 1, "zona"),
     ("Route 53: consultas de DNS", "r53_consulta", 5_000_000, "consultas"),
+    ("Route 53: verificação externa de saúde do /health (RNF03), grátis até 50", "r53_hc", 1, "verificação"),
+    ("Route 53: opções HTTPS e conferência do texto da resposta", "r53_hc_opcao", 2, "opções"),
     ("SMS para o Brasil: convites e avisos a quem não tem o app", "sms_br", 1_000, "SMS"),
 ]
 

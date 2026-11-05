@@ -70,3 +70,16 @@ Consultadas em 04/11/2026. O Glassdoor (glassdoor.com.br), indicado no enunciado
 | Conta de desenvolvedor Google Play | US$ 25, uma vez | [https://support.google.com/googleplay/android-developer/answer/6112435](https://support.google.com/googleplay/android-developer/answer/6112435) |
 
 Encargos trabalhistas (INSS patronal, RAT, terceiros, FGTS, 13º, férias e um terço) calculados item a item no item 7.3, a partir das alíquotas legais.
+
+## Bibliografia e material da disciplina
+
+| Referência | Onde usamos |
+| --- | --- |
+| CUNHA, Israel. Slides das Aulas 01 a 05 e enunciado do Projeto Final. Análise e Projeto de Sistemas, UNIPÊ, 2026.2 | Todo o projeto. O mapa "A disciplina no projeto" liga cada conceito ao bloco onde ele aparece |
+| SOMMERVILLE, Ian. *Engenharia de Software*. 9. ed. São Paulo: Pearson, 2011 | Classificação dos RNF em produto, organizacional e externo (2.2). Processo de engenharia de requisitos (2.0) |
+| PRESSMAN, Roger S.; MAXIM, Bruce R. *Engenharia de Software: uma abordagem profissional*. 8. ed. Porto Alegre: AMGH, 2016 | Dificuldade de entender requisitos (2.0) |
+| WAZLAWICK, Raul S. *Engenharia de Software: conceitos e práticas*. Rio de Janeiro: Elsevier, 2013 | Critério de escolha do ciclo de vida pelo nível de conhecimento e estabilidade dos requisitos (9.6) |
+| BOEHM, Barry W. A spiral model of software development and enhancement. *Computer*, IEEE, v. 21, n. 5, p. 61-72, 1988 | Modelo espiral e análise de risco por ciclo (9.6) |
+| ABNT. *NBR ISO/IEC 12207: Tecnologia de informação, processos de ciclo de vida de software*. Rio de Janeiro, 1998 | Definição de ciclo de vida (9.6) |
+| DENNIS, Alan; WIXOM, Barbara H.; ROTH, Roberta M. *Análise e Projeto de Sistemas*. 5. ed. Rio de Janeiro: LTC, 2014 | Estrutura geral de análise e projeto |
+| Definição de requisito do IEEE (2008), como apresentada na Aula 04 | Abertura do item 2.0 |

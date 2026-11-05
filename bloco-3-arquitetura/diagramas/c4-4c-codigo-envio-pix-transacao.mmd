@@ -1,0 +1,35 @@
+%% titulo: C4 nível 4, parte 3 de 3 · ServicoEnvioPix: a transação que ele cria
+%%{init: {"class": {"nodeSpacing": 26, "rankSpacing": 36, "padding": 6}}}%%
+classDiagram
+    direction LR
+    class Transacao {
+        <<abstract>>
+        #id: UUID
+        #contaId: UUID
+        #valorCentavos: Long
+        #status: StatusTransacao
+        #chaveIdempotencia: String
+        +transicionarPara(novo: StatusTransacao) void
+    }
+    class PixEnvio {
+        +chaveDestino: String
+        +nomeRecebedor: String
+        +bancoRecebedor: String
+        +destinatarioNovo: Boolean
+    }
+    class StatusTransacao {
+        <<enumeration>>
+        PENDENTE
+        RETIDA
+        ENVIADA
+        CONCLUIDA
+        RECUSADA
+        ESTORNADA
+    }
+    class ServicoEnvioPix {
+        <<parte 1>>
+    }
+
+    ServicoEnvioPix ..> PixEnvio : cria
+    Transacao --> StatusTransacao
+    Transacao <|-- PixEnvio

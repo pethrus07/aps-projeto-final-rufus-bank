@@ -1,0 +1,27 @@
+%% titulo: Diagrama de Atividades 2, parte A · Análise antifraude: retenção, análise e liberação
+%%{init: {"themeVariables": {"edgeLabelBackground": "#FFFFFF"}, "flowchart": {"wrappingWidth": 230, "nodeSpacing": 28, "rankSpacing": 30, "padding": 4, "diagramPadding": 8}}}%%
+flowchart TD
+    classDef inicio fill:#111827,stroke:#111827,color:#111827
+    classDef fim fill:#111827,stroke:#111827,stroke-width:4px,color:#111827
+    classDef barra fill:#111827,stroke:#111827,color:#111827,font-size:2px
+    classDef acao fill:#FFFFFF,stroke:#374151,color:#111827
+    classDef conector fill:#FFFFFF,stroke:#111827,stroke-width:2px,color:#111827
+    classDef nota fill:#FFFFFF,stroke:#FFFFFF,color:#4B5563
+
+    I(( )):::inicio --> A1(["(MotorAntifraude) Pix recebe nota 70 ou mais e fica RETIDA"]):::acao
+    A1 --> B1[" "]:::barra
+    B1 --> A2(["(Rufus) Avisa o cliente: seu Pix está em análise"]):::acao
+    B1 --> A3(["(Rufus) Coloca o Pix na fila do painel antifraude"]):::acao
+    A2 --> B2[" "]:::barra
+    A3 --> B2
+    B2 --> A4(["(Analista) Abre o Pix na fila"]):::acao
+    A4 --> A5(["(Analista) Vê os motivos da nota, o histórico e o destinatário"]):::acao
+    A5 --> D1{"Decisão"}
+    D1 -- "precisa de mais informação" --> A6(["(Analista) Fala com o cliente pelo chat do app"]):::acao
+    A6 --> A5
+    D1 -- "liberar" --> A7(["(Rufus) Grava LIBERADA_ANALISTA e o registro de auditoria"]):::acao
+    A7 --> A8(["(Worker) Envia o Pix ao parceiro pelo outbox"]):::acao
+    A8 --> A9(["(Rufus) Avisa o cliente que o Pix seguiu"]):::acao
+    A9 --> F1((( ))):::fim
+    D1 -- "recusar" --> R1(("R")):::conector
+    R1 -.- N1["continua na parte B: recusa"]:::nota

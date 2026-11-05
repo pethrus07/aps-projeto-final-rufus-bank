@@ -1,0 +1,19 @@
+%% titulo: Diagrama de Sequência 3, parte C · Erro crítico: aviso ao cliente e consulta ao parceiro
+%%{init: {"sequence": {"wrap": true, "width": 120, "actorMargin": 75, "messageMargin": 22, "boxMargin": 8, "noteMargin": 10, "mirrorActors": false, "messageFontSize": 14, "noteFontSize": 14, "actorFontSize": 15}}}%%
+sequenceDiagram
+    autonumber 18
+    actor C as Antônio
+    participant App as App mobile
+    participant API as API (pagamentos)
+    participant DB as PostgreSQL
+    participant W as Worker
+    participant BaaS as Parceiro BaaS
+    W-->>C: Push "O Pix não foi. Os 150 reais voltaram para sua conta"
+    App->>API: GET /v1/pix/envios/{id}
+    API-->>App: 200 {status: ESTORNADA, motivo}
+    App-->>C: Fala o motivo em uma frase e mostra o saldo de volta
+    opt Parceiro segue sem responder depois de 5 tentativas
+        W->>BaaS: Consulta a situação pelo id da transação
+        BaaS-->>W: Pix não encontrado
+        W->>DB: Mesma compensação: ESTORNADA e estorno dos lançamentos
+    end
